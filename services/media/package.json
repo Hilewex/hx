@@ -1,0 +1,21 @@
+{
+  "name": "@hx/media",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@hx/cancel-return": "workspace:*",
+    "@hx/checkout": "workspace:*",
+    "@hx/commerce": "workspace:*",
+    "@hx/contracts": "workspace:*",
+    "@hx/order": "workspace:*",
+    "@hx/payment": "workspace:*",
+    "@hx/persistence": "workspace:*",
+    "@hx/refund": "workspace:*",
+    "@hx/shipment": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "p39-smoke": "tsx src/p39-smoke-test.ts"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@hx/finance-correction",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "smoke": "ts-node src/smoke-test.ts"
+  },
+  "dependencies": {
+    "@hx/config": "workspace:*",
+    "@hx/contracts": "workspace:*",
+    "@hx/persistence": "workspace:*",
+    "@hx/payment": "workspace:*",
+    "@hx/order": "workspace:*",
+    "@hx/refund": "workspace:*",
+    "@hx/cancel-return": "workspace:*",
+    "@hx/risk": "workspace:*",
+    "pg": "^8.11.3",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/pg": "^8.11.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@hx/post": ["../../services/post/src"],
+      "@hx/question-answer": ["../../services/question-answer/src"],
+      "@hx/review": ["../../services/review/src"],
+      "@hx/ugc": ["../../services/ugc/src"]
+    },
+    "outDir": "./dist",
+    "types": ["node"]
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

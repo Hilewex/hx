@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@hx/contracts": ["packages/contracts/dist"],
+      "@hx/service-store-message": ["services/store-message/src"],
+      "@hx/service-store-post": ["services/store-post/src"]
+    }
+  }
+}

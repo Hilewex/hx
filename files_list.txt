@@ -1,0 +1,583 @@
+﻿.env.example
+.gitignore
+custom_tree.txt
+files_list.txt
+p21-runtime-check.ts
+p21-verification.js
+P51_ACCEPTANCE_CLOSURE_REPORT.md
+package.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
+README.md
+runtime-verification.js
+temp_checkout_test.js
+tree_full.txt
+tsconfig.base.json
+apps\bff\package.json
+apps\bff\README.md
+apps\bff\tsconfig.json
+apps\bff\src\index.ts
+apps\bff\src\config\index.ts
+apps\bff\src\server\access.ts
+apps\bff\src\server\actions.ts
+apps\bff\src\server\analytics.ts
+apps\bff\src\server\cancel-return.ts
+apps\bff\src\server\cart.ts
+apps\bff\src\server\catalog.ts
+apps\bff\src\server\category.ts
+apps\bff\src\server\checkout.ts
+apps\bff\src\server\context.ts
+apps\bff\src\server\feed.ts
+apps\bff\src\server\finance-correction.ts
+apps\bff\src\server\follow.ts
+apps\bff\src\server\index.ts
+apps\bff\src\server\interaction.ts
+apps\bff\src\server\media.ts
+apps\bff\src\server\moderation.ts
+apps\bff\src\server\notification.ts
+apps\bff\src\server\order-ops.ts
+apps\bff\src\server\order.ts
+apps\bff\src\server\p49-response-smoke-test.ts
+apps\bff\src\server\p50-response-smoke-test.ts
+apps\bff\src\server\payment.ts
+apps\bff\src\server\payout.ts
+apps\bff\src\server\plp.ts
+apps\bff\src\server\post.ts
+apps\bff\src\server\qa.ts
+apps\bff\src\server\refund.ts
+apps\bff\src\server\response.ts
+apps\bff\src\server\review.ts
+apps\bff\src\server\risk.ts
+apps\bff\src\server\search.ts
+apps\bff\src\server\settlement.ts
+apps\bff\src\server\shipment.ts
+apps\bff\src\server\storefront.ts
+apps\bff\src\server\story.ts
+apps\bff\src\server\support.ts
+apps\bff\src\server\ugc.ts
+apps\panel\package.json
+apps\panel\README.md
+apps\panel\tsconfig.json
+apps\panel\src\index.ts
+apps\panel\src\bootstrap\access.ts
+apps\panel\src\bootstrap\actions.ts
+apps\panel\src\bootstrap\app.ts
+apps\panel\src\bootstrap\auth.ts
+apps\panel\src\config\index.ts
+apps\web\package.json
+apps\web\README.md
+apps\web\tsconfig.json
+apps\web\src\config.ts
+apps\web\src\index.ts
+apps\web\src\bootstrap\access.ts
+apps\web\src\bootstrap\app.ts
+apps\web\src\bootstrap\auth.ts
+apps\web\src\bootstrap\cancel-return.ts
+apps\web\src\bootstrap\cart.ts
+apps\web\src\bootstrap\category.ts
+apps\web\src\bootstrap\checkout.ts
+apps\web\src\bootstrap\feed.ts
+apps\web\src\bootstrap\follow.ts
+apps\web\src\bootstrap\interaction.ts
+apps\web\src\bootstrap\media.ts
+apps\web\src\bootstrap\moderation.ts
+apps\web\src\bootstrap\notification.ts
+apps\web\src\bootstrap\order.ts
+apps\web\src\bootstrap\payment.ts
+apps\web\src\bootstrap\pdp.ts
+apps\web\src\bootstrap\plp.ts
+apps\web\src\bootstrap\post.ts
+apps\web\src\bootstrap\qa.ts
+apps\web\src\bootstrap\refund.ts
+apps\web\src\bootstrap\review.ts
+apps\web\src\bootstrap\search.ts
+apps\web\src\bootstrap\shipment.ts
+apps\web\src\bootstrap\storefront.ts
+apps\web\src\bootstrap\story.ts
+apps\web\src\bootstrap\support.ts
+apps\web\src\bootstrap\ugc.ts
+apps\web\src\config\index.ts
+docs\api\.gitkeep
+docs\architecture\.gitkeep
+docs\plan\.gitkeep
+docs\runbooks\.gitkeep
+docs\runbooks\db-validation.md
+docs\runbooks\local-setup.md
+docs\runbooks\runtime-verification.md
+docs\standards\.gitkeep
+docs\topology\.gitkeep
+infra\ci\.gitkeep
+infra\compose\.gitkeep
+infra\compose\docker-compose.local.yml
+infra\compose\tempo\tempo.yaml
+infra\docker\.gitkeep
+infra\docker\docker-compose.yml
+infra\env\.gitkeep
+infra\migrations\.gitkeep
+infra\migrations\20260425_001_moderation_init.sql
+infra\migrations\20260425_002_commerce_cart_checkout.sql
+infra\migrations\20260425_003_payment_order_persistence.sql
+infra\migrations\20260425_004_shipment_return_refund_persistence.sql
+infra\migrations\20260425_005_p37_shipment_return_refund_indexes.sql
+infra\migrations\20260426_001_event_audit_durability.sql
+infra\migrations\20260427_001_risk_foundation.sql
+infra\migrations\20260427_002_finance_correction_foundation.sql
+infra\migrations\20260427_003_settlement_foundation.sql
+infra\migrations\20260427_004_payout_foundation.sql
+infra\migrations\20260427_005_notification_provider_hardening.sql
+infra\migrations\20260427_006_metrics_analytics_foundation.sql
+infra\scripts\.gitkeep
+infra\topology\.gitkeep
+packages\config\package.json
+packages\config\README.md
+packages\config\tsconfig.json
+packages\config\src\index.ts
+packages\contracts\package.json
+packages\contracts\README.md
+packages\contracts\tsconfig.json
+packages\contracts\src\access.ts
+packages\contracts\src\actions.ts
+packages\contracts\src\analytics.ts
+packages\contracts\src\api-error.ts
+packages\contracts\src\auth.ts
+packages\contracts\src\cancel-return.ts
+packages\contracts\src\cart.ts
+packages\contracts\src\catalog.ts
+packages\contracts\src\category.ts
+packages\contracts\src\checkout.ts
+packages\contracts\src\feed.ts
+packages\contracts\src\finance-correction.ts
+packages\contracts\src\follow.ts
+packages\contracts\src\health.ts
+packages\contracts\src\index.ts
+packages\contracts\src\interaction.ts
+packages\contracts\src\media.ts
+packages\contracts\src\moderation.ts
+packages\contracts\src\notification.ts
+packages\contracts\src\order-ops.ts
+packages\contracts\src\order.ts
+packages\contracts\src\payment.ts
+packages\contracts\src\payout.ts
+packages\contracts\src\plp.ts
+packages\contracts\src\post.ts
+packages\contracts\src\pricing.ts
+packages\contracts\src\qa.ts
+packages\contracts\src\refund.ts
+packages\contracts\src\responses.ts
+packages\contracts\src\review.ts
+packages\contracts\src\risk.ts
+packages\contracts\src\search.ts
+packages\contracts\src\settlement.ts
+packages\contracts\src\shipment.ts
+packages\contracts\src\stock.ts
+packages\contracts\src\storefront.ts
+packages\contracts\src\story.ts
+packages\contracts\src\support.ts
+packages\contracts\src\ugc.ts
+packages\events\package.json
+packages\events\README.md
+packages\events\tsconfig.json
+packages\events\src\envelope.ts
+packages\events\src\index.ts
+packages\observability\package.json
+packages\observability\README.md
+packages\observability\tsconfig.json
+packages\observability\src\index.ts
+packages\observability\src\logger.ts
+packages\observability\src\tracer.ts
+packages\persistence\p37-smoke-test.ts
+packages\persistence\p38-smoke-test.ts
+packages\persistence\package.json
+packages\persistence\run-migrations.ts
+packages\persistence\tsconfig.json
+packages\persistence\verify-schema.ts
+packages\persistence\src\audit-event.ts
+packages\persistence\src\index.ts
+packages\persistence\src\migrator.ts
+packages\shared-kernel\package.json
+packages\shared-kernel\README.md
+packages\shared-kernel\tsconfig.json
+packages\shared-kernel\src\errors.ts
+packages\shared-kernel\src\index.ts
+packages\testing\package.json
+packages\testing\README.md
+packages\testing\tsconfig.json
+packages\testing\src\builders.ts
+packages\testing\src\index.ts
+packages\types\package.json
+packages\types\README.md
+packages\types\tsconfig.json
+packages\types\src\common.ts
+packages\types\src\index.ts
+packages\ui\package.json
+packages\ui\README.md
+packages\ui\tsconfig.json
+packages\ui\src\index.ts
+packages\ui\src\theme.ts
+planlama\1-havuz sistemi.md
+planlama\10-kategori-plp sistemi.md
+planlama\11-takip sistemi.md
+planlama\12- Arama Sistemi.md
+planlama\13-sepet sistemi .md
+planlama\14-checkout sistemi .md
+planlama\15-ödeme sistemi .md
+planlama\16-sipariş sistemi .md
+planlama\17- kargo ve teslimat sistemi.md
+planlama\18- iptal ve iade sistemi .md
+planlama\19- bildirim sistemi.md
+planlama\2-fenoemen mağaza sistemi.md
+planlama\20-destek sistemi .md
+planlama\21-post sistemi .md
+planlama\22-moderasyon sistemi.md
+planlama\23-üyelik giriş sistemi.md
+planlama\24-adres sistem,.md
+planlama\25-kural -yetki sistemi.md
+planlama\26-varyant sistemi.md
+planlama\27-merkezi stok sistemi.md
+planlama\28-ürün kabul - onay sistemi.md
+planlama\29-merkezi fiyat sistemi.md
+planlama\3- kullanıcı-müşteri sistemi.md
+planlama\30-sipariş takip sistemi.md
+planlama\31-yorum ve puanlama sistemi.md
+planlama\32-soru cevap sistemi.md
+planlama\33-beğenme kaydetme  paulaşma sistemi.md
+planlama\34-kullanıcı story sistemi.md
+planlama\35-kampanya sistemi.md
+planlama\36-beğen ve kaydet sayfaları sistemi.md
+planlama\37-öneri ve sıralama sistemi.md
+planlama\38-puan market sistemi.md
+planlama\39-ödül puan sistemi.md
+planlama\4-pdp sistemi.md
+planlama\40-admin sistemi.md
+planlama\41- fenomen yönetim sistemi.md
+planlama\42-fenomen mağaza yönetim panel sistemi.md
+planlama\43-tedarikçi panel sistemi.md
+planlama\44-tedarikçi yönetim sistemi.md
+planlama\45-sipariş operasyon sistemi.md
+planlama\46-kupon sistemi.md
+planlama\47-finansal mutabakat  hakediş sistemi.md
+planlama\48-arka paln analatik ölçümleme sistemi.md
+planlama\49-fraud risk abuse sistemi.md
+planlama\5-story sistemi.md
+planlama\50-medya sistemş asset  sitemi.md
+planlama\51-arama  indeksleme sistemi.md
+planlama\52-kategori taksonomi sistemi.md
+planlama\53- destek ticket operasyon sistemi.md
+planlama\54-payaut ödeme çıkış sistemi.md
+planlama\6-video sistemi.md
+planlama\60-KODLAMAYA HAZIRLIK YOL HARİTASI.md
+planlama\61-FULL_CAPACITY_CODING_ROADMAP.md
+planlama\62-MASTER_IMPLEMENTATION_PLAN.md
+planlama\63-IMPLEMENTATION_PROGRESS_MASTER.md
+planlama\64-PACKAGE_EXECUTION_LOG.md
+planlama\65-ACTIVE_RISKS_AND_DECISIONS.md
+planlama\66-referans dosyaları.md
+planlama\67-ROADMAP_ALIGNMENT_AND_PACKAGE_NUMBERING.md
+planlama\7-keşfet sistemi.md
+planlama\8-klasik ürün kart sistemi.md
+planlama\9-ana sayfa sistemi.md
+planlama\DOSYA_SEMASI.md
+planlama\KONFIGURASYON_YONETIMI.md
+planlama\kullanılacak teknolojiler.md
+planlama\platform sistem ağacı .md
+planlama\TEST_STRATEJISI.md
+planlama\VERI_AKISI_SENKRONIZASYON_MODELI.md
+planlama\vvv
+planlama\arşiv\63A-IMPLEMENTATION_PROGRESS_ARCHIVE_P01_P41.md
+planlama\arşiv\64A-PACKAGE_EXECUTION_ARCHIVE_P01_P41.md
+planlama\arşiv\65A-RISKS_AND_DECISIONS_ARCHIVE_P01_P41.md
+planlama\aşama-1\DOSYA_DURUM_ENVANTERI.md
+planlama\aşama-1\FAZ_1_KAPSAM_LISTESI.md
+planlama\aşama-1\FAZ_2_PARK_LISTESI.md
+planlama\aşama-1\KANONIK_KARARLAR_OZETI.md
+planlama\aşama-1\KRITIK_KARAR_KUMELERI.md
+planlama\aşama-1\TERIM_SOZLUGU.md
+planlama\aşama-10\BUSINESS_RULES_REGISTER.md
+planlama\aşama-10\ELIGIBILITY_RULEBOOK.md
+planlama\aşama-10\PROMOTION_RULEBOOK.md
+planlama\aşama-10\UGC_RULEBOOK.md
+planlama\aşama-11\AUDIT_TAXONOMY.md
+planlama\aşama-11\DATA_QUALITY_POLICY.md
+planlama\aşama-11\EVENT_TAXONOMY.md
+planlama\aşama-11\METRIC_DICTIONARY.md
+planlama\aşama-12\APPROVAL_FLOW_PACK.md
+planlama\aşama-12\ESCALATION_MATRIX.md
+planlama\aşama-12\OPERATION_LOGIC_GUIDE.md
+planlama\aşama-12\SLA_OWNER_LIST.md
+planlama\aşama-13\CLOUD_TOPOLOGY_DIAGRAM.png
+planlama\aşama-13\ENVIRONMENT_ARCHITECTURE.md
+planlama\aşama-13\SECRETS_AND_CONFIG_POLICY.md
+planlama\aşama-13\SERVICE_DEPLOYMENT_MAP.md
+planlama\aşama-14\BRANCH_RELEASE_POLICY.md
+planlama\aşama-14\DEFINITION_OF_DONE.md
+planlama\aşama-14\DEFINITION_OF_READY.md
+planlama\aşama-14\ENGINEERING_STANDARDS.md
+planlama\aşama-14\ERROR_CODE_STANDARD.md
+planlama\aşama-14\REPO_BLUEPRINT.md
+planlama\aşama-15\ACCEPTANCE_CRITERIA_PACK.md
+planlama\aşama-15\CODING_READINESS_GATE.md
+planlama\aşama-15\CRITICAL_JOURNEY_CHECKLIST.md
+planlama\aşama-2\ACTOR_MATRIX.md
+planlama\aşama-2\ENDPOINT_SCOPE_CATALOG.md
+planlama\aşama-2\GUARD_MATRIX.md
+planlama\aşama-2\OWNER_MATRIX.md
+planlama\aşama-2\PERMISSION_MATRIX.md
+planlama\aşama-3\IDEMPOTENCY_POLICIES.md
+planlama\aşama-3\TRANSITION_POLICIES.md
+planlama\aşama-3\STATE_MACHINES\cancel-return.md
+planlama\aşama-3\STATE_MACHINES\checkout.md
+planlama\aşama-3\STATE_MACHINES\creator-lifecycle.md
+planlama\aşama-3\STATE_MACHINES\moderation-item.md
+planlama\aşama-3\STATE_MACHINES\order.md
+planlama\aşama-3\STATE_MACHINES\payment.md
+planlama\aşama-3\STATE_MACHINES\payout-batch.md
+planlama\aşama-3\STATE_MACHINES\settlement-line.md
+planlama\aşama-3\STATE_MACHINES\shipment-delivery.md
+planlama\aşama-3\STATE_MACHINES\supplier-lifecycle.md
+planlama\aşama-3\STATE_MACHINES\support-ticket.md
+planlama\aşama-4\ARCHIVE_RETENTION_POLICY.md
+planlama\aşama-4\ENTITY_CATALOG.md
+planlama\aşama-4\LOGICAL_DATA_MODEL.md
+planlama\aşama-4\SNAPSHOT_POLICY.md
+planlama\aşama-5\API_ERROR_CATALOG.md
+planlama\aşama-5\MOCKING_STRATEGY.md
+planlama\aşama-5\OPENAPI\app.yaml
+planlama\aşama-5\OPENAPI\internal.yaml
+planlama\aşama-5\OPENAPI\panel.yaml
+planlama\aşama-5\OPENAPI\public.yaml
+planlama\aşama-6\FALLBACK_RETRY_TIMEOUT_POLICY.md
+planlama\aşama-6\INTEGRATION_BEHAVIOR_RULES.md
+planlama\aşama-6\SANDBOX_AND_MOCK_PLAN.md
+planlama\aşama-6\THIRD_PARTY_PROVIDER_MATRIX.md
+planlama\aşama-7\CAPACITY_ASSUMPTIONS.md
+planlama\aşama-7\NFR_TARGETS.md
+planlama\aşama-7\PERFORMANCE_BUDGETS.md
+planlama\aşama-7\RELIABILITY_TARGETS.md
+planlama\aşama-8\AŞAMA 8 KAPANIŞ NOTU.md
+planlama\aşama-8\DTO_RESPONSE_CATALOG.md
+planlama\aşama-8\PANEL_CONTRACTS.md
+planlama\aşama-8\SCREEN_CONTRACTS.md
+planlama\aşama-8\SCREEN_CONTRACTS_REFINED.md
+planlama\aşama-8\STATEFUL_UI_BEHAVIOR_GUIDE.md
+planlama\aşama-9\COMPONENT_STATE_GUIDE.md
+planlama\aşama-9\DESIGN_TOKEN_GUIDE.md
+planlama\aşama-9\DEV_HANDOFF_PACK.md
+planlama\aşama-9\FIGMA_LINKS.md
+planlama\ddd\app yaml.md
+planlama\ddd\internal.yaml.md
+planlama\ddd\panel.yaml.md
+planlama\ddd\public.yaml.md
+services\analytics\package.json
+services\analytics\tsconfig.json
+services\analytics\src\analytics.ts
+services\analytics\src\index.ts
+services\analytics\src\smoke-test.ts
+services\analytics\src\repository\in-memory.ts
+services\analytics\src\repository\index.ts
+services\analytics\src\repository\interface.ts
+services\analytics\src\repository\postgres.ts
+services\auth\package.json
+services\auth\README.md
+services\auth\tsconfig.json
+services\auth\src\index.ts
+services\cancel-return\package.json
+services\cancel-return\tsconfig.json
+services\cancel-return\src\cancel-return.ts
+services\cancel-return\src\index.ts
+services\cancel-return\src\repository\in-memory.ts
+services\cancel-return\src\repository\index.ts
+services\cancel-return\src\repository\interface.ts
+services\cancel-return\src\repository\postgres.ts
+services\category\package.json
+services\category\tsconfig.json
+services\category\src\category.ts
+services\category\src\index.ts
+services\checkout\package.json
+services\checkout\README.md
+services\checkout\tsconfig.json
+services\checkout\src\checkout.d.ts
+services\checkout\src\checkout.js
+services\checkout\src\checkout.ts
+services\checkout\src\index.ts
+services\commerce\package.json
+services\commerce\README.md
+services\commerce\tsconfig.json
+services\commerce\src\cart.ts
+services\commerce\src\index.ts
+services\commerce\src\smoke-test.ts
+services\commerce\src\repository\in-memory.ts
+services\commerce\src\repository\index.ts
+services\commerce\src\repository\interface.ts
+services\commerce\src\repository\postgres.ts
+services\creator-management\package.json
+services\creator-management\README.md
+services\creator-management\tsconfig.json
+services\creator-management\src\index.ts
+services\finance\package.json
+services\finance\README.md
+services\finance\tsconfig.json
+services\finance\src\index.ts
+services\finance-correction\package.json
+services\finance-correction\tsconfig.json
+services\finance-correction\src\finance-correction.ts
+services\finance-correction\src\index.ts
+services\finance-correction\src\smoke-test.ts
+services\finance-correction\src\repository\in-memory.ts
+services\finance-correction\src\repository\index.ts
+services\finance-correction\src\repository\interface.ts
+services\finance-correction\src\repository\postgres.ts
+services\follow\package.json
+services\follow\tsconfig.json
+services\follow\src\follow.ts
+services\follow\src\index.ts
+services\interaction\package.json
+services\interaction\tsconfig.json
+services\interaction\src\index.ts
+services\interaction\src\interaction.ts
+services\media\package.json
+services\media\README.md
+services\media\tsconfig.json
+services\media\src\asset.ts
+services\media\src\eligibility.ts
+services\media\src\index.ts
+services\media\src\media.d.ts
+services\media\src\media.js
+services\media\src\media.ts
+services\media\src\p39-smoke-test.ts
+services\media\src\qa.ts
+services\media\src\review.ts
+services\moderation\package.json
+services\moderation\README.md
+services\moderation\tsconfig.json
+services\moderation\src\index.ts
+services\moderation\src\moderation.ts
+services\moderation\src\test-persistence.ts
+services\moderation\src\repository\in-memory.ts
+services\moderation\src\repository\interface.ts
+services\moderation\src\repository\postgres.ts
+services\notification\package.json
+services\notification\README.md
+services\notification\tsconfig.json
+services\notification\src\index.ts
+services\notification\src\notification.ts
+services\notification\src\smoke-test.ts
+services\notification\src\repository\in-memory.ts
+services\notification\src\repository\index.ts
+services\notification\src\repository\interface.ts
+services\notification\src\repository\postgres.ts
+services\order\package.json
+services\order\README.md
+services\order\tsconfig.json
+services\order\src\index.ts
+services\order\src\order.ts
+services\order\src\repository\in-memory.ts
+services\order\src\repository\index.ts
+services\order\src\repository\interface.ts
+services\order\src\repository\postgres.ts
+services\order-ops\package.json
+services\order-ops\tsconfig.json
+services\order-ops\src\index.ts
+services\order-ops\src\order-ops.ts
+services\order-ops\src\smoke-test.ts
+services\payment\package.json
+services\payment\README.md
+services\payment\tsconfig.json
+services\payment\src\index.ts
+services\payment\src\payment.ts
+services\payment\src\smoke-test.ts
+services\payment\src\repository\in-memory.ts
+services\payment\src\repository\index.ts
+services\payment\src\repository\interface.ts
+services\payment\src\repository\postgres.ts
+services\payout\jest.config.js
+services\payout\package.json
+services\payout\README.md
+services\payout\tsconfig.json
+services\payout\src\index.ts
+services\payout\src\payout.ts
+services\payout\src\smoke-test.ts
+services\payout\src\repository\in-memory.ts
+services\payout\src\repository\index.ts
+services\payout\src\repository\interface.ts
+services\payout\src\repository\postgres.ts
+services\pricing\package.json
+services\pricing\README.md
+services\pricing\tsconfig.json
+services\pricing\src\index.ts
+services\pricing\src\pricing.ts
+services\ranking\package.json
+services\ranking\README.md
+services\ranking\tsconfig.json
+services\ranking\src\index.ts
+services\refund\package.json
+services\refund\tsconfig.json
+services\refund\src\index.ts
+services\refund\src\refund.ts
+services\refund\src\repository\in-memory.ts
+services\refund\src\repository\index.ts
+services\refund\src\repository\interface.ts
+services\refund\src\repository\postgres.ts
+services\risk\package.json
+services\risk\README.md
+services\risk\tsconfig.json
+services\risk\src\index.ts
+services\risk\src\risk.ts
+services\risk\src\smoke-test.ts
+services\risk\src\repository\in-memory.ts
+services\risk\src\repository\index.ts
+services\risk\src\repository\interface.ts
+services\risk\src\repository\postgres.ts
+services\search\p40-smoke-test.ts
+services\search\package.json
+services\search\README.md
+services\search\tsconfig.json
+services\search\src\config.ts
+services\search\src\document.ts
+services\search\src\index.ts
+services\search\src\opensearch.ts
+services\search\src\search.ts
+services\settlement\package.json
+services\settlement\tsconfig.json
+services\settlement\src\index.ts
+services\settlement\src\settlement.ts
+services\settlement\src\smoke-test.ts
+services\settlement\src\repository\in-memory.ts
+services\settlement\src\repository\index.ts
+services\settlement\src\repository\interface.ts
+services\settlement\src\repository\postgres.ts
+services\shipment\package.json
+services\shipment\tsconfig.json
+services\shipment\src\index.ts
+services\shipment\src\shipment.ts
+services\shipment\src\repository\in-memory.ts
+services\shipment\src\repository\index.ts
+services\shipment\src\repository\interface.ts
+services\shipment\src\repository\postgres.ts
+services\stock\package.json
+services\stock\README.md
+services\stock\tsconfig.json
+services\stock\src\index.ts
+services\stock\src\stock.ts
+services\storefront\package.json
+services\storefront\tsconfig.json
+services\storefront\src\index.ts
+services\storefront\src\storefront.ts
+services\story\package.json
+services\story\tsconfig.json
+services\story\src\index.ts
+services\story\src\story.ts
+services\supplier-management\package.json
+services\supplier-management\README.md
+services\supplier-management\tsconfig.json
+services\supplier-management\src\index.ts
+services\support\package.json
+services\support\README.md
+services\support\tsconfig.json
+services\support\src\index.ts
+services\support\src\support.d.ts
+services\support\src\support.js
+services\support\src\support.ts
+tests\acceptance\.gitkeep
+tests\contract\.gitkeep
+tests\fixtures\.gitkeep
+tests\integration\.gitkeep

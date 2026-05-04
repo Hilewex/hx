@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@hx/post": ["../../services/post/src"],
+      "@hx/question-answer": ["../../services/question-answer/src"],
+      "@hx/review": ["../../services/review/src"],
+      "@hx/notification": ["../../services/notification/src"],
+      "@hx/ugc": ["../../services/ugc/src"]
+    },
+    "outDir": "./dist",
+    "rootDir": "../../.."
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@hx/service-storefront",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@hx/contracts": "workspace:*",
+    "@types/pg": "^8.20.0",
+    "pg": "^8.20.0"
+  }
+}

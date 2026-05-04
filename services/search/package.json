@@ -1,0 +1,20 @@
+{
+  "name": "@hx/search",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "smoke:p40": "tsx p40-smoke-test.ts"
+  },
+  "dependencies": {
+    "@hx/catalog": "workspace:*",
+    "@hx/config": "workspace:*",
+    "@hx/contracts": "workspace:*",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.21.0"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "@hx/story",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hx/contracts": "workspace:*",
+    "@hx/media": "workspace:*",
+    "@hx/service-storefront": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}

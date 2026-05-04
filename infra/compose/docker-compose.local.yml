@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-hx_local_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hx_local_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-hx_local_db}
+    ports:
+      - '5433:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../migrations:/migrations
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    volumes:
+      - redisdata:/data
+
+  opensearch:
+    image: opensearchproject/opensearch:2.11.0
+    environment:
+      - discovery.type=single-node
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_PASSWORD:-Hx_L0cal_P@ssw0rd}
+    ports:
+      - '9200:9200'
+
+  loki:
+    image: grafana/loki:2.9.2
+    ports:
+      - '3100:3100'
+
+  tempo:
+    image: grafana/tempo:2.3.0
+    command: [ '-config.file=/etc/tempo.yaml' ]
+    ports:
+      - '3200:3200'
+      - '4317:4317' # OTLP gRPC
+    volumes:
+      - ./tempo/tempo.yaml:/etc/tempo.yaml:ro
+
+  grafana:
+    image: grafana/grafana:10.2.2
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    ports:
+      - '3000:3000'
+    depends_on:
+      - loki
+      - tempo
+
+volumes:
+  pgdata:
+  redisdata:

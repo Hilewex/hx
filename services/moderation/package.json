@@ -1,0 +1,21 @@
+{
+  "name": "@hx/moderation",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@hx/contracts": "workspace:*",
+    "@hx/persistence": "workspace:*",
+    "@hx/config": "workspace:*",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test:persistence": "ts-node src/test-persistence.ts"
+  }
+}

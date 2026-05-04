@@ -1,0 +1,35 @@
+{
+  "name": "@hx/panel",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@hx/config": "workspace:*",
+    "@hx/contracts": "workspace:*",
+    "@hx/service-storefront": "workspace:*",
+    "@hx/post": "workspace:*",
+    "@hx/question-answer": "workspace:*",
+    "@hx/review": "workspace:*",
+    "@hx/ugc": "workspace:*",
+    "@hx/shared-kernel": "workspace:*",
+    "@hx/ui": "workspace:*",
+    "@hx/types": "workspace:*",
+    "@hx/observability": "workspace:*",
+    "@hx/pool": "workspace:*",
+    "@hx/service-store-message": "workspace:*",
+    "@hx/service-store-post": "workspace:*",
+    "@hx/store-story": "workspace:*",
+    "@hx/customer": "workspace:*",
+    "@hx/customer-address": "workspace:*",
+    "zod": "^3.22.4",
+    "axios": "^1.6.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "@types/axios": "^0.14.0"
+  }
+}

@@ -1,0 +1,259 @@
+Yeni Yol Haritası
+Faz 0 — Mevcut Durumu Sabitleme
+
+Bu fazı büyük ölçüde yaptık.
+
+Tamamlananlar:
+
+S01 — Havuz Sistemi
+S02 — Fenomen Mağaza Sistemi
+S03 — Kullanıcı / Müşteri Sistemi
+S04 — PDP Sistemi
+S05 — Story Sistemi
+S06 — Video Sistemi
+HARDENING-00 — Cross-System Foundation Baseline Review
+
+Bu bize sistemin en kritik sosyal-commerce omurgasını gösterdi.
+
+Karar:
+
+Artık tek tek sistem kapatma hattından, ortak hardening hattına geçiyoruz.
+Faz 1 — Çalıştırma / Test / Smoke Standardı
+HARDENING-01 — Smoke & Runtime Baseline Standardization
+
+İlk yapılacak paket bu olmalı.
+
+Amaç:
+
+Smoke test standardını kurmak
+pnpm run smoke:* komutlarını tanımlamak
+BFF port/env standardını netleştirmek
+Mevcut bootstrap dosyalarını düzenli smoke akışına bağlamak
+Runtime’da gerçekten ne çalışıyor görmek
+
+Neden önce bu?
+
+Çünkü smoke yoksa persistence, auth, media veya search değişikliklerinden sonra neyin bozulduğunu güvenilir şekilde anlayamayız.
+
+Bu paket kodun iş mantığını değiştirmemeli.
+
+Faz 2 — Kalıcı Veri Pilot Geçişi
+HARDENING-02 — Persistence Pilot: Customer + Cart + Storefront
+
+Amaç:
+
+Her şeyi bir anda Postgres’e geçirmek değil
+Önce 3 kritik ve yönetilebilir alanı seçmek:
+Customer
+Cart / Commerce
+Storefront
+
+Neden bunlar?
+
+Çünkü:
+
+Customer → auth/permission için temel
+Cart → commerce journey için temel
+Storefront → fenomen mağaza, PDP, story, video bağlamı için temel
+
+Başarı olursa persistence modeli diğer servislere yayılır.
+
+Faz 3 — Core Commerce Journey Acceptance
+HARDENING-03 — Core Commerce Journey Acceptance
+
+Amaç:
+
+Şu akışı uçtan uca doğrulamak:
+
+PDP → Cart → Checkout → Payment Simulation → Order → Shipment
+
+Burada amaç gerçek ödeme sağlayıcısına bağlanmak değil. Önce platform içi ticari akışın bozulmadan çalıştığını kanıtlamak.
+
+Kontrol edilecekler:
+
+fiyat owner ayrımı
+stok owner ayrımı
+cart/order/payment boundary
+BFF delegation
+canonical error response
+smoke/acceptance kanıtı
+Faz 4 — Media Readiness Foundation
+HARDENING-04 — Media Readiness Foundation
+
+Amaç:
+
+Story, video, PDP, post, mağaza ve ürün görselleri için medya omurgasını güçlendirmek.
+
+Kapsam:
+
+medya upload standardı
+storage modeli
+thumbnail / poster / preview
+video için simulation’dan gerçek işleme planına geçiş
+media visibility
+moderation readiness
+media owner ayrımı
+
+Bu fazda ilgili sistem dosyaları okunmalı:
+
+50-medya sistemi
+5-story sistemi
+6-video sistemi
+21-post sistemi
+4-pdp sistemi
+22-moderasyon sistemi
+42-fenomen mağaza yönetim panel sistemi
+
+54 dosyanın tamamı gerekmez.
+
+Faz 5 — Auth / Session / Permission
+HARDENING-05 — Auth / Session / Permission Integration
+
+Amaç:
+
+Header simülasyonundan gerçek auth/session yapısına geçmek.
+
+Kapsam:
+
+login / session / token doğrulama
+guest / customer / creator / admin ayrımı
+BFF context resolution
+permission/action kontrolü
+panel route guard
+customer contribution eligibility ile uyum
+
+Bu fazda okunacak temel dosyalar:
+
+3-kullanıcı-müşteri sistemi
+25-kural-yetki sistemi
+41-fenomen yönetim sistemi
+42-fenomen mağaza yönetim panel sistemi
+40-admin sistemi
+Faz 6 — Moderation / Risk Workflow
+HARDENING-06 — Moderation / Risk Workflow Integration
+
+Amaç:
+
+Sosyal içerik ve ticari riskleri gerçek workflow’a bağlamak.
+
+Kapsam:
+
+moderation case workflow
+risk/fraud case workflow
+story / UGC / review / Q&A / post / media hedefleri
+admin/panel görünürlüğü
+otomatik case tetikleme
+target truth mutate etmeme
+
+Okunacak dosyalar:
+
+22-moderasyon sistemi
+49-fraud risk abuse sistemi
+5-story sistemi
+34-kullanıcı story sistemi
+31-yorum ve puanlama sistemi
+32-soru cevap sistemi
+50-medya sistemi
+Faz 7 — Search / Index Sync
+HARDENING-07 — Search / Index Sync
+
+Amaç:
+
+Statik / in-memory aramadan gerçek index mantığına yaklaşmak.
+
+Kapsam:
+
+ürün indexleme
+mağaza indexleme
+category / PLP / search bağları
+discover video akışı
+PDP/storefront context korunması
+OpenSearch local standardı
+
+Okunacak dosyalar:
+
+12-arama sistemi
+10-kategori-plp sistemi
+7-keşfet sistemi
+52-kategori taksonomi sistemi
+8-klasik ürün kart sistemi
+4-pdp sistemi
+6-video sistemi
+Faz 8 — Analytics / Notification
+HARDENING-08 — Analytics / Notification Integration
+
+Amaç:
+
+Kullanıcı davranışı ve sistem olaylarını ölçülebilir hale getirmek.
+
+Kapsam:
+
+PDP view
+story view
+video watch
+add to cart
+checkout started
+order created
+notification dispatch
+reward / loyalty event bağlantıları
+
+Bu fazda ölçüm ve bildirim sistemi birlikte ele alınmalı.
+
+Faz 9 — Provider Sandbox Integration
+HARDENING-09 — Provider Sandbox Integration
+
+Amaç:
+
+Dış dünya bağlantılarını kontrollü başlatmak.
+
+Öncelik:
+
+payment sandbox
+shipment sandbox
+notification/email sandbox
+payout sandbox / park environment
+
+Burada gerçek production değil, kontrollü sandbox/park entegrasyon yapılmalı.
+
+Faz 10 — CI / Workspace Quality Standardization
+HARDENING-10 — CI / Workspace Quality Standardization
+
+Amaç:
+
+Projenin büyümesini güvenli hale getirmek.
+
+Kapsam:
+
+CI pipeline
+typecheck
+build
+smoke
+lint
+format
+workspace dependency standardı
+package script standardı
+build order kontrolü
+54 Sistem Dosyası İçin Kural
+
+Bundan sonra kural şu olsun:
+
+Her hardening paketinde sadece doğrudan etkilenen sistem dosyaları okunacak.
+54 dosya komple okunmayacak.
+Ama hiçbir paket referanssız açılmayacak.
+
+Yani:
+
+kör ilerleme yok
+varsayım yok
+ama gereksiz tüm kütüphane taraması da yok
+Ne zaman 54 dosyanın tamamı tekrar gerekir?
+
+Sadece şu durumlarda:
+
+Büyük mimari değişiklik yapacaksak
+Owner matrix’i yeniden düzenleyeceksek
+Sistemler arası kapsam yeniden çizilecekse
+Product roadmap tamamen değişecekse
+Production release öncesi final audit yapılacaksa
+
+Şu an bu aşamada değiliz.

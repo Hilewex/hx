@@ -1,0 +1,12 @@
+{
+  "name": "@hx/pricing",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hx/contracts": "workspace:*"
+  }
+}

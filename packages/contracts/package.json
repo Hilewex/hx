@@ -1,0 +1,12 @@
+{
+  "name": "@hx/contracts",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0"
+  }
+}

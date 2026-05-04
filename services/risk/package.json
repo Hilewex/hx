@@ -1,0 +1,24 @@
+{
+  "name": "@hx/risk",
+  "version": "1.0.0",
+  "description": "Risk and Fraud Foundation Service",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "node dist/smoke-test.js"
+  },
+  "dependencies": {
+    "@hx/contracts": "workspace:*",
+    "@hx/persistence": "workspace:*",
+    "@hx/config": "workspace:*",
+    "zod": "^3.22.4",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.16",
+    "@types/pg": "^8.11.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

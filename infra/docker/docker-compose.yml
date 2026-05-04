@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: hx-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: hx_local_user
+      POSTGRES_PASSWORD: hx_local_pass
+      POSTGRES_DB: hx_local_db
+    volumes:
+      - hx_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  hx_postgres_data:

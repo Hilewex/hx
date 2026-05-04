@@ -1,0 +1,23 @@
+{
+  "name": "@hx/commerce",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "smoke-test": "ts-node src/smoke-test.ts"
+  },
+  "dependencies": {
+    "@hx/contracts": "workspace:*",
+    "@hx/pricing": "workspace:*",
+    "@hx/stock": "workspace:*",
+    "@hx/persistence": "workspace:*",
+    "@hx/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.1"
+  }
+}

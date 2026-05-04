@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "../../"
+  },
+  "include": [
+    "src/**/*",
+    "../../packages/contracts/src/**/*",
+    "../../services/cancel-return/src/**/*",
+    "../../services/checkout/src/**/*",
+    "../../services/order/src/**/*",
+    "../../services/payment/src/**/*",
+    "../../services/refund/src/**/*",
+    "../../services/shipment/src/**/*"
+  ]
+}

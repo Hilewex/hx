@@ -1,0 +1,13 @@
+{
+  "name": "@hx/support",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@hx/contracts": "workspace:*",
+    "@hx/notification": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  }
+}

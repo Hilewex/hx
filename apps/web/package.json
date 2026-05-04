@@ -1,0 +1,21 @@
+{
+  "name": "@hx/web",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@hx/config": "workspace:*",
+    "zod": "^3.22.4",
+    "@hx/contracts": "workspace:*",
+    "@hx/events": "workspace:*",
+    "@hx/types": "workspace:*",
+    "@hx/shared-kernel": "workspace:*",
+    "@hx/observability": "workspace:*",
+    "@hx/testing": "workspace:*",
+    "@hx/ui": "workspace:*"
+  }
+}

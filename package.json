@@ -1,0 +1,52 @@
+{
+  "name": "hx-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "dev:bff": "pnpm --filter @hx/bff run start",
+    "dev:web": "pnpm --filter @hx/web run start",
+    "dev:panel": "pnpm --filter @hx/panel run start",
+    "clean": "pnpm -r exec rm -rf dist && rm -rf node_modules",
+    "smoke:health": "tsx tests/smoke/run-smoke.ts health",
+    "smoke:catalog": "tsx tests/smoke/run-smoke.ts catalog",
+    "smoke:catalog-read": "tsx tests/smoke/run-smoke.ts catalog-read",
+    "smoke:commerce": "tsx tests/smoke/run-smoke.ts commerce",
+    "smoke:social": "tsx tests/smoke/run-smoke.ts social",
+    "smoke:media": "tsx tests/smoke/run-smoke.ts media",
+    "smoke:search": "tsx tests/smoke/run-smoke.ts search",
+    "smoke:search-index-projection": "tsx tests/smoke/run-smoke.ts search-index-projection",
+    "smoke:event-audit": "tsx tests/smoke/run-smoke.ts event-audit",
+    "smoke:event-outbox": "tsx tests/smoke/run-smoke.ts event-outbox",
+    "smoke:event": "tsx tests/smoke/run-smoke.ts event-audit",
+    "smoke:audit": "tsx tests/smoke/run-smoke.ts event-audit",
+    "smoke:analytics": "tsx tests/smoke/run-smoke.ts analytics",
+    "smoke:notification": "tsx tests/smoke/run-smoke.ts notification",
+    "smoke:all": "tsx tests/smoke/run-smoke.ts all",
+    "smoke:auth-permission": "tsx tests/smoke/run-smoke.ts auth-permission",
+    "smoke:admin-permission": "tsx tests/smoke/run-smoke.ts admin-permission",
+    "smoke:commerce-permission": "tsx tests/smoke/run-smoke.ts commerce-permission",
+    "smoke:social-permission": "tsx tests/smoke/run-smoke.ts social-permission",
+    "smoke:moderation-workflow": "tsx tests/smoke/run-smoke.ts moderation-workflow",
+    "smoke:social-moderation": "tsx tests/smoke/run-smoke.ts social-moderation",
+    "smoke:core-commerce": "tsx tests/smoke/run-smoke.ts core-commerce",
+    "smoke:risk-signal": "tsx tests/smoke/run-smoke.ts risk-signal",
+    "smoke:social-abuse-signal": "tsx tests/smoke/run-smoke.ts social-abuse-signal",
+    "smoke:commerce-abuse-signal": "tsx tests/smoke/run-smoke.ts commerce-abuse-signal",
+    "smoke:provider-boundary": "tsx tests/smoke/run-smoke.ts provider-boundary",
+    "smoke:payment-provider-boundary": "tsx tests/smoke/run-smoke.ts payment-provider-boundary",
+    "smoke:shipment-provider-boundary": "tsx tests/smoke/run-smoke.ts shipment-provider-boundary",
+    "smoke:notification-provider-boundary": "tsx tests/smoke/run-smoke.ts notification-provider-boundary",
+    "smoke:payout-provider-boundary": "tsx tests/smoke/run-smoke.ts payout-provider-boundary",
+    "smoke:core-commerce:1": "cross-env SMOKE_PHASE=1 tsx tests/smoke/run-smoke.ts core-commerce",
+    "smoke:core-commerce:2": "cross-env SMOKE_PHASE=2 tsx tests/smoke/run-smoke.ts core-commerce"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "tsx": "^4.21.0"
+  },
+  "dependencies": {
+    "cross-env": "^10.1.0"
+  }
+}

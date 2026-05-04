@@ -1,0 +1,21 @@
+{
+  "name": "@hx/notification",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@hx/contracts": "workspace:*",
+    "@hx/persistence": "workspace:*",
+    "pg": "^8.11.3",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.10.9",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "smoke": "tsx src/smoke-test.ts"
+  }
+}

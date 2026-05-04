@@ -1,0 +1,29 @@
+{
+  "name": "@hx/settlement",
+  "version": "1.0.0",
+  "description": "Settlement Foundation Service",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "smoke": "ts-node src/smoke-test.ts"
+  },
+  "dependencies": {
+    "@hx/contracts": "workspace:*",
+    "@hx/order": "workspace:*",
+    "@hx/refund": "workspace:*",
+    "@hx/cancel-return": "workspace:*",
+    "@hx/finance-correction": "workspace:*",
+    "@hx/risk": "workspace:*",
+    "@hx/persistence": "workspace:*",
+    "@hx/config": "workspace:*",
+    "zod": "^3.22.4",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/pg": "^8.11.0",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  }
+}

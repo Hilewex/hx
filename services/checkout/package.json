@@ -1,0 +1,22 @@
+{
+  "name": "@hx/checkout",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hx/contracts": "workspace:*",
+    "@hx/commerce": "workspace:*",
+    "@hx/pricing": "workspace:*",
+    "@hx/stock": "workspace:*",
+    "@hx/risk": "workspace:*",
+    "@hx/persistence": "workspace:*",
+    "@hx/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

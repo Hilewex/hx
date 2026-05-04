@@ -1,0 +1,26 @@
+{
+  "name": "@hx/persistence",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@hx/contracts": "workspace:*",
+    "@hx/config": "workspace:*",
+    "pg": "^8.11.3",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.10.9",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.1",
+    "dotenv": "^16.3.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "migrate": "ts-node run-migrations.ts",
+    "verify-schema": "ts-node verify-schema.ts",
+    "p37:smoke": "tsx p37-smoke-test.ts",
+    "p38:smoke": "tsx p38-smoke-test.ts"
+  }
+}
