@@ -1755,3 +1755,74 @@ Bu fazda ele alınması gereken ana başlıklar:
 Provider boundary foundation tamamlandı. Production provider entegrasyonu değildir; ancak payment, shipment, notification ve payout domainleri için provider response’un business truth yerine geçmemesini sağlayan güvenli foundation başarıyla kurulmuştur.
 
 ---
+
+# HARDENING-10 — Provider Callback / Webhook / Reconciliation Foundation
+
+## Durum
+
+**IN PROGRESS**
+
+## Kapsam
+
+Bu faz, HARDENING-09 ile kurulan outbound provider boundary'sini, inbound provider etkileşimleriyle (callback/webhook) tamamlar. Amaç, provider'dan gelen asenkron bildirimleri güvenli, doğrulanabilir ve işlenebilir bir şekilde sisteme almaktır.
+
+## Alt Paketler
+
+| Paket | Başlık | Durum |
+|---|---|---|
+| HARDENING-10A1 | Provider Callback Contract Only | PASS |
+| HARDENING-10A2 | Provider Callback Signature Helper Only | PASS |
+
+## HARDENING-10A2 — Provider Callback Signature Helper Only
+
+### Durum
+
+**PASS**
+
+### Amaç
+
+`HARDENING-10A1` ile eklenen `ProviderCallbackRecord` contract'ını bozmadan, provider callback/webhook payload’ları için yalnızca contract-level / pure helper seviyesinde bir signature verification temeli eklemek.
+
+### Yapılanlar
+
+- `packages/contracts/src/provider.ts` dosyasına yeni tipler ve bir helper fonksiyonu eklendi:
+  - `ProviderCallbackSignatureAlgorithm` (type)
+  - `ProviderCallbackSignatureInput` (interface)
+  - `ProviderCallbackSignatureVerificationResult` (interface)
+  - `createProviderCallbackSignatureVerificationResult` (helper)
+- Bu yapılar, imza doğrulama sonucunu standart bir zarf içinde temsil etmek için tasarlandı.
+- Helper fonksiyonu, `signatureVerified` alanını `verificationStatus`'e göre güvenli bir şekilde ayarlar ve boundary flag'lerinin her zaman `false` olmasını garanti eder.
+
+### Boundary Review
+
+- Signature verification sonucu business truth olarak kabul edilmedi.
+- Signature `verified` olsa bile, bu durum doğrudan bir domain (payment, order vb.) state'ini değiştirmez.
+- `createProviderCallbackSignatureVerificationResult` helper'ı, `boundary` flag'lerini her zaman `false` olarak oluşturur.
+- Mevcut provider-boundary smoke testi bozulmadı.
+- Gerçek kriptografik doğrulama (HMAC/SHA256 vb.) bu paketin dışında bırakıldı.
+
+### Test / Kanıtlar
+
+| Komut | Sonuç |
+|---|---|
+| `pnpm --filter @hx/contracts run build` | PASS |
+| `pnpm run typecheck` | PASS |
+| `pnpm run build` | PASS |
+| `pnpm run smoke:provider-boundary` | PASS |
+
+### Kalan Limitation'lar
+
+- Gerçek kriptografik imza doğrulaması yok.
+- Provider secret/env yönetimi yok.
+- Callback endpoint'i yok.
+- Callback persistence/migration yok.
+- Replay/duplicate saldırılarına karşı persistence tabanlı bir koruma yok.
+- Domain callback işleme (processing) mantığı yok.
+
+### Sonraki Faz Önerisi
+
+**HARDENING-10A3 — Provider Callback Persistence / Migration Only**
+
+
+
+---
