@@ -1,13 +1,28 @@
 {
+  "references": [
+    {
+      "path": "../../packages/contracts"
+    },
+    {
+      "path": "../checkout"
+    },
+    {
+      "path": "../payment"
+    },
+    {
+      "path": "../../packages/persistence"
+    },
+    {
+      "path": "../risk"
+    }
+  ],
+
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "../../"
+    "rootDir": "./src"
   },
   "include": [
-    "src/**/*",
-    "../../packages/contracts/src/**/*",
-    "../../services/checkout/src/**/*",
-    "../../services/payment/src/**/*"
+    "src/**/*"
   ]
 }

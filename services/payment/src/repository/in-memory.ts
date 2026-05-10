@@ -17,6 +17,28 @@ export class InMemoryPaymentRepository implements IPaymentRepository {
     return Array.from(this.payments.values()).find(p => p.attempt.paymentAttemptId === paymentAttemptId);
   }
 
+  async getByProviderReference(
+    providerName: string,
+    providerReference: string,
+  ): Promise<PaymentInitiationResponse | undefined> {
+    const payments = Array.from(this.payments.values());
+    const byProviderReference = payments.find(
+      p =>
+        p.attempt.providerName === providerName &&
+        p.attempt.providerReference === providerReference,
+    );
+
+    if (byProviderReference) {
+      return byProviderReference;
+    }
+
+    return payments.find(
+      p =>
+        p.attempt.providerName === providerName &&
+        p.attempt.providerEventId === providerReference,
+    );
+  }
+
   async getByIdempotencyKey(namespace: string, key: string): Promise<PaymentInitiationResponse | undefined> {
     return this.idempotency.get(`${namespace}:${key}`);
   }

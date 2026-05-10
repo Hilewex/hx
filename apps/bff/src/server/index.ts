@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import * as http from 'http';
 import { config } from '../config';
 import { resolveContext } from './context';
@@ -37,7 +38,9 @@ import {
   handleListSupportTickets,
   handleGetSupportTicket,
   handleTransitionSupportTicket,
-  handleAddSupportTicketMessage
+  handleAddSupportTicketMessage,
+  handleSupportProtectedActionValidate,
+  handleSupportVisibilityCheck
 } from './support';
 import {
   handleCreateStorePost,
@@ -93,6 +96,7 @@ import { storefrontRouter } from './storefront';
 import { handleListStoryTray, handleGetStoryViewer } from './story';
 import { customerRewardRouter } from './customer-reward';  
 import { customerSupportRouter } from './customer-support';
+import { handleProviderCallbackIngestion } from './provider-callback';
 
 export { customerRewardRouter, customerSupportRouter };
 import { 
@@ -155,11 +159,14 @@ import customerRouter from './customer';
 import customerAddressRouter from './customer-address';
 import customerContributionRouter from './customer-contribution';
 import { customerSocialRouter } from './customer-social';
-
+import { handleAdminProtectedActionValidate } from './admin';
+import { handleCreatorProtectedActionValidate } from './creator';
+import { handleSupplierProtectedActionValidate } from './supplier';
 
 
 
 import * as response from './response';
+import type { ProviderCallbackIngestionResponse } from './provider-callback';
 
 
 async function parseBody(req: http.IncomingMessage): Promise<any> {
@@ -179,7 +186,6 @@ export function createServer() {
     console.log(`[BFF] Received request: ${req.method} ${req.url}`);
     const authHeader = req.headers['authorization'] as string | undefined;
     const actorIdHeader = req.headers['x-actor-id'] as string | undefined;
-    const actorTypeHeader = req.headers['x-actor-type'] as string | undefined;
     const sessionIdHeader = req.headers['session-id'] as string | undefined;
     
     let { context } = resolveContext(authHeader, actorIdHeader, sessionIdHeader);
@@ -193,7 +199,15 @@ export function createServer() {
         // Fallback for some hardcoded endpoints if needed, but better to rely on context.
     }
 
-    const sendBffResponse = (result: response.BffResponse) => {
+    const sendBffResponse = (result: response.BffResponse | ProviderCallbackIngestionResponse) => {
+      if ('ackPolicy' in result && result.ackPolicy?.kind === 'plain_text') {
+        res.writeHead(result.ackPolicy.status, {
+          'Content-Type': result.ackPolicy.contentType,
+        });
+        res.end(result.ackPolicy.body);
+        return;
+      }
+
       res.writeHead(result.status, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(result.body));
     };
@@ -215,6 +229,22 @@ export function createServer() {
 
     if (req.url === '/health' && req.method === 'GET') {
       return sendBffResponse(response.ok({ status: 'ok', version: '1.0.0', timestamp: new Date().toISOString() }));
+    }
+
+    if (pathname.startsWith('/provider-callback/') && req.method === 'POST') {
+      const parts = pathname.split('/').filter(Boolean);
+      const [, providerDomain, providerName] = parts;
+      return sendBffResponse(await handleProviderCallbackIngestion({
+        providerDomain: providerDomain || '',
+        providerName: providerName || '',
+        body,
+        headers: req.headers,
+        requestMetadata: {
+          requestId: req.headers['x-request-id'] as string | undefined,
+          correlationId: req.headers['x-correlation-id'] as string | undefined,
+          causationId: req.headers['x-causation-id'] as string | undefined,
+        },
+      }));
     }
 
     if (req.url === '/public' && req.method === 'GET') {
@@ -401,6 +431,16 @@ export function createServer() {
 
     if (req.url === '/support/ticket/message' && req.method === 'POST') {
       return sendBffResponse(await handleAddSupportTicketMessage(context, body));
+    }
+
+    if (req.url === '/support/protected-action/validate' && req.method === 'POST') {
+      const result = await handleSupportProtectedActionValidate(context, body, req.headers as any);
+      return sendJson(result.status, result.body);
+    }
+
+    if (req.url === '/support/visibility/check' && req.method === 'POST') {
+      const result = await handleSupportVisibilityCheck(context, body, req.headers as any);
+      return sendJson(result.status, result.body);
     }
 
     if (pathname === '/post/create' && req.method === 'POST') {
@@ -646,8 +686,7 @@ export function createServer() {
       return sendBffResponse(await handleGetMediaVisibility(context, query));
     }
 
-    if (req.url === '/moderation/list') {
-      const url = new URL(req.url, `http://${req.headers.host}`);
+    if (pathname === '/moderation/list') {
       const query = Object.fromEntries(url.searchParams);
       return sendBffResponse(await handleListModerationCases(context, query));
     }
@@ -670,8 +709,7 @@ export function createServer() {
       return sendBffResponse(await handleReviewModerationCase(context, body));
     }
 
-    if (req.url === '/moderation/list') {
-      const url = new URL(req.url, `http://${req.headers.host}`);
+    if (pathname === '/moderation/list') {
       const query = Object.fromEntries(url.searchParams);
       return sendBffResponse(await handleListModerationCases(context, query));
     }
@@ -1134,6 +1172,25 @@ export function createServer() {
       return storeMessageRouter.fetch(mockReq as any, mockRes as any);
     }
 
+    if (req.url?.startsWith('/admin/protected-action/validate') && req.method === 'POST') {
+      console.log(`[BFF] Hit admin route: ${req.url}`);
+      const result = await handleAdminProtectedActionValidate(context, body, req.headers as any);
+      return sendJson(result.status, result.body);
+    }
+
+    if (req.url?.startsWith('/creator/protected-action/validate') && req.method === 'POST') {
+      console.log(`[BFF] Hit creator route: ${req.url}`);
+      const result = await handleCreatorProtectedActionValidate(context, body, req.headers as any);
+      return sendJson(result.status, result.body);
+    }
+
+    if (req.url?.startsWith('/supplier/protected-action/validate') && req.method === 'POST') {
+      console.log(`[BFF] Hit supplier route: ${req.url}`);
+      const result = await handleSupplierProtectedActionValidate(context, body, req.headers as any);
+      return sendJson(result.status, result.body);
+    }
+
+    console.log(`[BFF] 404 NOT_FOUND for: ${req.method} ${pathname}`);
     return sendBffResponse(response.notFound('NOT_FOUND', 'Endpoint not found'));
   });
 

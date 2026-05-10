@@ -2,7 +2,17 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "types": ["node"]
+    "rootDir": ".",
+    "types": ["node", "mocha"]
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts"],
+  "references": [
+    { "path": "../../packages/contracts" },
+    { "path": "../../services/ranking" },
+    { "path": "../../services/catalog" },
+    { "path": "../../services/search" },
+    { "path": "../../services/checkout" },
+    { "path": "../../services/ledger" },
+    { "path": "../../services/order" }
+  ]
 }

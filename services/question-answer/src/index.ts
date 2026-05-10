@@ -1,2 +1,7 @@
 export * from './qa';
-export { approveQuestionModerationResult, rejectQuestionModerationResult } from './qa';
+export {
+  approveAnswerModerationResult,
+  approveQuestionModerationResult,
+  rejectAnswerModerationResult,
+  rejectQuestionModerationResult
+} from './qa';

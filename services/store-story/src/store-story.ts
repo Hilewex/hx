@@ -1,7 +1,9 @@
 import {
   StoreStory,
+  StoreStoryModerationStatus,
   StoreStoryType,
   StoreStoryStatus,
+  StoreStoryVisibilityState,
   CreateStoreStoryCommand,
   PublishStoreStoryCommand,
   UnpublishStoreStoryCommand,
@@ -50,7 +52,10 @@ export const createStoreStory = async (
     storefrontId,
     type: cmd.type,
     status: StoreStoryStatus.DRAFT,
+    moderationStatus: StoreStoryModerationStatus.PENDING,
+    visibilityState: StoreStoryVisibilityState.NOT_VISIBLE,
     mediaAssetId: cmd.mediaAssetId,
+    mediaVisibilityReady: cmd.mediaVisibilityReady === true,
     creatorStoreProductId: cmd.creatorStoreProductId,
     caption: cmd.caption,
     displayOrder: cmd.displayOrder ?? 0,
@@ -81,7 +86,16 @@ export const publishStoreStory = async (
     return { success: false, error: { code: StoreStoryErrorCode.ALREADY_ARCHIVED, message: 'Archived story cannot be published' } };
   }
 
+  if (story.moderationStatus !== StoreStoryModerationStatus.APPROVED) {
+    return { success: false, error: { code: StoreStoryErrorCode.MODERATION_NOT_APPROVED, message: 'Story moderation must be approved before publish' } };
+  }
+
+  if (!story.mediaVisibilityReady) {
+    return { success: false, error: { code: StoreStoryErrorCode.MEDIA_NOT_VISIBILITY_READY, message: 'Story media must be visibility-ready before publish' } };
+  }
+
   story.status = StoreStoryStatus.PUBLISHED;
+  story.visibilityState = StoreStoryVisibilityState.VISIBLE;
   story.updatedAt = new Date();
 
   return { success: true, data: story };
@@ -106,6 +120,7 @@ export const unpublishStoreStory = async (
   }
 
   story.status = StoreStoryStatus.UNPUBLISHED;
+  story.visibilityState = StoreStoryVisibilityState.NOT_VISIBLE;
   story.unpublishReason = cmd.reason;
   story.updatedAt = new Date();
 
@@ -127,6 +142,7 @@ export const archiveStoreStory = async (
   }
 
   story.status = StoreStoryStatus.ARCHIVED;
+  story.visibilityState = StoreStoryVisibilityState.ARCHIVED;
   story.updatedAt = new Date();
 
   return { success: true, data: story };
@@ -195,8 +211,57 @@ export const listPublishedStoreStoriesForPublicStorefront = async (
   storefrontId: string
 ): Promise<StoreStoryResult<StoreStory[]>> => {
   const list = stories
-    .filter((s) => s.storefrontId === storefrontId && s.status === StoreStoryStatus.PUBLISHED)
+    .filter((s) =>
+      s.storefrontId === storefrontId &&
+      s.status === StoreStoryStatus.PUBLISHED &&
+      s.moderationStatus === StoreStoryModerationStatus.APPROVED &&
+      s.visibilityState === StoreStoryVisibilityState.VISIBLE &&
+      s.mediaVisibilityReady
+    )
     .sort((a, b) => a.displayOrder - b.displayOrder);
 
   return { success: true, data: list };
+};
+
+export const approveStoreStoryModerationResult = async (
+  storefrontId: string,
+  storeStoryId: string
+): Promise<StoreStoryResult<StoreStory>> => {
+  const story = stories.find((s) => s.id === storeStoryId);
+
+  if (!story) {
+    return { success: false, error: { code: StoreStoryErrorCode.NOT_FOUND, message: 'Story not found' } };
+  }
+
+  if (story.storefrontId !== storefrontId) {
+    return { success: false, error: { code: StoreStoryErrorCode.UNAUTHORIZED, message: 'Unauthorized' } };
+  }
+
+  story.moderationStatus = StoreStoryModerationStatus.APPROVED;
+  story.updatedAt = new Date();
+
+  return { success: true, data: story };
+};
+
+export const rejectStoreStoryModerationResult = async (
+  storefrontId: string,
+  storeStoryId: string,
+  reason?: string
+): Promise<StoreStoryResult<StoreStory>> => {
+  const story = stories.find((s) => s.id === storeStoryId);
+
+  if (!story) {
+    return { success: false, error: { code: StoreStoryErrorCode.NOT_FOUND, message: 'Story not found' } };
+  }
+
+  if (story.storefrontId !== storefrontId) {
+    return { success: false, error: { code: StoreStoryErrorCode.UNAUTHORIZED, message: 'Unauthorized' } };
+  }
+
+  story.moderationStatus = StoreStoryModerationStatus.REJECTED;
+  story.visibilityState = StoreStoryVisibilityState.NOT_VISIBLE;
+  story.unpublishReason = reason;
+  story.updatedAt = new Date();
+
+  return { success: true, data: story };
 };

@@ -1553,3 +1553,166 @@ P52 — Release Candidate, PASS WITH LIMITATION olarak kapatıldı. Foundation-l
 - Catalog/product write owner yok.
 - Category taxonomy owner foundation seviyesinde.
 - Stale generated dist artifact hygiene.
+
+
+
+65-ACTIVE_RISKS_AND_DECISIONS-CONSOLIDATED.md altına eklenecek kayıt
+---
+
+# PHASE-07 Sonrası Aktif Risk ve Karar Güncellemesi
+
+## Kayıt: DECISION-PHASE-07-CLOSURE
+
+- **Tür:** DECISION
+- **Durum:** CLOSED
+- **Karar:** PHASE-07 — Search / Catalog / Ranking / Taxonomy Readiness fazı **PASS WITH LIMITATION** kararıyla kapatılmıştır.
+- **Gerekçe:** Search, catalog, category/taxonomy, projection, stale leak smoke, ranking/recommendation ve type-safety alanlarında PHASE-07 hedefleri foundation/smoke seviyesinde kanıtlanmıştır. Kritik gap’ler fix paketleriyle ele alınmıştır.
+- **Production-ready claim:** Verilmedi.
+- **Sonraki Faz:** PHASE-08 — GO WITH LIMITATION.
+- **Referans:** PHASE-07-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: DECISION-PHASE-07-NOT-PRODUCTION-READY
+
+- **Tür:** DECISION
+- **Durum:** ACTIVE
+- **Karar:** PHASE-07 kapanışı platform genel production-ready anlamına gelmez.
+- **Gerekçe:** PHASE-07 yalnız Search / Catalog / Ranking / Taxonomy readiness kapsamını foundation/smoke seviyesinde kapatmıştır. Production-ready claim için PHASE-10 Frontend/Public Surface Readiness, PHASE-11 Critical Journey Acceptance ve PHASE-12 Infra/Release Gate doğrulamaları tamamlanmalıdır.
+- **Etkisi:** Yayın hazırlığı kararı PHASE-12 sonrasına kadar verilmez.
+- **Referans:** PHASE-07-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-07-OPEN-OPENSEARCH-PRODUCTION-OPS
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** OpenSearch production ops, bootstrap, lifecycle, runtime bağlantısı ve production index yönetimi tamamlanmamıştır.
+- **Etkisi:** Search production readiness PHASE-12’den önce tam kapanamaz.
+- **Mevcut Azaltım:** Search/index projection foundation ve related smoke’lar PASS.
+- **Devredilen Faz:** PHASE-12 / Infra Release Gate.
+- **Kapanış Kriteri:** Gerçek OpenSearch cluster kurulumu, credential/config validation, index lifecycle, rebuild/retry stratejisi ve runtime smoke kanıtı.
+- **Referans:** PHASE-07-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-07-PRODUCTION-BROKER-DISTRIBUTED-WORKER
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Projection/event handling hâlâ memory/foundation seviyesindedir; production broker ve distributed worker yoktur.
+- **Etkisi:** Production ortamında price/stock/media projection sync dayanıklılığı garanti edilemez.
+- **Mevcut Azaltım:** Projection consumer foundation ve stale leak smoke coverage foundation seviyesinde PASS WITH LIMITATION.
+- **Devredilen Faz:** PHASE-12 veya eventing/infra readiness.
+- **Kapanış Kriteri:** RabbitMQ/Kafka veya seçilen broker entegrasyonu, worker lifecycle, retry/backoff, DLQ ve observability kanıtı.
+- **Referans:** PHASE-07-FIX-03, PHASE-07-FIX-04, PHASE-07-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-07-DURABLE-PROJECTION-PERSISTENCE
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Projection state kalıcı depolama üzerinde doğrulanmamıştır; memory/foundation seviyesi kullanılmıştır.
+- **Etkisi:** Restart, scale-out ve production consistency senaryolarında projection durability garanti edilemez.
+- **Mevcut Azaltım:** Projection model, update contract ve leak smoke coverage foundation seviyesinde doğrulanmıştır.
+- **Devredilen Faz:** PHASE-12 veya persistence/projection durability package.
+- **Kapanış Kriteri:** Durable projection persistence adapter, restart sonrası state validation, consistency/rebuild smoke.
+- **Referans:** PHASE-07-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-07-EXTERNAL-INDEX-RUNTIME-INTEGRATION
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** External index runtime integration production seviyesinde tamamlanmamıştır.
+- **Etkisi:** Search/retrieval production ortamı full external runtime ile doğrulanmamış kalır.
+- **Mevcut Azaltım:** Internal/foundation index projection smoke’ları PASS.
+- **Devredilen Faz:** PHASE-12.
+- **Kapanış Kriteri:** External index API/runtime bağlantısı, failure/retry, rate-limit ve rebuild strategy smoke kanıtı.
+- **Referans:** PHASE-07-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-07-PDP-PUBLIC-ENDPOINT-SMOKE
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** PDP özel public endpoint smoke doğrudan tamamlanmamıştır.
+- **Etkisi:** PDP public/API/UI journey PHASE-07 kapsamında tam kanıtlanmamıştır.
+- **Mevcut Azaltım:** Catalog/product card projection ve backend foundation smoke’ları PASS.
+- **Devredilen Faz:** PHASE-10 / PHASE-11.
+- **Kapanış Kriteri:** PDP public endpoint, PDP UI journey ve PDP→cart critical journey smoke/acceptance kanıtı.
+- **Referans:** PHASE-07-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-07-HOME-DISCOVER-UI-JOURNEY
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Home/discover full algorithm ve UI journey uçtan uca doğrulanmamıştır.
+- **Etkisi:** Ana sayfa ve keşfet kullanıcı deneyimi production acceptance seviyesinde kapalı değildir.
+- **Mevcut Azaltım:** Ranking/recommendation foundation ve public-safe candidate smoke PASS WITH LIMITATION.
+- **Devredilen Faz:** PHASE-10 / PHASE-11 veya ileri discovery/ranking package.
+- **Kapanış Kriteri:** Home/discover frontend + algorithm + data path E2E testleri.
+- **Referans:** PHASE-07-FIX-05, PHASE-07-FIX-05A, PHASE-07-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-07-ADVANCED-RANKING-RECOMMENDATION
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Advanced ranking/recommendation engine, personalization persistence ve feature store henüz mevcut değildir.
+- **Etkisi:** Foundation-level recommendation çalışır; ancak gelişmiş discovery/personalization readiness tamamlanmamıştır.
+- **Mevcut Azaltım:** Ranking/recommendation smoke readiness ve type-safety remediation tamamlandı.
+- **Devredilen Faz:** İleri discovery/ranking package veya personalization/readiness phase.
+- **Kapanış Kriteri:** Advanced ranking/recommendation engine, personalization persistence, feature store ve production signal ingestion doğrulamaları.
+- **Referans:** PHASE-07-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-07-DYNAMIC-FACET-ADVANCED-PLP
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Dynamic facet / advanced PLP facet engine tamamlanmamıştır.
+- **Etkisi:** Temel PLP/category smoke coverage var; fakat gelişmiş kategoriye duyarlı facet motoru henüz yoktur.
+- **Mevcut Azaltım:** Category/taxonomy/PLP smoke coverage PASS.
+- **Devredilen Faz:** İleri catalog/search advanced package.
+- **Kapanış Kriteri:** Dynamic facet engine, OpenSearch/index destekli facet sorguları ve category-specific filter smoke kanıtı.
+- **Referans:** PHASE-07-FIX-01, PHASE-07-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-07-PRODUCTION-RETRY-DLQ-BACKOFF
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Production retry / DLQ / backoff strategy yoktur.
+- **Etkisi:** Projection/event worker failure senaryoları production seviyesinde yönetilemez.
+- **Mevcut Azaltım:** Idempotency ve duplicate event effect foundation smoke seviyesinde doğrulandı.
+- **Devredilen Faz:** PHASE-12.
+- **Kapanış Kriteri:** Retry policy, DLQ, backoff strategy, worker observability ve alerting dashboard.
+- **Referans:** PHASE-07-FIX-04, PHASE-07-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: DECISION-PHASE-08-GO-WITH-LIMITATION
+
+- **Tür:** DECISION
+- **Durum:** ACTIVE
+- **Karar:** PHASE-08 — Admin / Creator / Supplier / Support Panel Readiness fazına **GO WITH LIMITATION** kararıyla geçilebilir.
+- **Gerekçe:** PHASE-07 kapsamındaki closure blocker’lar kapatılmıştır; ancak PHASE-07’den PHASE-08’e devreden projection, panel direct-write, action coverage ve infra limitation’ları dikkate alınmalıdır.
+- **PHASE-08 dikkat noktaları:**
+  - Panel direct write yapılmamalı.
+  - Panel action coverage owner boundary ile doğrulanmalı.
+  - Search/catalog projection hâlâ foundation seviyesindedir.
+  - Production infra işleri PHASE-12’ye devredilmiştir.
+  - PDP özel public endpoint smoke PHASE-10/11’e devredildiği için PHASE-08 kapsamıyla karıştırılmamalıdır.
+- **Referans:** PHASE-07-CLOSURE-REPORT.md
+
+Kaynak: PHASE-07 closure kararları, açık limitation’lar ve PHASE-08 geçiş notları.

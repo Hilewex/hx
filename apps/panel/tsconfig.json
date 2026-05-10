@@ -1,13 +1,62 @@
 {
+  "references": [
+    {
+      "path": "../../packages/config"
+    },
+    {
+      "path": "../../packages/contracts"
+    },
+    {
+      "path": "../../services/storefront"
+    },
+    {
+      "path": "../../services/post"
+    },
+    {
+      "path": "../../services/question-answer"
+    },
+    {
+      "path": "../../services/review"
+    },
+    {
+      "path": "../../services/ugc"
+    },
+    {
+      "path": "../../packages/shared-kernel"
+    },
+    {
+      "path": "../../packages/ui"
+    },
+    {
+      "path": "../../packages/types"
+    },
+    {
+      "path": "../../packages/observability"
+    },
+    {
+      "path": "../../services/pool"
+    },
+    {
+      "path": "../../services/store-message"
+    },
+    {
+      "path": "../../services/store-post"
+    },
+    {
+      "path": "../../services/store-story"
+    },
+    {
+      "path": "../../services/customer"
+    },
+    {
+      "path": "../../services/customer-address"
+    }
+  ],
+
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {
-      "@hx/post": ["../../services/post/src"],
-      "@hx/question-answer": ["../../services/question-answer/src"],
-      "@hx/review": ["../../services/review/src"],
-      "@hx/ugc": ["../../services/ugc/src"]
-    },
+
     "outDir": "./dist",
     "types": ["node"]
   },

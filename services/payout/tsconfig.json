@@ -1,4 +1,24 @@
 {
+  "references": [
+    {
+      "path": "../../packages/config"
+    },
+    {
+      "path": "../../packages/contracts"
+    },
+    {
+      "path": "../finance-correction"
+    },
+    {
+      "path": "../../packages/persistence"
+    },
+    {
+      "path": "../risk"
+    },
+    {
+      "path": "../settlement"
+    }
+  ],
   "compilerOptions": {
     "target": "ES2022",
     "module": "CommonJS",
@@ -11,6 +31,12 @@
     "declaration": true,
     "sourceMap": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "extends": "../../tsconfig.base.json"
 }

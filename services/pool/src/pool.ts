@@ -12,6 +12,7 @@ import {
   SuspendSubmittedProductCommand,
   CommercialPoolStatus,
   CommercialPoolProduct,
+  CreatorVisibleCommercialPoolProduct,
   CommercializeApprovedProductCommand,
   ActivateCommercialPoolProductCommand,
   SuspendCommercialPoolProductCommand,
@@ -41,6 +42,9 @@ import {
   CreatorStoreProductMediaType,
   CreatorStoreProductMediaUsage,
   CreatorStoreProductMediaOperationResult,
+  PoolBasePriceSnapshot,
+  PriceCorridor,
+  SupplierBasePriceSnapshot,
 } from "@hx/contracts";
 import { randomUUID } from "crypto";
 
@@ -62,6 +66,78 @@ const fail = (
   success: false,
   error: { code, message, details },
 });
+
+const FOUNDATION_MARGIN_RULE_SOURCE =
+  "FOUNDATION_CATEGORY_MARGIN_POLICY_MISSING" as const;
+
+function buildSupplierBasePriceSnapshot(
+  product: SupplierSubmittedProduct,
+): SupplierBasePriceSnapshot | undefined {
+  const baseVariant = product.variants
+    .filter((variant) => variant.price > 0)
+    .sort((left, right) => left.price - right.price)[0];
+
+  if (!baseVariant) return undefined;
+
+  return {
+    amount: baseVariant.price,
+    currency: "TRY",
+    supplierId: product.supplierId,
+    sourceProductId: product.id,
+    capturedAt: new Date(),
+    visibility: "INTERNAL_ONLY",
+  };
+}
+
+function buildPoolBasePriceSnapshot(
+  supplierBasePriceSnapshot: SupplierBasePriceSnapshot,
+  categoryId?: string,
+): PoolBasePriceSnapshot {
+  return {
+    amount: supplierBasePriceSnapshot.amount,
+    currency: supplierBasePriceSnapshot.currency,
+    supplierBasePriceAmount: supplierBasePriceSnapshot.amount,
+    platformMarginAmount: 0,
+    categoryId,
+    ruleSource: FOUNDATION_MARGIN_RULE_SOURCE,
+    calculatedAt: new Date(),
+  };
+}
+
+function buildPriceCorridor(poolBasePriceSnapshot: PoolBasePriceSnapshot): PriceCorridor {
+  return {
+    minPrice: poolBasePriceSnapshot.amount,
+    suggestedPrice: poolBasePriceSnapshot.amount,
+    recommendedPrice: poolBasePriceSnapshot.amount,
+    maxPrice: poolBasePriceSnapshot.amount,
+    currency: poolBasePriceSnapshot.currency,
+    ruleSource: poolBasePriceSnapshot.ruleSource,
+    launchMode: true,
+    launchRequiresRecommendedPrice: true,
+  };
+}
+
+function redactCommercialProductForCreator(
+  product: CommercialPoolProduct,
+): CreatorVisibleCommercialPoolProduct {
+  const { supplierBasePriceSnapshot, poolBasePriceSnapshot, ...visible } = product;
+  const visiblePoolBasePriceSnapshot = poolBasePriceSnapshot
+    ? {
+        amount: poolBasePriceSnapshot.amount,
+        currency: poolBasePriceSnapshot.currency,
+        platformMarginAmount: poolBasePriceSnapshot.platformMarginAmount,
+        platformMarginRate: poolBasePriceSnapshot.platformMarginRate,
+        categoryId: poolBasePriceSnapshot.categoryId,
+        ruleSource: poolBasePriceSnapshot.ruleSource,
+        calculatedAt: poolBasePriceSnapshot.calculatedAt,
+      }
+    : undefined;
+
+  return {
+    ...visible,
+    poolBasePriceSnapshot: visiblePoolBasePriceSnapshot,
+  };
+}
 
 export class PoolService {
   private validateActor(
@@ -450,6 +526,18 @@ export class PoolService {
       );
     }
 
+    const supplierBasePriceSnapshot =
+      buildSupplierBasePriceSnapshot(submittedProduct);
+    const poolBasePriceSnapshot = supplierBasePriceSnapshot
+      ? buildPoolBasePriceSnapshot(
+          supplierBasePriceSnapshot,
+          submittedProduct.categoryId,
+        )
+      : undefined;
+    const priceCorridor = poolBasePriceSnapshot
+      ? buildPriceCorridor(poolBasePriceSnapshot)
+      : undefined;
+
     const id = randomUUID();
     const commercialProduct: CommercialPoolProduct = {
       id,
@@ -468,6 +556,9 @@ export class PoolService {
           logistics: submittedProduct.logistics,
         },
       },
+      supplierBasePriceSnapshot,
+      poolBasePriceSnapshot,
+      priceCorridor,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -488,8 +579,9 @@ export class PoolService {
 
     const snapshotData = product.commercialization.data;
     const hasBasePrice =
-      snapshotData.variants.length > 0 &&
-      snapshotData.variants.some((v) => v.price > 0);
+      !!product.supplierBasePriceSnapshot &&
+      !!product.poolBasePriceSnapshot &&
+      !!product.priceCorridor;
     const hasStockInput =
       snapshotData.variants.length > 0 &&
       snapshotData.variants.some((v) => v.stock > 0);
@@ -502,7 +594,9 @@ export class PoolService {
     const pricing: PoolBindingCheckResult = {
       type: PoolBindingType.PRICING,
       status: hasBasePrice ? PoolBindingStatus.BOUND : PoolBindingStatus.FAILED,
-      reason: hasBasePrice ? undefined : "Product has no variants with a price > 0",
+      reason: hasBasePrice
+        ? undefined
+        : "Product has no persisted supplier base price, pool base price, or price corridor.",
       checkedAt: new Date(),
     };
     const stock: PoolBindingCheckResult = {
@@ -655,14 +749,14 @@ export class PoolService {
   }
 
   async listAvailableCommercialProductsForCreator(): Promise<
-    PoolResult<CommercialPoolProduct[]>
+    PoolResult<CreatorVisibleCommercialPoolProduct[]>
   > {
     const products = Array.from(inMemoryCommercialProductStore.values()).filter(
       (p) =>
         p.status === CommercialPoolStatus.ACTIVE &&
         p.bindingSnapshot?.isAllBound,
     );
-    return ok(products);
+    return ok(products.map(redactCommercialProductForCreator));
   }
 
   async addCommercialProductToCreatorStore(
@@ -709,6 +803,53 @@ export class PoolService {
       );
     }
 
+    const corridor = commercialProduct.priceCorridor;
+    if (!corridor) {
+      return fail(
+        PoolErrorCode.POOL_BINDING_INCOMPLETE,
+        "Cannot add a product without a price corridor.",
+      );
+    }
+
+    if (cmd.selectedPrice < corridor.minPrice) {
+      return fail(
+        PoolErrorCode.POOL_CREATOR_PRICE_OUT_OF_CORRIDOR,
+        "selectedPrice is below the allowed corridor.",
+        {
+          reasonCode: "SELECTED_PRICE_BELOW_MIN",
+          selectedPrice: cmd.selectedPrice,
+          corridor,
+        },
+      );
+    }
+
+    if (cmd.selectedPrice > corridor.maxPrice) {
+      return fail(
+        PoolErrorCode.POOL_CREATOR_PRICE_OUT_OF_CORRIDOR,
+        "selectedPrice is above the allowed corridor.",
+        {
+          reasonCode: "SELECTED_PRICE_ABOVE_MAX",
+          selectedPrice: cmd.selectedPrice,
+          corridor,
+        },
+      );
+    }
+
+    if (
+      corridor.launchRequiresRecommendedPrice &&
+      cmd.selectedPrice !== corridor.recommendedPrice
+    ) {
+      return fail(
+        PoolErrorCode.POOL_CREATOR_PRICE_REQUIRES_RECOMMENDED,
+        "Launch mode requires the recommended price.",
+        {
+          reasonCode: "LAUNCH_REQUIRES_RECOMMENDED_PRICE",
+          selectedPrice: cmd.selectedPrice,
+          corridor,
+        },
+      );
+    }
+
     const existing = Array.from(
       inMemoryCreatorStoreProductStore.values(),
     ).find(
@@ -735,6 +876,11 @@ export class PoolService {
       displayOrder: 0,
       isFeatured: false,
       creatorNote: "",
+      priceSelection: {
+        accepted: true,
+        selectedPrice: cmd.selectedPrice,
+        corridor,
+      },
       creatorMediaRefs: [],
       createdAt: new Date(),
       updatedAt: new Date(),

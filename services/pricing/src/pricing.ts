@@ -7,17 +7,13 @@ export async function resolvePrice(input: ResolvePriceInput): Promise<ResolvePri
     return { status: 'PRICE_UNAVAILABLE' };
   }
 
-  // Deterministic in-memory base price simulation
+  // Foundation fallback only; pool/category pricing truth is owned by pool policy snapshots.
   const hash = productId.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
-  const basePrice = (hash % 100) * 10 + 50; // between 50 and 1040
+  const poolBasePrice = (hash % 100) * 10 + 50; // between 50 and 1040
   
-  const platformMarginRate = 0.20; // 20% platform margin
-  const poolBasePrice = basePrice * (1 + platformMarginRate);
-  
-  // Corridor simulation
-  const minPrice = Math.round(poolBasePrice * 0.9);
-  const suggestedPrice = Math.round(poolBasePrice * 1.1);
-  const maxPrice = Math.round(poolBasePrice * 1.5);
+  const minPrice = poolBasePrice;
+  const suggestedPrice = poolBasePrice;
+  const maxPrice = poolBasePrice;
   
   const price: ActiveSalesPrice = {
     productId,
@@ -28,10 +24,18 @@ export async function resolvePrice(input: ResolvePriceInput): Promise<ResolvePri
     corridor: {
       minPrice,
       suggestedPrice,
-      maxPrice
+      recommendedPrice: suggestedPrice,
+      maxPrice,
+      currency: 'TRY',
+      ruleSource: 'FOUNDATION_CATEGORY_MARGIN_POLICY_MISSING',
+      launchMode: true,
+      launchRequiresRecommendedPrice: true
     },
-    source: 'FOUNDATION_SIMULATED',
-    warnings: []
+    source: 'POOL_BASE_PRICE_SNAPSHOT',
+    warnings: [
+      'FOUNDATION_CATEGORY_MARGIN_POLICY_MISSING',
+      'PRICE_CORRIDOR_COLLAPSED_TO_POOL_BASE_PRICE'
+    ]
   };
 
   return {

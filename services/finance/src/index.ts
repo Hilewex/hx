@@ -1,1 +1,1 @@
-export const name = "finance";
+export * from './finance';

@@ -6,6 +6,9 @@ import {
   GetModerationCaseQuery, 
   ListModerationCasesQuery,
   ModerationMutationResult,
+  ModerationDecisionResult,
+  ModerationDecisionRecord,
+  ModerationDecisionEvidence,
   ModerationCaseResponse,
   ModerationCaseListResponse,
   ModerationCaseStatus
@@ -22,7 +25,7 @@ const moderationPersistenceSchema = createServiceConfig({
   DATABASE_URL: z.string().url().optional(),
 });
 
-const config = parseConfig(moderationPersistenceSchema);
+const config = parseConfig(moderationPersistenceSchema, process.env);
 
 // Repository instance selection based on explicit config
 // In-memory is allowed for foundation/local but should be explicit
@@ -43,6 +46,76 @@ export const createModerationSnapshot = (input: { targetType: string; targetId: 
     status: 'PENDING',
     createdAt: new Date().toISOString()
   };
+};
+
+const decisionStatusByType = (decision: string, currentStatus: ModerationCaseStatus): ModerationCaseStatus => {
+  switch (decision) {
+    case 'APPROVE':
+      return 'APPROVED';
+    case 'REJECT':
+      return 'REJECTED';
+    case 'RESTRICT_VISIBILITY':
+    case 'HIDE':
+    case 'REMOVE':
+    case 'ARCHIVE':
+      return 'RESTRICTED';
+    case 'ESCALATE':
+      return 'UNDER_REVIEW';
+    case 'NO_ACTION':
+      return 'CLOSED';
+    default:
+      return currentStatus;
+  }
+};
+
+const stableStringify = (value: any): string => {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(stableStringify).join(',')}]`;
+  return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableStringify(value[key])}`).join(',')}}`;
+};
+
+const buildDecisionFingerprint = (command: ReviewModerationCaseCommand): string => stableStringify({
+  caseId: command.caseId,
+  decision: command.decision,
+  note: command.note || '',
+  actor: command.actor,
+  reasonCode: command.reasonCode,
+  evidence: command.evidence || [],
+  makerCheckerContext: command.makerCheckerContext,
+});
+
+const validateDecisionCommand = (command: ReviewModerationCaseCommand) => {
+  if (!command.actor?.actorId || !command.actor?.actorType) {
+    throw new Error('MODERATION_DECISION_ACTOR_REQUIRED');
+  }
+  if (!command.reasonCode) {
+    throw new Error('MODERATION_DECISION_REASON_REQUIRED');
+  }
+  if (!command.evidence || command.evidence.length === 0) {
+    throw new Error('MODERATION_DECISION_EVIDENCE_REQUIRED');
+  }
+  const makerChecker = command.makerCheckerContext;
+  if (makerChecker?.requiresSeparateChecker) {
+    const checkerActorId = makerChecker.checkerActorId || command.actor.actorId;
+    const conflictingActors = [
+      makerChecker.makerActorId,
+      makerChecker.submittedByActorId,
+    ].filter(Boolean);
+    if (conflictingActors.includes(checkerActorId)) {
+      throw new Error('MODERATION_MAKER_CHECKER_SAME_ACTOR_FORBIDDEN');
+    }
+  }
+};
+
+const normalizeDecisionEvidence = (evidence: ModerationDecisionEvidence[] | undefined, now: string): ModerationDecisionEvidence[] => {
+  return (evidence || []).map((item) => ({
+    ...item,
+    evidenceId: item.evidenceId,
+    evidenceType: item.evidenceType,
+    sourceType: item.sourceType,
+    sourceId: item.sourceId,
+    createdAt: item.createdAt || now,
+  }));
 };
 
 export const createModerationCase = async (command: CreateModerationCaseCommand): Promise<ModerationMutationResult> => {
@@ -154,43 +227,54 @@ export const createModerationCase = async (command: CreateModerationCaseCommand)
   };
 };
 
-export const reviewModerationCase = async (command: ReviewModerationCaseCommand): Promise<ModerationMutationResult> => {
+export const reviewModerationCase = async (command: ReviewModerationCaseCommand): Promise<ModerationDecisionResult> => {
   const { caseId, decision, note } = command;
+  validateDecisionCommand(command);
+
+  if (command.idempotencyKey) {
+    const fingerprint = buildDecisionFingerprint(command);
+    const existing = await repository.findDecisionByIdempotencyKey(command.idempotencyKey);
+    if (existing) {
+      if (existing.fingerprint !== fingerprint) {
+        throw new Error('MODERATION_DECISION_IDEMPOTENCY_CONFLICT');
+      }
+      return existing.result;
+    }
+  }
+
   const existingCase = await repository.getById(caseId);
 
   if (!existingCase) {
     throw new Error('MODERATION_CASE_NOT_FOUND');
   }
 
-  let newStatus: ModerationCaseStatus = existingCase.status;
   const now = new Date().toISOString();
-
-  // Transition Logic
-  switch (decision) {
-    case 'APPROVE':
-      newStatus = 'APPROVED';
-      break;
-    case 'REJECT':
-      newStatus = 'REJECTED';
-      break;
-    case 'RESTRICT_VISIBILITY':
-    case 'HIDE':
-    case 'ARCHIVE':
-      newStatus = 'RESTRICTED';
-      break;
-    case 'ESCALATE':
-      newStatus = 'UNDER_REVIEW';
-      break;
-    case 'NO_ACTION':
-      newStatus = 'CLOSED';
-      break;
-  }
+  const decisionId = `mod_dec_${Math.random().toString(36).substr(2, 9)}`;
+  const newStatus = decisionStatusByType(decision, existingCase.status);
+  const evidence = normalizeDecisionEvidence(command.evidence, now);
+  const makerCheckerEnforced = command.makerCheckerContext?.requiresSeparateChecker === true;
+  const decisionRecord: ModerationDecisionRecord = {
+    decisionId,
+    caseId,
+    decisionType: decision,
+    actor: command.actor!,
+    reasonCode: command.reasonCode!,
+    evidence,
+    makerCheckerContext: command.makerCheckerContext,
+    createdAt: now,
+    auditRecorded: false,
+    evidenceRecorded: evidence.length > 0,
+    ownerHandoffCreated: command.ownerHandoffCreated === true,
+    visibilityTruthMutatedByBff: false,
+    makerCheckerEnforced,
+  };
 
   const updatedCase: ModerationCase = {
     ...existingCase,
     status: newStatus,
     decision,
     decisionNote: note,
+    decisions: [...(existingCase.decisions || []), decisionRecord],
     updatedAt: now,
     reviewedAt: now,
     closedAt: ['APPROVED', 'REJECTED', 'CLOSED'].includes(newStatus) ? now : undefined,
@@ -199,49 +283,78 @@ export const reviewModerationCase = async (command: ReviewModerationCaseCommand)
   await repository.update(updatedCase);
 
   const warnings = ['TARGET_TRUTH_NOT_MUTATED', 'HUMAN_REVIEW_QUEUE_NOT_CONFIGURED'];
+  let auditRecorded = false;
   try {
     const auditEvent = getAuditEventRepositories();
     await auditEvent.audit.appendAuditLog({
-      actorType: 'REVIEWER',
-      actorId: 'system',
+      actorType: command.actor!.actorType,
+      actorId: command.actor!.actorId,
       actionType: 'moderation.case_reviewed',
       ownerService: 'moderation',
       entityType: 'moderation_case',
       entityId: caseId,
       beforeState: existingCase,
       afterState: updatedCase,
-      reason: note,
+      reason: command.reasonCode,
+      idempotencyKey: command.idempotencyKey,
       correlationId: caseId,
       metadata: {
+        decisionId,
         decision,
+        decisionActor: command.actor,
+        evidence,
+        makerCheckerContext: command.makerCheckerContext,
         target: updatedCase.target,
         targetTruthMutated: false,
+        visibilityTruthMutatedByBff: false,
       },
     });
     await auditEvent.outbox.appendOutboxEvent({
       topic: 'moderation.case_reviewed',
       payloadSchema: 'moderation.case_reviewed.v1',
       payload: {
+        decisionId,
         caseId,
         decision,
+        actorId: command.actor!.actorId,
+        reasonCode: command.reasonCode,
+        evidenceRecorded: evidence.length > 0,
         status: updatedCase.status,
         target: updatedCase.target,
         targetTruthMutated: false,
+        visibilityTruthMutatedByBff: false,
       },
       ownerService: 'moderation',
       entityType: 'moderation_case',
       entityId: caseId,
+      idempotencyKey: command.idempotencyKey ? `event:${command.idempotencyKey}` : undefined,
       correlationId: caseId,
     });
+    auditRecorded = true;
   } catch (error) {
     warnings.push('AUDIT_EVENT_APPEND_FAILED_AFTER_TRUTH_WRITE');
   }
 
-  return {
+  const result: ModerationDecisionResult = {
     success: true,
     caseId,
+    decisionId,
+    decisionType: decision,
+    actorId: command.actor!.actorId,
+    reasonCode: command.reasonCode!,
+    evidenceRecorded: evidence.length > 0,
+    auditRecorded,
+    ownerHandoffCreated: command.ownerHandoffCreated === true,
+    visibilityTruthMutatedByBff: false,
+    makerCheckerEnforced,
     warnings,
   };
+
+  if (command.idempotencyKey) {
+    await repository.saveDecisionIdempotencyKey(command.idempotencyKey, buildDecisionFingerprint(command), result);
+  }
+
+  return result;
 };
 
 export const getModerationCase = async (query: GetModerationCaseQuery): Promise<ModerationCaseResponse> => {

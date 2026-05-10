@@ -1,12 +1,14 @@
 import { 
   ModerationCase, 
-  ListModerationCasesQuery
+  ListModerationCasesQuery,
+  ModerationDecisionResult
 } from '@hx/contracts';
 import { IModerationRepository } from './interface';
 
 export class InMemoryModerationRepository implements IModerationRepository {
   private store = new Map<string, ModerationCase>();
   private idempotency = new Map<string, string>();
+  private decisionIdempotency = new Map<string, { fingerprint: string; result: ModerationDecisionResult }>();
 
   async create(mCase: ModerationCase): Promise<void> {
     this.store.set(mCase.caseId, mCase);
@@ -35,5 +37,13 @@ export class InMemoryModerationRepository implements IModerationRepository {
 
   async saveIdempotencyKey(key: string, caseId: string): Promise<void> {
     this.idempotency.set(key, caseId);
+  }
+
+  async findDecisionByIdempotencyKey(key: string): Promise<{ fingerprint: string; result: ModerationDecisionResult } | null> {
+    return this.decisionIdempotency.get(key) || null;
+  }
+
+  async saveDecisionIdempotencyKey(key: string, fingerprint: string, result: ModerationDecisionResult): Promise<void> {
+    this.decisionIdempotency.set(key, { fingerprint, result });
   }
 }

@@ -1,0 +1,1 @@
+{"version":3,"file":"finance-ledger.d.ts","sourceRoot":"","sources":["finance-ledger.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,wBAAwB,EAAE,cAAc,EAAE,MAAM,eAAe,CAAC;AAMtF,wBAAgB,iBAAiB,CAAC,OAAO,EAAE,wBAAwB,GAAG,WAAW,CAgBhF;AAED,wBAAgB,gBAAgB,CAAC,KAAK,GAAE,cAAmB,GAAG,WAAW,EAAE,CAQ1E;AAGD,wBAAgB,YAAY,IAAI,IAAI,CAEnC"}

@@ -1,4 +1,16 @@
 {
+  "references": [
+    {
+      "path": "../catalog"
+    },
+    {
+      "path": "../../packages/config"
+    },
+    {
+      "path": "../../packages/contracts"
+    }
+  ],
+
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",

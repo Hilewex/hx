@@ -52,3 +52,119 @@ export interface CustomerRewardEligibilityResult {
 export interface CheckCustomerRewardEligibilityCommand {
   context: CustomerRewardEligibilityContext;
 }
+
+export enum RewardPointState {
+  PENDING = 'PENDING',
+  SPENDABLE = 'SPENDABLE',
+  REDEEMED = 'REDEEMED',
+  REVERSED = 'REVERSED',
+  EXPIRED = 'EXPIRED',
+  BLOCKED = 'BLOCKED',
+}
+
+export enum RewardPointEventType {
+  EARN_PENDING = 'EARN_PENDING',
+  PROMOTE_TO_SPENDABLE = 'PROMOTE_TO_SPENDABLE',
+  REDEEM = 'REDEEM',
+  REVERSE_PENDING = 'REVERSE_PENDING',
+  REVERSE_SPENDABLE = 'REVERSE_SPENDABLE',
+  EXPIRE = 'EXPIRE',
+  BLOCK = 'BLOCK',
+}
+
+export enum RewardPointSourceType {
+  ORDER_DELIVERY = 'ORDER_DELIVERY',
+  REVIEW = 'REVIEW',
+  STORY = 'STORY',
+  CAMPAIGN = 'CAMPAIGN',
+  REFUND = 'REFUND',
+  MANUAL_ADJUSTMENT = 'MANUAL_ADJUSTMENT',
+}
+
+export interface RewardPointEntry {
+  rewardPointEntryId: string;
+  customerId: string;
+  sourceType: RewardPointSourceType;
+  sourceId: string;
+  orderId?: string;
+  orderLineId?: string;
+  pointAmount: number;
+  state: RewardPointState;
+  idempotencyKey: string;
+  createdAt: string;
+  availableAt?: string;
+  metadata?: Record<string, unknown>;
+  cashEquivalent: false;
+  payoutEligible: false;
+}
+
+export interface RewardPointSummary {
+  customerId: string;
+  pendingPoints: number;
+  spendablePoints: number;
+  redeemedPoints: number;
+  reversedPoints: number;
+  cashEquivalent: false;
+  payoutEligible: false;
+  payoutCreated: false;
+  payableCreated: false;
+  paidOutCreated: false;
+  ledgerCashEntryCreated: false;
+  orderStateMutated: false;
+  paymentStateMutated: false;
+  refundStateMutated: false;
+  reversalRequired?: boolean;
+}
+
+export interface GrantPendingRewardPointsCommand {
+  customerId: string;
+  sourceType: RewardPointSourceType;
+  sourceId: string;
+  orderId?: string;
+  orderLineId?: string;
+  pointAmount: number;
+  idempotencyKey: string;
+  availableAt?: string;
+  metadata?: Record<string, unknown>;
+  delivered?: boolean;
+  notReturned?: boolean;
+}
+
+export interface PromotePendingRewardPointsCommand {
+  customerId: string;
+  rewardPointEntryId: string;
+  idempotencyKey: string;
+  availableAt?: string;
+}
+
+export interface RedeemSpendableRewardPointsCommand {
+  customerId: string;
+  rewardPointEntryId: string;
+  idempotencyKey: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface ReverseRewardPointsForRefundCommand {
+  customerId: string;
+  refundId: string;
+  idempotencyKey: string;
+  orderId?: string;
+  orderLineId?: string;
+  rewardPointEntryId?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export type RewardPointLifecycleStatus =
+  | 'RECORDED'
+  | 'REJECTED'
+  | 'CONFLICT'
+  | 'REVERSAL_REQUIRED';
+
+export interface RewardPointLifecycleResult {
+  status: RewardPointLifecycleStatus;
+  eventType?: RewardPointEventType;
+  entry?: RewardPointEntry;
+  entries: RewardPointEntry[];
+  summary: RewardPointSummary;
+  errors: string[];
+}

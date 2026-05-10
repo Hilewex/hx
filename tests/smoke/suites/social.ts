@@ -11,8 +11,10 @@ export const socialSmoke: SmokeRunner = {
       const customerToken = issueDevAuthToken(actorId, 'CUSTOMER');
       const adminToken = issueDevAuthToken('admin-1', 'ADMIN');
 
-      const approveModerationCase = async (targetId: string) => {
-        const listRes = await fetch(`${baseUrl}/moderation/list`, {
+      const approveModerationCase = async (targetId: string, targetType?: string) => {
+        const params = new URLSearchParams({ limit: '100' });
+        if (targetType) params.set('targetType', targetType);
+        const listRes = await fetch(`${baseUrl}/moderation/list?${params.toString()}`, {
           headers: { 'Authorization': `Bearer ${adminToken}` }
         });
         if (!listRes.ok) {
@@ -60,7 +62,7 @@ export const socialSmoke: SmokeRunner = {
       const postId = postData.data?.post?.postId;
       if (!postId) return { result: 'FAIL', message: `POST /post/create missing postId: ${JSON.stringify(postData)}` };
 
-      const approvePostError = await approveModerationCase(postId);
+      const approvePostError = await approveModerationCase(postId, 'STORE_POST');
       if (approvePostError) return { result: 'FAIL', message: approvePostError };
 
       // 2. UGC Creation

@@ -8,7 +8,7 @@ export const baseConfigSchema = z.object({
 
 export type BaseConfig = z.infer<typeof baseConfigSchema>;
 
-export function parseConfig<T extends z.ZodTypeAny>(schema: T, env: Record<string, string | undefined> = process.env) {
+export function parseConfig<T extends z.ZodTypeAny>(schema: T, env: Record<string, string | undefined>) {
   return schema.parse(env);
 }
 

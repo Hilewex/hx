@@ -1,4 +1,4 @@
-import { Pool, PoolConfig } from 'pg';
+import { Pool, PoolConfig, QueryResult, QueryResultRow } from 'pg';
 import { z } from 'zod';
 import { createServiceConfig, parseConfig } from '@hx/config';
 
@@ -22,7 +22,7 @@ let pool: Pool | null = null;
 export function getDbPool(config?: PersistenceConfig): Pool {
   if (pool) return pool;
 
-  const conf = config || parseConfig(persistenceConfigSchema);
+  const conf = config || parseConfig(persistenceConfigSchema, process.env);
   
   const poolConfig: PoolConfig = {
     connectionString: conf.DATABASE_URL,
@@ -40,7 +40,7 @@ export function getDbPool(config?: PersistenceConfig): Pool {
   return pool;
 }
 
-export async function query<T = any>(text: string, params?: any[]) {
+export async function query<T extends QueryResultRow = any>(text: string, params?: any[]): Promise<QueryResult<T>> {
   const start = Date.now();
   const res = await getDbPool().query(text, params);
   const duration = Date.now() - start;
@@ -60,4 +60,7 @@ export async function closePool() {
 }
 
 export * from './audit-event';
+export * from './provider-callback';
+export * from './payment-reconciliation-task';
+export * from './finance-ledger';
 

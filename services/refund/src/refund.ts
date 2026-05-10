@@ -7,10 +7,165 @@ import {
   RefundTransitionResult,
   RefundLine,
   RefundDetailResponse,
+  RefundCouponSponsorReversalCommand,
+  RefundCouponSponsorReversalResult,
+  RefundCouponSponsorReversalSummary,
 } from '@hx/contracts';
 import { getCancelReturnRequestById } from '@hx/cancel-return';
 import { simulateProviderRefund } from '@hx/payment';
 import { randomUUID } from 'node:crypto';
+
+const refundCouponSponsorReversalGuard = new Map<string, RefundCouponSponsorReversalResult & { fingerprint: string }>();
+
+function roundMoney(amount: number): number {
+  return Math.round((amount + Number.EPSILON) * 100) / 100;
+}
+
+function emptyRefundCouponSponsorReversalSummary(): RefundCouponSponsorReversalSummary {
+  return {
+    platformReversalAmount: 0,
+    creatorReversalAmount: 0,
+    supplierReversalAmount: 0,
+    brandReversalAmount: 0,
+    totalReversalAmount: 0,
+    settlementAdjustedCreated: false,
+    payoutReversalCreated: false,
+    ledgerEntryCreated: false,
+    orderStateMutated: false,
+    paymentStateMutated: false,
+    refundStateMutated: false,
+  };
+}
+
+function canonicalizeRefundCouponSponsorReversalCommand(command: RefundCouponSponsorReversalCommand): string {
+  return JSON.stringify({
+    refundId: command.refundId,
+    refundLines: [...command.refundLines].sort((a, b) =>
+      `${a.refundLineId ?? ''}:${a.lineId ?? ''}:${a.cartLineId ?? ''}:${a.orderLineId ?? ''}`.localeCompare(
+        `${b.refundLineId ?? ''}:${b.lineId ?? ''}:${b.cartLineId ?? ''}:${b.orderLineId ?? ''}`,
+      ),
+    ),
+    discountLineAllocations: [...command.discountLineAllocations].sort((a, b) => a.allocationId.localeCompare(b.allocationId)),
+    reversalReason: command.reversalReason ?? 'REFUND_LINE_COUPON_SPONSOR_REVERSAL',
+  });
+}
+
+function lineMatchesAllocation(
+  line: RefundCouponSponsorReversalCommand['refundLines'][number],
+  allocation: RefundCouponSponsorReversalCommand['discountLineAllocations'][number],
+): boolean {
+  return Boolean(
+    (line.orderLineId && allocation.orderLineId && line.orderLineId === allocation.orderLineId) ||
+      (line.lineId && line.lineId === allocation.lineId) ||
+      (line.cartLineId && allocation.cartLineId && line.cartLineId === allocation.cartLineId),
+  );
+}
+
+function reversalRatio(line: RefundCouponSponsorReversalCommand['refundLines'][number]): number {
+  if (line.refundAmount === undefined || line.originalLineAmount === undefined) return 1;
+  if (line.originalLineAmount <= 0 || line.refundAmount <= 0) return 0;
+  return Math.min(1, line.refundAmount / line.originalLineAmount);
+}
+
+export function resetRefundCouponSponsorReversalGuardForTesting(): void {
+  refundCouponSponsorReversalGuard.clear();
+}
+
+export function calculateRefundCouponSponsorReversal(
+  command: RefundCouponSponsorReversalCommand,
+): RefundCouponSponsorReversalResult {
+  const summary = emptyRefundCouponSponsorReversalSummary();
+  const errors: string[] = [];
+
+  if (!command.refundId) errors.push('REFUND_ID_REQUIRED');
+  if (!command.idempotencyKey) errors.push('IDEMPOTENCY_KEY_REQUIRED');
+  if (!command.refundLines.length) errors.push('REFUND_LINE_REQUIRED');
+  if (!command.discountLineAllocations.length) errors.push('DISCOUNT_LINE_ALLOCATION_REQUIRED');
+
+  const fingerprint = canonicalizeRefundCouponSponsorReversalCommand(command);
+  const existing = refundCouponSponsorReversalGuard.get(command.idempotencyKey);
+  if (existing) {
+    if (existing.fingerprint !== fingerprint) {
+      return {
+        status: 'CONFLICT',
+        reversals: [],
+        summary,
+        errors: ['DUPLICATE_IDEMPOTENCY_KEY_CONFLICT'],
+        idempotencyKey: command.idempotencyKey,
+      };
+    }
+
+    const { fingerprint: _fingerprint, ...result } = existing;
+    return result;
+  }
+
+  const unsupportedAllocation = command.discountLineAllocations.find((allocation) =>
+    allocation.sponsorType === 'SUPPLIER' || allocation.sponsorType === 'BRAND' || allocation.sponsorType === 'MIXED',
+  );
+  if (unsupportedAllocation) {
+    errors.push('FIRST_PHASE_REFUND_COUPON_SPONSOR_REVERSAL_UNSUPPORTED');
+  }
+
+  if (errors.length > 0) {
+    return {
+      status: 'BLOCKED',
+      reversals: [],
+      summary,
+      errors,
+      idempotencyKey: command.idempotencyKey,
+    };
+  }
+
+  const createdAt = new Date().toISOString();
+  const reversals = command.refundLines.flatMap((line) => {
+    const ratio = reversalRatio(line);
+    if (ratio <= 0) return [];
+
+    return command.discountLineAllocations
+      .filter((allocation) => lineMatchesAllocation(line, allocation))
+      .filter((allocation) => allocation.sponsorType === 'PLATFORM' || allocation.sponsorType === 'CREATOR')
+      .map((allocation) => {
+        const reversedAmount = roundMoney(Math.min(allocation.allocatedAmount, allocation.allocatedAmount * ratio));
+
+        return {
+          reversalId: `rcr_${randomUUID()}`,
+          refundId: command.refundId,
+          refundLineId: line.refundLineId,
+          lineId: allocation.lineId,
+          cartLineId: allocation.cartLineId,
+          orderLineId: allocation.orderLineId ?? line.orderLineId,
+          discountSnapshotId: allocation.discountSnapshotId,
+          allocationId: allocation.allocationId,
+          discountKind: allocation.discountKind,
+          sponsorType: allocation.sponsorType as 'PLATFORM' | 'CREATOR',
+          sponsorId: allocation.sponsorId,
+          reversedAmount,
+          currency: allocation.currency || line.currency,
+          reversalReason: command.reversalReason ?? 'REFUND_LINE_COUPON_SPONSOR_REVERSAL',
+          idempotencyKey: command.idempotencyKey,
+          createdAt,
+        };
+      });
+  });
+
+  summary.platformReversalAmount = roundMoney(
+    reversals.filter((reversal) => reversal.sponsorType === 'PLATFORM').reduce((sum, reversal) => sum + reversal.reversedAmount, 0),
+  );
+  summary.creatorReversalAmount = roundMoney(
+    reversals.filter((reversal) => reversal.sponsorType === 'CREATOR').reduce((sum, reversal) => sum + reversal.reversedAmount, 0),
+  );
+  summary.totalReversalAmount = roundMoney(summary.platformReversalAmount + summary.creatorReversalAmount);
+
+  const result: RefundCouponSponsorReversalResult = {
+    status: 'CALCULATED',
+    reversals,
+    summary,
+    errors: [],
+    idempotencyKey: command.idempotencyKey,
+  };
+  refundCouponSponsorReversalGuard.set(command.idempotencyKey, { ...result, fingerprint });
+  return result;
+}
 
 export async function createRefundFromCancelReturn(
   command: CreateRefundFromCancelReturnCommand

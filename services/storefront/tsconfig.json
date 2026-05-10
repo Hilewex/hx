@@ -1,5 +1,11 @@
 {
-  "extends": "../../tsconfig.json",
+  "references": [
+    {
+      "path": "../../packages/contracts"
+    }
+  ],
+
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src"

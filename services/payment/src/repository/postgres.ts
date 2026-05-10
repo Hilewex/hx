@@ -27,6 +27,32 @@ export class PostgresPaymentRepository implements IPaymentRepository {
     return res.rows[0].data;
   }
 
+  async getByProviderReference(
+    providerName: string,
+    providerReference: string,
+  ): Promise<PaymentInitiationResponse | undefined> {
+    const byProviderReference = await query(
+      `SELECT data FROM payments
+       WHERE data->'attempt'->>'providerName' = $1
+         AND data->'attempt'->>'providerReference' = $2
+       LIMIT 1`,
+      [providerName, providerReference]
+    );
+    if (byProviderReference.rowCount && byProviderReference.rowCount > 0) {
+      return byProviderReference.rows[0].data;
+    }
+
+    const byProviderEventId = await query(
+      `SELECT data FROM payments
+       WHERE data->'attempt'->>'providerName' = $1
+         AND data->'attempt'->>'providerEventId' = $2
+       LIMIT 1`,
+      [providerName, providerReference]
+    );
+    if (!byProviderEventId.rowCount || byProviderEventId.rowCount === 0) return undefined;
+    return byProviderEventId.rows[0].data;
+  }
+
   async getByIdempotencyKey(namespace: string, key: string): Promise<PaymentInitiationResponse | undefined> {
     const res = await query(
       'SELECT response_data FROM idempotency_records WHERE namespace = $1 AND idempotency_key = $2',

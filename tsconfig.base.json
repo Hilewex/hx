@@ -9,10 +9,9 @@
     "declaration": true,
     "declarationMap": true,
     "baseUrl": ".",
+    "composite": true,
     "paths": {
-      "@hx/contracts": ["packages/contracts/dist"],
-      "@hx/service-store-message": ["services/store-message/src"],
-      "@hx/service-store-post": ["services/store-post/src"]
+      "@hx/*": ["packages/*/src", "services/*/src"]
     }
   }
 }

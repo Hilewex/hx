@@ -7,13 +7,13 @@ const customerSupportService = new CustomerSupportService();
 
 export async function customerSupportRouter(req: any, res: any, next: any) {
   if (req.method === 'POST' && req.url === '/customer/support-eligibility/check') {
-    const actorId = req.headers['x-actor-id'] as string;
-    const actorType = req.headers['x-actor-type'] as string;
+    const actorId = req.context?.actorId || req.context?.sessionId;
+    const actorType = req.context?.role;
 
     if (!actorId || !actorType) {
       return res.status(400).json({
         allowed: false,
-        reason: 'x-actor-id and x-actor-type headers are required',
+        reason: 'Authenticated actor context is required',
       });
     }
 

@@ -7,7 +7,7 @@ export const handleListStoryTray = async (context: any, query: any) => {
     surface: query.surface as StorySurface,
     storefrontId: query.storefrontId as string,
     productId: query.productId as string,
-    actorId: context?.actorId || query.actorId as string,
+    actorId: context?.actorId,
     limit: query.limit ? parseInt(query.limit as string) : undefined,
     cursor: query.cursor as string
   };
@@ -27,7 +27,7 @@ export const handleGetStoryViewer = async (context: any, query: any) => {
     surface: query.surface as StorySurface,
     storefrontId: query.storefrontId as string,
     productId: query.productId as string,
-    actorId: context?.actorId || query.actorId as string
+    actorId: context?.actorId
   };
 
   if (!viewerQuery.surface) {

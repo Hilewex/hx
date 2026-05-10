@@ -1,6 +1,7 @@
 import { createPayoutProviderAdapter } from './provider-adapter';
 import {
   CreatePayoutItemsFromSettlementCommand,
+  CreatePayoutItemFromSourceCommand,
   CreatePayoutBatchCommand,
   ApplyPayoutItemActionCommand,
   ApplyPayoutBatchActionCommand,
@@ -17,7 +18,9 @@ import {
   PayoutBatch,
   PayoutItemStatus,
   PayoutHoldReasonCode,
-  PayoutBeneficiaryType
+  PayoutBeneficiaryType,
+  PayoutBoundaryLimitationFlag,
+  PayoutBoundarySummary
 } from '@hx/contracts';
 import { getPayoutRepository } from './repository';
 import { getSettlementLine } from '@hx/settlement';
@@ -31,6 +34,224 @@ function determineBeneficiaryType(partyType: string): PayoutBeneficiaryType {
     case 'PLATFORM': return 'PLATFORM';
     default: return 'UNKNOWN';
   }
+}
+
+const payoutSourceFingerprintMap = new Map<string, string>();
+const payoutIdempotencyFingerprintMap = new Map<string, string>();
+const payoutIdempotencyItemMap = new Map<string, PayoutItem>();
+
+function stableValue(value: any): any {
+  if (Array.isArray(value)) return value.map(stableValue);
+  if (value && typeof value === 'object') {
+    return Object.keys(value)
+      .sort()
+      .reduce<Record<string, any>>((acc, key) => {
+        acc[key] = stableValue(value[key]);
+        return acc;
+      }, {});
+  }
+  return value;
+}
+
+function createPayoutSourceKey(command: CreatePayoutItemFromSourceCommand): string {
+  return `${command.sourceType}:${command.sourceId}:${command.counterpartyType}:${command.counterpartyId}`;
+}
+
+function createPayoutFingerprint(command: CreatePayoutItemFromSourceCommand): string {
+  return JSON.stringify(stableValue({
+    sourceType: command.sourceType,
+    sourceId: command.sourceId,
+    settlementId: command.settlementId,
+    settlementLineId: command.settlementLineId,
+    counterpartyType: command.counterpartyType,
+    counterpartyId: command.counterpartyId,
+    amount: command.amount,
+    currency: command.currency,
+    holdReason: command.holdReason,
+    riskHold: command.riskHold ?? false,
+    metadata: command.metadata ?? {},
+  }));
+}
+
+function createPayoutBoundarySummary(
+  payableCreated: boolean,
+  payoutRequested: boolean,
+  duplicatePayout: boolean
+): PayoutBoundarySummary {
+  return {
+    payableCreated,
+    payoutRequested,
+    duplicatePayout,
+    actualProviderPayoutPerformed: false,
+    settlementTruthMutated: false,
+    ledgerTruthMutated: false,
+    paymentTruthMutated: false,
+    refundTruthMutated: false,
+    orderTruthMutated: false,
+  };
+}
+
+function payoutBoundaryLimitationFlags(): PayoutBoundaryLimitationFlag[] {
+  return [
+    'PROVIDER_PAYOUT_EXECUTION_NOT_PERFORMED',
+    'PAYABLE_LIFECYCLE_FOUNDATION_ONLY',
+    'SETTLEMENT_TRUTH_NOT_MUTATED',
+    'LEDGER_TRUTH_NOT_MUTATED',
+    'APPROVAL_WORKFLOW_NOT_IMPLEMENTED',
+    'AUDIT_WORKFLOW_NOT_ENFORCED',
+  ];
+}
+
+export function resetPayoutBoundaryGuardForTesting(): void {
+  payoutSourceFingerprintMap.clear();
+  payoutIdempotencyFingerprintMap.clear();
+  payoutIdempotencyItemMap.clear();
+}
+
+export async function createPayoutItemFromSource(
+  command: CreatePayoutItemFromSourceCommand
+): Promise<PayoutMutationResult> {
+  const errors: string[] = [];
+  if (!command.sourceType) errors.push('PAYOUT_SOURCE_TYPE_REQUIRED');
+  if (!command.sourceId) errors.push('PAYOUT_SOURCE_ID_REQUIRED');
+  if (!command.counterpartyType) errors.push('PAYOUT_COUNTERPARTY_TYPE_REQUIRED');
+  if (!command.counterpartyId) errors.push('PAYOUT_COUNTERPARTY_ID_REQUIRED');
+  if (!command.idempotencyKey) errors.push('IDEMPOTENCY_KEY_REQUIRED');
+  if (command.amount === undefined || command.amount === null) errors.push('PAYOUT_AMOUNT_REQUIRED');
+  if (!command.currency) errors.push('PAYOUT_CURRENCY_REQUIRED');
+  if (command.amount !== undefined && (!Number.isFinite(command.amount) || command.amount <= 0)) {
+    errors.push('PAYOUT_AMOUNT_MUST_BE_POSITIVE');
+  }
+
+  const limitationFlags = payoutBoundaryLimitationFlags();
+  if (errors.length > 0) {
+    return {
+      success: false,
+      status: 'REJECTED',
+      summary: createPayoutBoundarySummary(false, false, false),
+      limitationFlags,
+      errors,
+    };
+  }
+
+  const fingerprint = createPayoutFingerprint(command);
+  const sourceKey = createPayoutSourceKey(command);
+  const existingByIdempotency = payoutIdempotencyItemMap.get(command.idempotencyKey);
+
+  if (existingByIdempotency) {
+    if (payoutIdempotencyFingerprintMap.get(command.idempotencyKey) !== fingerprint) {
+      return {
+        success: false,
+        status: 'REJECTED',
+        duplicateOfPayoutItemId: existingByIdempotency.payoutItemId,
+        summary: createPayoutBoundarySummary(false, false, true),
+        limitationFlags: [...limitationFlags, 'DUPLICATE_IDEMPOTENCY_KEY_CONFLICT'],
+        errors: ['DUPLICATE_IDEMPOTENCY_KEY_CONFLICT'],
+      };
+    }
+
+    return {
+      success: true,
+      status: 'DUPLICATE',
+      payoutItemId: existingByIdempotency.payoutItemId,
+      payoutItem: existingByIdempotency,
+      payoutItems: [existingByIdempotency],
+      duplicateOfPayoutItemId: existingByIdempotency.payoutItemId,
+      summary: createPayoutBoundarySummary(false, false, true),
+      limitationFlags,
+    };
+  }
+
+  const existingSourceFingerprint = payoutSourceFingerprintMap.get(sourceKey);
+  if (existingSourceFingerprint && existingSourceFingerprint !== fingerprint) {
+    return {
+      success: false,
+      status: 'REJECTED',
+      summary: createPayoutBoundarySummary(false, false, true),
+      limitationFlags: [...limitationFlags, 'DUPLICATE_PAYOUT_SOURCE_CONFLICT'],
+      errors: ['DUPLICATE_PAYOUT_SOURCE_CONFLICT'],
+    };
+  }
+
+  const repo = getPayoutRepository();
+  const payoutItemId = `pyi_${uuidv4().replace(/-/g, '')}`;
+  const now = new Date().toISOString();
+  const beneficiaryType = determineBeneficiaryType(command.counterpartyType);
+  const status: PayoutItemStatus = command.riskHold || command.holdReason ? 'ON_HOLD' : 'ELIGIBLE';
+
+  const item: PayoutItem = {
+    payoutItemId,
+    sourceType: command.sourceType,
+    sourceId: command.sourceId,
+    settlementId: command.settlementId,
+    settlementLineId: command.settlementLineId ?? command.sourceId,
+    counterpartyType: command.counterpartyType,
+    counterpartyId: command.counterpartyId,
+    amount: command.amount,
+    currency: command.currency,
+    payableStatus: status === 'ON_HOLD' ? 'ON_HOLD' : 'ELIGIBLE',
+    payoutStatus: 'REQUESTED',
+    riskHold: command.riskHold ?? false,
+    beneficiaryType,
+    beneficiaryId: command.counterpartyId,
+    status,
+    holdReasonCode: command.holdReason,
+    amountSummary: {
+      currency: command.currency,
+      grossPayableAmount: command.amount,
+      heldAmount: status === 'ON_HOLD' ? command.amount : 0,
+      payableAmount: command.amount,
+      paidAmount: 0,
+      thresholdPassed: true,
+    },
+    executionSummary: {
+      foundationInstructionOnly: true,
+      actualProviderPayoutPerformed: false,
+      paymentInstructionCreated: false,
+      retryRequired: false,
+    },
+    boundaryFlags: {
+      settlementTruthMutated: false,
+      ledgerTruthMutated: false,
+      paymentTruthMutated: false,
+      refundTruthMutated: false,
+      orderTruthMutated: false,
+      cancelReturnTruthMutated: false,
+      financeCorrectionTruthMutated: false,
+      riskTruthMutated: false,
+      actualProviderPayoutPerformed: false,
+      paymentInstructionCreated: false,
+    },
+    sourceRefs: [{
+      sourceType: command.sourceType,
+      sourceId: command.sourceId,
+      metadata: {
+        ...(command.metadata ?? {}),
+        payoutBoundaryFingerprint: fingerprint,
+      },
+    }],
+    idempotencyKey: command.idempotencyKey,
+    createdAt: now,
+    updatedAt: now,
+    errors: [],
+    warnings: [],
+  };
+
+  await repo.createItems([item]);
+  await repo.saveItemIdempotencyKey(command.idempotencyKey, [item.payoutItemId]);
+  payoutIdempotencyFingerprintMap.set(command.idempotencyKey, fingerprint);
+  payoutIdempotencyItemMap.set(command.idempotencyKey, item);
+  payoutSourceFingerprintMap.set(sourceKey, fingerprint);
+
+  return {
+    success: true,
+    status: 'CREATED',
+    payoutItemId,
+    payoutItem: item,
+    payoutItems: [item],
+    summary: createPayoutBoundarySummary(true, true, false),
+    limitationFlags,
+  };
 }
 
 export async function createPayoutItemsFromSettlement(command: CreatePayoutItemsFromSettlementCommand): Promise<PayoutMutationResult> {
@@ -125,6 +346,7 @@ export async function createPayoutItemsFromSettlement(command: CreatePayoutItems
         },
         boundaryFlags: {
           settlementTruthMutated: false,
+          ledgerTruthMutated: false,
           paymentTruthMutated: false,
           refundTruthMutated: false,
           orderTruthMutated: false,
@@ -258,12 +480,15 @@ export async function createPayoutBatch(command: CreatePayoutBatchCommand): Prom
 
   const batch: PayoutBatch = {
     batchId,
+    payoutBatchId: batchId,
     batchType,
     status: 'CREATED',
     beneficiaryType,
     itemIds: eligibleItems.map(i => i.payoutItemId),
+    items: eligibleItems,
     totalAmount,
     currency,
+    providerMode: 'SIMULATION',
     scheduledExecutionAt,
     ownerAdminId,
     foundationOnly: true,
@@ -476,6 +701,7 @@ export async function applyPayoutBatchAction(command: ApplyPayoutBatchActionComm
         // Provider sonucunu kaydet, ama paid_out durumunu DEĞİŞTİRME
         await repo.updateItem(itemId, {
           status: 'PROCESSING', // Durumu 'PROCESSING' olarak güncelle
+          payoutStatus: 'PROCESSING',
           providerEnvelope: result as any,
           providerMode: result.providerMode,
           providerName: result.providerName,
@@ -594,7 +820,7 @@ export async function createTestPayoutItem(body: any): Promise<PayoutMutationRes
             paymentInstructionCreated: false,
             retryRequired: false,
         },
-        boundaryFlags: { settlementTruthMutated: false, paymentTruthMutated: false, refundTruthMutated: false, orderTruthMutated: false, cancelReturnTruthMutated: false, financeCorrectionTruthMutated: false, riskTruthMutated: false, actualProviderPayoutPerformed: false, paymentInstructionCreated: false },
+        boundaryFlags: { settlementTruthMutated: false, ledgerTruthMutated: false, paymentTruthMutated: false, refundTruthMutated: false, orderTruthMutated: false, cancelReturnTruthMutated: false, financeCorrectionTruthMutated: false, riskTruthMutated: false, actualProviderPayoutPerformed: false, paymentInstructionCreated: false },
         sourceRefs: [{ sourceType: 'MANUAL_FOUNDATION', sourceId: 'smoke-test' }],
         createdAt: now,
         updatedAt: now,

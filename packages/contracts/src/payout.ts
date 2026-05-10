@@ -4,6 +4,25 @@ export type PayoutBeneficiaryType = 'CREATOR' | 'SUPPLIER' | 'PLATFORM' | 'UNKNO
 
 export type PayoutBatchType = 'DAILY' | 'WEEKLY' | 'MANUAL' | 'CREATOR' | 'SUPPLIER' | 'FOUNDATION_SIMULATION';
 
+export type PayableStatus = 'ELIGIBLE' | 'ON_HOLD' | 'BLOCKED' | 'RELEASED' | 'SUPERSEDED';
+
+export type PayoutStatus =
+  | 'REQUESTED'
+  | 'APPROVED'
+  | 'PROCESSING'
+  | 'SUCCEEDED'
+  | 'FAILED'
+  | 'CANCELLED'
+  | 'UNKNOWN_RESULT';
+
+export type PayoutSourceType =
+  | 'SETTLEMENT'
+  | 'SETTLEMENT_LINE'
+  | 'PAYABLE'
+  | 'MANUAL_ADJUSTMENT';
+
+export type PayoutProviderMode = 'SIMULATION' | 'SANDBOX' | 'PRODUCTION';
+
 export type PayoutItemStatus = 'ELIGIBLE' | 'BELOW_THRESHOLD' | 'ON_HOLD' | 'BATCHED' | 'PENDING_EXECUTION' | 'PROCESSING' | 'PAID' | 'FAILED' | 'RETURNED' | 'CANCELLED' | 'CLOSED';
 
 export type PayoutBatchStatus = 'CREATED' | 'UNDER_REVIEW' | 'APPROVED' | 'PROCESSING' | 'COMPLETED' | 'PARTIALLY_FAILED' | 'FAILED' | 'CANCELLED' | 'CLOSED';
@@ -33,6 +52,7 @@ export interface PayoutExecutionSummary {
 
 export interface PayoutBoundaryFlags {
   settlementTruthMutated: false;
+  ledgerTruthMutated?: false;
   paymentTruthMutated: false;
   refundTruthMutated: false;
   orderTruthMutated: false;
@@ -44,14 +64,46 @@ export interface PayoutBoundaryFlags {
 }
 
 export interface PayoutSourceRef {
-  sourceType: 'SETTLEMENT_LINE' | 'RISK' | 'FINANCE_CORRECTION' | 'MANUAL_FOUNDATION';
+  sourceType: 'SETTLEMENT' | 'SETTLEMENT_LINE' | 'PAYABLE' | 'MANUAL_ADJUSTMENT' | 'RISK' | 'FINANCE_CORRECTION' | 'MANUAL_FOUNDATION';
   sourceId: string;
   sourceState?: string;
   metadata?: Record<string, any>;
 }
 
+export type PayoutBoundaryLimitationFlag =
+  | 'PROVIDER_PAYOUT_EXECUTION_NOT_PERFORMED'
+  | 'PAYABLE_LIFECYCLE_FOUNDATION_ONLY'
+  | 'SETTLEMENT_TRUTH_NOT_MUTATED'
+  | 'LEDGER_TRUTH_NOT_MUTATED'
+  | 'APPROVAL_WORKFLOW_NOT_IMPLEMENTED'
+  | 'AUDIT_WORKFLOW_NOT_ENFORCED'
+  | 'DUPLICATE_IDEMPOTENCY_KEY_CONFLICT'
+  | 'DUPLICATE_PAYOUT_SOURCE_CONFLICT';
+
+export interface PayoutBoundarySummary {
+  payableCreated: boolean;
+  payoutRequested: boolean;
+  duplicatePayout: boolean;
+  actualProviderPayoutPerformed: false;
+  settlementTruthMutated: false;
+  ledgerTruthMutated: false;
+  paymentTruthMutated: false;
+  refundTruthMutated: false;
+  orderTruthMutated: false;
+}
+
 export interface PayoutItem {
   payoutItemId: string;
+  sourceType?: PayoutSourceType;
+  sourceId?: string;
+  settlementId?: string;
+  counterpartyType?: PayoutBeneficiaryType | string;
+  counterpartyId?: string;
+  amount?: number;
+  currency?: string;
+  payableStatus?: PayableStatus;
+  payoutStatus?: PayoutStatus;
+  riskHold?: boolean;
   beneficiaryType: PayoutBeneficiaryType;
   beneficiaryId?: string;
   settlementLineId: string;
@@ -78,12 +130,15 @@ export interface PayoutItem {
 
 export interface PayoutBatch {
   batchId: string;
+  payoutBatchId?: string;
   batchType: PayoutBatchType;
   status: PayoutBatchStatus;
   beneficiaryType?: PayoutBeneficiaryType;
   itemIds: string[];
+  items?: PayoutItem[];
   totalAmount: number;
   currency: string;
+  providerMode?: PayoutProviderMode;
   scheduledExecutionAt?: string;
   ownerAdminId?: string;
   foundationOnly: true;
@@ -101,6 +156,22 @@ export interface CreatePayoutItemsFromSettlementCommand {
   minimumThresholdAmount?: number;
   idempotencyKey?: string;
   correlationId?: string;
+}
+
+export interface CreatePayoutItemFromSourceCommand {
+  sourceType: PayoutSourceType;
+  sourceId: string;
+  settlementId?: string;
+  settlementLineId?: string;
+  counterpartyType: PayoutBeneficiaryType | string;
+  counterpartyId: string;
+  amount: number;
+  currency: string;
+  holdReason?: PayoutHoldReasonCode;
+  riskHold?: boolean;
+  idempotencyKey: string;
+  correlationId?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface CreatePayoutBatchCommand {
@@ -157,11 +228,15 @@ export interface ListPayoutBatchesQuery {
 
 export interface PayoutMutationResult {
   success: boolean;
+  status?: 'CREATED' | 'DUPLICATE' | 'REJECTED';
   payoutItemId?: string;
   batchId?: string;
   payoutItem?: PayoutItem;
   payoutItems?: PayoutItem[];
   batch?: PayoutBatch;
+  duplicateOfPayoutItemId?: string;
+  summary?: PayoutBoundarySummary;
+  limitationFlags?: PayoutBoundaryLimitationFlag[];
   errors?: string[];
   warnings?: string[];
 }

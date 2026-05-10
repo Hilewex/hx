@@ -2,13 +2,13 @@ import { Router } from 'express';
 import { 
   StorePostV2
 } from '@hx/contracts';
-import * as StorePostService from '../../../../services/store-post/src';
+import * as StorePostService from '@hx/service-store-post';
 
 const router: Router = Router();
 
 // Middleware: actorType CREATOR zorunlu
 const creatorGuard = (req: any, res: any, next: any) => {
-  const actorType = req.headers['x-actor-type'];
+  const actorType = req.context?.role;
   if (actorType !== 'CREATOR') {
     return res.status(403).json({
       success: false,
@@ -40,7 +40,10 @@ const storefrontGuard = (req: any, res: any, next: any) => {
 router.post('/creator/posts', creatorGuard, storefrontGuard, async (req: any, res: any) => {
   try {
     const storefrontId = req.headers['x-storefront-id'] as string;
-    const actorId = req.headers['x-actor-id'] as string;
+    const actorId = req.context.actorId;
+    if (!actorId) {
+      return res.status(401).json({ success: false, error: { code: 'UNAUTHORIZED' } });
+    }
     
     const post = await StorePostService.createStorePost({
       ...req.body,
@@ -82,7 +85,10 @@ router.get('/creator/posts/:storePostId', creatorGuard, storefrontGuard, async (
 router.post('/creator/posts/:storePostId/publish', creatorGuard, storefrontGuard, async (req: any, res: any) => {
   try {
     const storefrontId = req.headers['x-storefront-id'] as string;
-    const actorId = req.headers['x-actor-id'] as string;
+    const actorId = req.context.actorId;
+    if (!actorId) {
+      return res.status(401).json({ success: false, error: { code: 'UNAUTHORIZED' } });
+    }
     const post = await StorePostService.publishStorePost({
       storePostId: req.params.storePostId,
       storefrontId,
@@ -98,7 +104,10 @@ router.post('/creator/posts/:storePostId/publish', creatorGuard, storefrontGuard
 router.post('/creator/posts/:storePostId/hide', creatorGuard, storefrontGuard, async (req: any, res: any) => {
   try {
     const storefrontId = req.headers['x-storefront-id'] as string;
-    const actorId = req.headers['x-actor-id'] as string;
+    const actorId = req.context.actorId;
+    if (!actorId) {
+      return res.status(401).json({ success: false, error: { code: 'UNAUTHORIZED' } });
+    }
     const post = await StorePostService.hideStorePost({
       storePostId: req.params.storePostId,
       storefrontId,
@@ -115,7 +124,10 @@ router.post('/creator/posts/:storePostId/hide', creatorGuard, storefrontGuard, a
 router.post('/creator/posts/:storePostId/archive', creatorGuard, storefrontGuard, async (req: any, res: any) => {
   try {
     const storefrontId = req.headers['x-storefront-id'] as string;
-    const actorId = req.headers['x-actor-id'] as string;
+    const actorId = req.context.actorId;
+    if (!actorId) {
+      return res.status(401).json({ success: false, error: { code: 'UNAUTHORIZED' } });
+    }
     const post = await StorePostService.archiveStorePost({
       storePostId: req.params.storePostId,
       storefrontId,
@@ -132,7 +144,10 @@ router.post('/creator/posts/:storePostId/archive', creatorGuard, storefrontGuard
 router.post('/creator/posts/reorder', creatorGuard, storefrontGuard, async (req: any, res: any) => {
   try {
     const storefrontId = req.headers['x-storefront-id'] as string;
-    const actorId = req.headers['x-actor-id'] as string;
+    const actorId = req.context.actorId;
+    if (!actorId) {
+      return res.status(401).json({ success: false, error: { code: 'UNAUTHORIZED' } });
+    }
     await StorePostService.reorderStorePosts({
       storefrontId,
       creatorId: actorId,

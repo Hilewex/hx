@@ -94,6 +94,16 @@ async function verifyPilotIntegrations() {
     caseId: created.caseId,
     decision: 'APPROVE',
     note: 'p38 review',
+    actor: { actorId: 'p38-reviewer', actorType: 'ADMIN', role: 'ADMIN' },
+    reasonCode: 'POLICY_VIOLATION',
+    evidence: [{
+      evidenceId: 'p38-moderation-evidence',
+      evidenceType: 'PERSISTENCE_SMOKE',
+      sourceType: 'P38_SMOKE',
+      sourceId: created.caseId,
+      summary: 'P38 moderation review evidence',
+      createdAt: new Date().toISOString(),
+    }],
   });
   if (!reviewed.success) {
     throw new Error('Moderation review failed');

@@ -27,9 +27,48 @@ export const commercePermissionSmoke: SmokeRunner = {
     const headersA = getCustomerHeaders(customerA);
     const headersB = getCustomerHeaders(customerB);
 
-    const testProductId = 'prod-smoke-1';
-    const testVariantId = 'var-smoke-1-a';
-    const testStorefrontId = `store-${randomUUID()}`;
+    const testProductId = 'p_valid';
+    const testVariantId = 'v_1';
+    const testStorefrontId = 's_feno_1';
+
+    const createCustomer = async (actorId: string, headers: Record<string, string>) => {
+      const res = await fetch(`${baseUrl}/customer/profile`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          id: actorId,
+          firstName: 'Permission',
+          lastName: 'Smoke',
+          email: `${actorId}@example.com`,
+          phone: '+905550000000',
+          locale: 'tr-TR',
+          currency: 'TRY',
+        }),
+      });
+      if (!res.ok) throw new Error(`Customer setup failed: ${res.status} ${await res.text()}`);
+    };
+
+    const createAddress = async (headers: Record<string, string>) => {
+      const res = await fetch(`${baseUrl}/customer/address`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          type: 'SHIPPING',
+          firstName: 'Permission',
+          lastName: 'Smoke',
+          phone: '+905550000000',
+          city: 'Istanbul',
+          district: 'Kadikoy',
+          neighborhood: 'Smoke',
+          fullAddress: 'Commerce permission smoke address',
+        }),
+      });
+      if (!res.ok) throw new Error(`Address setup failed: ${res.status} ${await res.text()}`);
+      const json = await res.json();
+      const addressId = json.data?.id;
+      if (!addressId) throw new Error('Address setup did not return an address id');
+      return addressId;
+    };
 
     // Helper for add to cart
     const addToCart = async (headers: Record<string, string>) => {
@@ -40,18 +79,38 @@ export const commercePermissionSmoke: SmokeRunner = {
       });
       if (!res.ok) throw new Error(`Add to cart failed: ${res.status}`);
       const json = await res.json();
+      const cart = json.data?.data;
+      if (!cart?.lines?.length || cart.errors?.length) {
+        throw new Error(`Add to cart returned invalid cart payload: ${JSON.stringify(json)}`);
+      }
       return json.data?.context?.actorId; // Context actorId
     };
 
-    const startCheckout = async (headers: Record<string, string>) => {
+    const startCheckout = async (headers: Record<string, string>, addressSnapshot?: any) => {
       const res = await fetch(`${baseUrl}/checkout/start`, {
         method: 'POST',
         headers,
+        body: JSON.stringify(addressSnapshot ? { addressSnapshot } : {}),
       });
       if (!res.ok) throw new Error(`Checkout start failed: ${res.status}`);
       const json = await res.json();
+      if (json.data?.state !== 'REVIEW_READY' || json.data?.validationState !== 'VALID') {
+        throw new Error(`Checkout did not become ready: ${JSON.stringify(json)}`);
+      }
       return json.data?.checkoutId;
     };
+
+    let customerBAddressId: string;
+
+    await runStep('Customer A setup profile', async () => {
+      await createCustomer(customerA, headersA);
+      await createAddress(headersA);
+    });
+
+    await runStep('Customer B setup profile', async () => {
+      await createCustomer(customerB, headersB);
+      customerBAddressId = await createAddress(headersB);
+    });
 
     // 1. Guest add cart (success)
     await runStep('Guest add cart (success)', async () => {
@@ -70,14 +129,20 @@ export const commercePermissionSmoke: SmokeRunner = {
     // 3. Guest checkout own cart (success)
     let guestCheckoutId: string;
     await runStep('Guest checkout own cart (success)', async () => {
-      guestCheckoutId = await startCheckout(guestHeaders);
+      guestCheckoutId = await startCheckout(guestHeaders, {
+        recipientName: 'Guest Smoke',
+        phone: '+905550000000',
+        city: 'Istanbul',
+        district: 'Kadikoy',
+        addressLine: 'Guest commerce permission smoke address',
+      });
       if (!guestCheckoutId) throw new Error('No checkout ID returned');
     });
 
     // 4. Customer B checkout own cart (success)
     let customerBCheckoutId: string;
     await runStep('Customer B checkout own cart (success)', async () => {
-      customerBCheckoutId = await startCheckout(headersB);
+      customerBCheckoutId = await startCheckout(headersB, { addressId: customerBAddressId });
       if (!customerBCheckoutId) throw new Error('No checkout ID returned');
     });
 
@@ -105,6 +170,9 @@ export const commercePermissionSmoke: SmokeRunner = {
         if (!res.ok) throw new Error(`Payment initiation failed: ${res.status}`);
         const json = await res.json();
         customerBPaymentData = json.data;
+        if (!customerBPaymentData?.paymentId || !customerBPaymentData?.attempt?.paymentAttemptId) {
+          throw new Error(`Payment initiation did not return payment ids: ${JSON.stringify(json)}`);
+        }
     });
 
     // 6. Customer A create order from Customer B payment (403 Forbidden)
@@ -154,6 +222,9 @@ export const commercePermissionSmoke: SmokeRunner = {
         }
         const json = await res.json();
         customerBOrderId = json.data?.orderId;
+        if (!customerBOrderId) {
+          throw new Error(`Order creation did not return orderId: ${JSON.stringify(json)}`);
+        }
     });
 
     // 7. Customer A read Customer B order (403 Forbidden)

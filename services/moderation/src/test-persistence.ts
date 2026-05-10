@@ -33,7 +33,17 @@ async function testPersistence() {
     const reviewResult = await moderation.reviewModerationCase({
       caseId: createResult.caseId,
       decision: 'APPROVE',
-      note: 'Looks good'
+      note: 'Looks good',
+      actor: { actorId: 'test-reviewer', actorType: 'ADMIN', role: 'ADMIN' },
+      reasonCode: 'UNKNOWN',
+      evidence: [{
+        evidenceId: `test_evidence_${Date.now()}`,
+        evidenceType: 'TEST_NOTE',
+        sourceType: 'TEST',
+        sourceId: createResult.caseId,
+        summary: 'Persistence smoke review evidence',
+        createdAt: new Date().toISOString(),
+      }],
     });
     console.log('Review result:', reviewResult);
 

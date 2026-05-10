@@ -1,10 +1,19 @@
 import { startCheckout } from '@hx/checkout';
 import { getCart } from '@hx/commerce';
-import { ActorContext, CartContext } from '@hx/contracts';
+import { ActorContext, CartContext, CheckoutAddressSnapshot, CheckoutDiscountInput } from '@hx/contracts';
 import * as response from './response';
 import { requireGuestOrCustomer, extractCommerceContext, requireResourceOwnership } from './guards';
 
-export async function handleStartCheckout(context: ActorContext, body: { cartId: string }) {
+export async function handleStartCheckout(
+  context: ActorContext,
+  body: {
+    cartId: string;
+    addressSnapshot?: CheckoutAddressSnapshot;
+    couponCode?: string;
+    campaignId?: string;
+    discountInputs?: CheckoutDiscountInput[];
+  },
+) {
   const guard = requireGuestOrCustomer(context);
   if (!guard.allowed) return guard.response;
 
@@ -19,7 +28,13 @@ export async function handleStartCheckout(context: ActorContext, body: { cartId:
     const ownershipGuard = requireResourceOwnership(context, cart.data.context.actorId);
     if (!ownershipGuard.allowed) return ownershipGuard.response;
     
-    const result = await startCheckout({ cartContext });
+    const result = await startCheckout({
+      cartContext,
+      addressSnapshot: body.addressSnapshot,
+      couponCode: body.couponCode,
+      campaignId: body.campaignId,
+      discountInputs: body.discountInputs,
+    });
     return response.ok(result);
   } catch (error) {
     return response.forbidden('FORBIDDEN', (error as Error).message);

@@ -1,4 +1,16 @@
 {
+  "references": [
+    {
+      "path": "../../packages/contracts"
+    },
+    {
+      "path": "../post"
+    },
+    {
+      "path": "../risk"
+    }
+  ],
+
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",

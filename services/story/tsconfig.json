@@ -1,4 +1,16 @@
 {
+  "references": [
+    {
+      "path": "../../packages/contracts"
+    },
+    {
+      "path": "../media"
+    },
+    {
+      "path": "../storefront"
+    }
+  ],
+
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",

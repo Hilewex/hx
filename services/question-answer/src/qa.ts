@@ -284,6 +284,64 @@ export const createQaAnswer = async (command: CreateQaAnswerCommand): Promise<Qa
   question.updatedAt = now;
   if (command.idempotencyKey) store.answerIdempotency.set(command.idempotencyKey, answerId);
 
+  try {
+    const modCommand: CreateModerationCaseCommand = {
+      target: {
+        targetType: 'QA_ANSWER',
+        targetId: answerId,
+        ownerActorId: answer.authorId,
+        productId: question.productTag.productId
+      },
+      source: 'SYSTEM_RULE',
+      riskLevel: 'LOW',
+      reasonCodes: ['UNKNOWN'],
+      contentText: answer.body,
+      idempotencyKey: command.idempotencyKey ? `mod_qa_a_${command.idempotencyKey}` : undefined
+    };
+    await createModerationCase(modCommand);
+  } catch (error) {
+    console.error('[QaService] Failed to create moderation case for answer:', error);
+  }
+
+  return { success: true, question, answer };
+};
+
+export const approveAnswerModerationResult = async (answerId: string): Promise<QaMutationResult> => {
+  const store = getQaStore();
+  const question = Array.from(store.questions.values()).find(q => q.answers.some(a => a.answerId === answerId));
+  if (!question) return { success: false, errors: ['QA_QUESTION_NOT_FOUND'] };
+
+  const answer = question.answers.find(a => a.answerId === answerId);
+  if (!answer) return { success: false, errors: ['QA_ANSWER_NOT_FOUND'], question };
+
+  const now = new Date().toISOString();
+  answer.moderationStatus = 'APPROVED';
+  answer.status = 'PUBLISHED';
+  answer.visibilityState = 'VISIBLE';
+  answer.publishedAt = now;
+  answer.updatedAt = now;
+  question.updatedAt = now;
+
+  return { success: true, question, answer };
+};
+
+export const rejectAnswerModerationResult = async (answerId: string, reason?: string): Promise<QaMutationResult> => {
+  const store = getQaStore();
+  const question = Array.from(store.questions.values()).find(q => q.answers.some(a => a.answerId === answerId));
+  if (!question) return { success: false, errors: ['QA_QUESTION_NOT_FOUND'] };
+
+  const answer = question.answers.find(a => a.answerId === answerId);
+  if (!answer) return { success: false, errors: ['QA_ANSWER_NOT_FOUND'], question };
+
+  const now = new Date().toISOString();
+  answer.moderationStatus = 'REJECTED';
+  answer.status = 'REJECTED';
+  answer.visibilityState = 'NOT_VISIBLE';
+  answer.rejectedAt = now;
+  answer.rejectionReason = reason || 'REJECTED_BY_MODERATION';
+  answer.updatedAt = now;
+  question.updatedAt = now;
+
   return { success: true, question, answer };
 };
 

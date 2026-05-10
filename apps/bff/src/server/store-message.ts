@@ -1,4 +1,4 @@
-import { StoreMessageService } from '../../../../services/store-message/src/store-message';
+import { StoreMessageService } from '@hx/service-store-message';
 import { StoreMessageSenderType } from '@hx/contracts';
 
 export const storeMessageRouter = {
@@ -8,8 +8,8 @@ export const storeMessageRouter = {
 
     // Customer routes
     if (url.includes('/customer/threads')) {
-      const actorType = header('x-actor-type');
-      const actorId = header('x-actor-id');
+      const actorType = req.context.role;
+      const actorId = req.context.actorId;
 
       if (actorType !== StoreMessageSenderType.CUSTOMER || !actorId) {
         return res.status(401).json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Customer actor required' } });
@@ -61,8 +61,8 @@ export const storeMessageRouter = {
 
     // Creator routes
     if (url.includes('/creator/threads')) {
-      const actorType = header('x-actor-type');
-      const actorId = header('x-actor-id');
+      const actorType = req.context.role;
+      const actorId = req.context.actorId;
       const storefrontId = header('x-storefront-id');
 
       if (actorType !== StoreMessageSenderType.CREATOR || !actorId || !storefrontId) {

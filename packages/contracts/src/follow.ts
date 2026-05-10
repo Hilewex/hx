@@ -62,6 +62,14 @@ export interface FollowMutationResult {
   success: boolean;
   follow?: FollowRecord;
   state?: FollowState;
+  followerId?: string;
+  followeeId?: string;
+  creatorId?: string;
+  storeId?: string;
+  applied?: boolean;
+  idempotentReplay?: boolean;
+  counterDelta?: 0 | 1 | -1;
+  reasonCode?: string;
   errors?: string[];
   warnings?: string[];
 }

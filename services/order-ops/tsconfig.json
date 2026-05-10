@@ -1,4 +1,28 @@
 {
+  "references": [
+    {
+      "path": "../../packages/contracts"
+    },
+    {
+      "path": "../order"
+    },
+    {
+      "path": "../shipment"
+    },
+    {
+      "path": "../cancel-return"
+    },
+    {
+      "path": "../refund"
+    },
+    {
+      "path": "../support"
+    },
+    {
+      "path": "../risk"
+    }
+  ],
+
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",

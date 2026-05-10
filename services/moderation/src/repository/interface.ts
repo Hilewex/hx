@@ -1,8 +1,7 @@
 import { 
   ModerationCase, 
-  CreateModerationCaseCommand, 
-  ReviewModerationCaseCommand,
-  ListModerationCasesQuery 
+  ListModerationCasesQuery,
+  ModerationDecisionResult
 } from '@hx/contracts';
 
 export interface IModerationRepository {
@@ -12,4 +11,6 @@ export interface IModerationRepository {
   list(query: ListModerationCasesQuery): Promise<ModerationCase[]>;
   findByIdempotencyKey(key: string): Promise<string | null>;
   saveIdempotencyKey(key: string, caseId: string): Promise<void>;
+  findDecisionByIdempotencyKey(key: string): Promise<{ fingerprint: string; result: ModerationDecisionResult } | null>;
+  saveDecisionIdempotencyKey(key: string, fingerprint: string, result: ModerationDecisionResult): Promise<void>;
 }

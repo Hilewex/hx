@@ -1,4 +1,19 @@
 {
+  "references": [
+    {
+      "path": "../cancel-return"
+    },
+    {
+      "path": "../../packages/contracts"
+    },
+    {
+      "path": "../payment"
+    },
+    {
+      "path": "../../packages/persistence"
+    }
+  ],
+
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",

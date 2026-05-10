@@ -18,13 +18,20 @@ export const commerceSmoke: SmokeRunner = {
           'Authorization': `Bearer ${customerToken}`
         },
         body: JSON.stringify({
-          productId: 'prod-smoke-1',
+          productId: 'p_valid',
+          variantId: 'v_1',
+          storefrontId: 's_feno_1',
           quantity: 2
         })
       });
 
       if (!addToCartRes.ok) {
         return { result: 'FAIL', message: `POST /cart/items failed: ${addToCartRes.status}` };
+      }
+      const addToCartBody: any = await addToCartRes.json();
+      const cartData = addToCartBody.data?.data;
+      if (!cartData?.lines?.length || cartData.errors?.length) {
+        return { result: 'FAIL', message: `POST /cart/items did not create a valid cart line: ${JSON.stringify(addToCartBody)}` };
       }
 
       const getCartRes = await fetch(`${baseUrl}/cart`, {
@@ -35,6 +42,10 @@ export const commerceSmoke: SmokeRunner = {
 
       if (!getCartRes.ok) {
         return { result: 'FAIL', message: `GET /cart failed: ${getCartRes.status}` };
+      }
+      const getCartBody: any = await getCartRes.json();
+      if (!getCartBody.data?.data?.lines?.length) {
+        return { result: 'FAIL', message: 'GET /cart returned no cart lines after add' };
       }
 
       return { result: 'PASS', message: 'Cart operations successful' };

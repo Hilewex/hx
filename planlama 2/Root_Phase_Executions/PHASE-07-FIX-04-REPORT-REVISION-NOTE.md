@@ -1,0 +1,22 @@
+# PHASE-07-FIX-04-REPORT-REVISION-NOTE
+
+- **Önceki karar**: PASS WITH LIMITATION
+- **Yeni karar**: PASS WITH LIMITATION
+- **Karar değişti mi?**: Hayır
+- **Değişiklik gerekçesi**: Teknik sonuç doğruydu; ancak risk/release blocker dilinde production-ready iddiası doğurabilecek fazla güçlü ifadeler vardı. Bu ifadeler foundation/memory smoke kapsamıyla sınırlandırıldı.
+- **Düzeltilen fazla güçlü ifadeler**:
+  - "mantıksal sızıntı riski sıfırlanmıştır" ifadesi, foundation smoke kapsamıyla sınırlı tutuldu.
+  - "architecture/boundary tasarımı bu testle release'e uygun hale gelmiştir" ifadesi, production release uygunluğu için PHASE-11 ve PHASE-12 şartlarına bağlandı.
+- **Açık production limitation’lar**:
+  - Durable projection persistence yok.
+  - Production broker / distributed worker yok.
+  - External OpenSearch runtime integration yok.
+  - PDP özel public HTTP endpoint smoke yok.
+  - Production retry / DLQ / backoff yok.
+- **Devredilen paketler**:
+  - Ranking / Recommendation Smoke Readiness → PHASE-07-FIX-05
+  - OpenSearch Production Ops → PHASE-12 / Infra Release Gate
+  - Production broker/distributed worker → PHASE-12 veya eventing/infra readiness
+  - Durable Projection Persistence → PHASE-12 veya persistence/projection durability
+  - PDP özel endpoint smoke → PHASE-10 Frontend/Public Surface Readiness veya PHASE-11 Critical Journey Acceptance
+- **Kod değişikliği yapıldı mı?**: Hayır

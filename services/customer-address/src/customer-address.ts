@@ -180,32 +180,23 @@ export const checkCheckoutEligibility = async (
   actorType: string
 ): Promise<CheckoutEligibilityResult> => {
   if (actorType === 'GUEST') {
-    // For guest checkout, maybe require config? Currently rule says active customer, but what about guest?
-    // Let's say guest might be allowed if we don't have constraints, but "closed customer checkout eligibility FAIL"
-    // "active checkout eligibility with default address PASS"
-    // So let's allow guest for now or just check profile if not guest.
+    // Guests are eligible by default from an address perspective.
+    // The checkout service is responsible for validating the provided address snapshot.
+    return { eligible: true };
   }
 
-  if (actorType !== 'GUEST') {
-    const profile = await getCustomerProfileByActorId(actorId);
-    if (profile) {
-      if (profile.status === CustomerAccountStatus.CLOSED) {
-        return { eligible: false, reason: CustomerAddressErrorCode.CLOSED_CUSTOMER_CANNOT_CHECKOUT };
-      }
-    }
+  // For registered customers, perform full checks.
+  const profile = await getCustomerProfileByActorId(actorId);
+  if (profile?.status === CustomerAccountStatus.CLOSED) {
+    return { eligible: false, reason: CustomerAddressErrorCode.CLOSED_CUSTOMER_CANNOT_CHECKOUT };
   }
 
-  // Active customer check for default address
-  // If registered customer, do they need an address?
-  // "active checkout eligibility with default address PASS"
-  // "active checkout eligibility without address FAIL"
-  if (actorType !== 'GUEST') {
-    const hasActiveShipping = addresses.some(
-      (a) => a.customerId === actorId && a.type === CustomerAddressType.SHIPPING && a.status === CustomerAddressStatus.ACTIVE && a.isDefault
-    );
-    if (!hasActiveShipping) {
-      return { eligible: false, reason: 'NO_DEFAULT_SHIPPING_ADDRESS' };
-    }
+  // Active registered customers must have a default shipping address.
+  const hasActiveShipping = addresses.some(
+    (a) => a.customerId === actorId && a.type === CustomerAddressType.SHIPPING && a.status === CustomerAddressStatus.ACTIVE && a.isDefault
+  );
+  if (!hasActiveShipping) {
+    return { eligible: false, reason: 'NO_DEFAULT_SHIPPING_ADDRESS' };
   }
 
   return { eligible: true };

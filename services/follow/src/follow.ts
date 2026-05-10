@@ -41,6 +41,37 @@ const getFollowStore = (): FollowStore => {
   return root.__followStore;
 };
 
+const getFollowTargetKey = (command: { target?: { storefrontId?: string; creatorId?: string } }) => {
+  return command.target?.creatorId || command.target?.storefrontId;
+};
+
+const followResult = (
+  command: { actorId?: string; target?: { storefrontId?: string; creatorId?: string } },
+  success: boolean,
+  follow: FollowRecord | undefined,
+  state: 'ACTIVE' | 'REMOVED' | undefined,
+  applied: boolean,
+  idempotentReplay: boolean,
+  counterDelta: 0 | 1 | -1,
+  warnings?: string[],
+  reasonCode?: string,
+  errors?: string[]
+): FollowMutationResult => ({
+  success,
+  follow,
+  state,
+  followerId: command.actorId,
+  followeeId: getFollowTargetKey(command),
+  creatorId: command.target?.creatorId,
+  storeId: command.target?.storefrontId,
+  applied,
+  idempotentReplay,
+  counterDelta,
+  reasonCode,
+  errors,
+  warnings
+});
+
 export const followCreator = async (command: FollowCreatorCommand): Promise<FollowMutationResult> => {
   const store = getFollowStore();
   const warnings: string[] = ['FOLLOW_TARGET_EXISTENCE_NOT_VERIFIED', 'IN_MEMORY_FOUNDATION_LIMITATION'];
@@ -49,10 +80,14 @@ export const followCreator = async (command: FollowCreatorCommand): Promise<Foll
   if (!command.target) return { success: false, errors: ['FOLLOW_TARGET_REQUIRED'] };
   if (command.target.targetType !== 'CREATOR_STOREFRONT') return { success: false, errors: ['INVALID_TARGET_TYPE'] };
   if (!command.target.storefrontId) return { success: false, errors: ['STOREFRONT_ID_REQUIRED'] };
+  if (command.target.storefrontId === command.actorId || command.target.creatorId === command.actorId) {
+    return followResult(command, false, undefined, undefined, false, false, 0, warnings, 'SELF_FOLLOW_BLOCKED', ['SELF_FOLLOW_BLOCKED']);
+  }
 
   if (command.idempotencyKey && store.idempotency.has(command.idempotencyKey)) {
     const existingId = store.idempotency.get(command.idempotencyKey)!;
-    return { success: true, follow: store.follows.get(existingId), warnings };
+    const follow = store.follows.get(existingId);
+    return followResult(command, true, follow, follow?.state, false, true, 0, [...warnings, 'IDEMPOTENT_REPLAY'], 'IDEMPOTENT_REPLAY');
   }
 
   // Check follow limit (foundation: max 100)
@@ -76,7 +111,7 @@ export const followCreator = async (command: FollowCreatorCommand): Promise<Foll
     } catch (e) {
       console.error('[FollowService] Risk signal failed:', e);
     }
-    return { success: false, errors: ['FOLLOW_LIMIT_EXCEEDED'] };
+    return followResult(command, false, undefined, undefined, false, false, 0, warnings, 'FOLLOW_LIMIT_EXCEEDED', ['FOLLOW_LIMIT_EXCEEDED']);
   }
 
   // Check if already following
@@ -101,7 +136,7 @@ export const followCreator = async (command: FollowCreatorCommand): Promise<Foll
       } catch (e) {
         console.error('[FollowService] Risk signal failed:', e);
       }
-      return { success: true, follow: existingFollow, warnings: [...warnings, 'ALREADY_FOLLOWING'] };
+      return followResult(command, true, existingFollow, 'ACTIVE', false, true, 0, [...warnings, 'ALREADY_FOLLOWING'], 'ALREADY_FOLLOWING');
     }
     
     // Reactivate
@@ -110,7 +145,7 @@ export const followCreator = async (command: FollowCreatorCommand): Promise<Foll
     existingFollow.updatedAt = now;
     existingFollow.removedAt = undefined;
     
-    return { success: true, follow: existingFollow, state: 'ACTIVE', warnings };
+    return followResult(command, true, existingFollow, 'ACTIVE', true, false, 1, warnings);
   }
 
   const followId = `fol_${Math.random().toString(36).substr(2, 9)}`;
@@ -136,7 +171,7 @@ export const followCreator = async (command: FollowCreatorCommand): Promise<Foll
   store.follows.set(followId, follow);
   if (command.idempotencyKey) store.idempotency.set(command.idempotencyKey, followId);
 
-  return { success: true, follow, state: 'ACTIVE', warnings };
+  return followResult(command, true, follow, 'ACTIVE', true, false, 1, warnings);
 };
 
 export const unfollowCreator = async (command: UnfollowCreatorCommand): Promise<FollowMutationResult> => {
@@ -152,11 +187,7 @@ export const unfollowCreator = async (command: UnfollowCreatorCommand): Promise<
   );
 
   if (!existingFollow || existingFollow.state === 'REMOVED') {
-    return { 
-      success: true, 
-      state: 'REMOVED', 
-      warnings: [...warnings, 'FOLLOW_ALREADY_ABSENT'] 
-    };
+    return followResult(command, true, existingFollow, 'REMOVED', false, true, 0, [...warnings, 'FOLLOW_ALREADY_ABSENT'], 'FOLLOW_ALREADY_ABSENT');
   }
 
   const now = new Date().toISOString();
@@ -164,7 +195,7 @@ export const unfollowCreator = async (command: UnfollowCreatorCommand): Promise<
   existingFollow.updatedAt = now;
   existingFollow.removedAt = now;
 
-  return { success: true, state: 'REMOVED', warnings };
+  return followResult(command, true, existingFollow, 'REMOVED', true, false, -1, warnings);
 };
 
 export const getFollowState = async (query: GetFollowStateQuery): Promise<FollowStateResponse> => {

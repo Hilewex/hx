@@ -4,5 +4,9 @@
     "outDir": "dist",
     "rootDir": "src"
   },
+  "references": [
+    { "path": "../contracts" },
+    { "path": "../config" }
+  ],
   "include": ["src/**/*"]
 }

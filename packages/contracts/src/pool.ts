@@ -1,4 +1,12 @@
 
+import type {
+  CreatorPriceSelectionResult,
+  CreatorVisiblePoolBasePriceSnapshot,
+  PoolBasePriceSnapshot,
+  PriceCorridor,
+  SupplierBasePriceSnapshot,
+} from "./pricing";
+
 export enum ProductAcceptanceStatus {
   DRAFT = "DRAFT",
   SUBMITTED = "SUBMITTED",
@@ -159,6 +167,8 @@ export enum PoolErrorCode {
   POOL_CREATOR_STORE_MEDIA_DUPLICATE = "POOL_CREATOR_STORE_MEDIA_DUPLICATE",
   POOL_CREATOR_STORE_MEDIA_NOT_FOUND = "POOL_CREATOR_STORE_MEDIA_NOT_FOUND",
   POOL_CREATOR_STORE_MEDIA_INVALID = "POOL_CREATOR_STORE_MEDIA_INVALID",
+  POOL_CREATOR_PRICE_OUT_OF_CORRIDOR = "POOL_CREATOR_PRICE_OUT_OF_CORRIDOR",
+  POOL_CREATOR_PRICE_REQUIRES_RECOMMENDED = "POOL_CREATOR_PRICE_REQUIRES_RECOMMENDED",
 }
 
 export interface PoolErrorResult {
@@ -229,9 +239,20 @@ export interface CommercialPoolProduct {
   id: string;
   status: CommercialPoolStatus;
   commercialization: CommercializationSnapshot;
+  supplierBasePriceSnapshot?: SupplierBasePriceSnapshot;
+  poolBasePriceSnapshot?: PoolBasePriceSnapshot;
+  priceCorridor?: PriceCorridor;
   bindingSnapshot?: CommercialPoolBindingSnapshot;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface CreatorVisibleCommercialPoolProduct
+  extends Omit<
+    CommercialPoolProduct,
+    "supplierBasePriceSnapshot" | "poolBasePriceSnapshot"
+  > {
+  poolBasePriceSnapshot?: CreatorVisiblePoolBasePriceSnapshot;
 }
 
 export interface CommercializeApprovedProductCommand {
@@ -315,6 +336,7 @@ export interface CreatorStoreProduct {
   isFeatured: boolean;
   creatorNote: string;
   selectedPrice: number;
+  priceSelection?: CreatorPriceSelectionResult;
   creatorMediaRefs: CreatorStoreProductMediaRef[];
   createdAt: Date;
   updatedAt: Date;

@@ -1,12 +1,31 @@
 {
+  "references": [
+    {
+      "path": "../../packages/contracts"
+    },
+    {
+      "path": "../checkout"
+    },
+    {
+      "path": "../../packages/persistence"
+    },
+    {
+      "path": "../commerce"
+    },
+    {
+      "path": "../risk"
+    }
+  ],
+
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "../../"
+    "rootDir": "./src"
   },
   "include": [
-    "src/**/*",
-    "../../packages/contracts/src/**/*",
-    "../../services/checkout/src/**/*"
+    "src/**/*"
+  ],
+  "exclude": [
+    "src/smoke-test.ts"
   ]
 }

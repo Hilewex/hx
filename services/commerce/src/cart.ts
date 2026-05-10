@@ -4,9 +4,11 @@ import {
   CartResponse, 
   AddToCartCommand, 
   UpdateCartLineCommand, 
-  RemoveCartLineCommand
+  RemoveCartLineCommand,
+  CatalogVariantProjection
 } from '@hx/contracts';
 import { resolvePrice } from '@hx/pricing';
+import { getCatalogProduct } from '@hx/catalog';
 import { stockService } from '@hx/stock';
 import { parseConfig } from '@hx/config';
 import { persistenceConfigSchema } from '@hx/persistence';
@@ -20,7 +22,7 @@ let repository: ICartRepository;
 function getRepository(): ICartRepository {
   if (repository) return repository;
 
-  const config = parseConfig(persistenceConfigSchema);
+  const config = parseConfig(persistenceConfigSchema, process.env);
   
   if (config.PERSISTENCE_MODE === 'postgres') {
     if (!config.DATABASE_URL) {
@@ -117,17 +119,45 @@ export async function addToCart(context: CartContext, command: AddToCartCommand)
       existingLine.lineTotal = existingLine.unitPrice * existingLine.quantity;
     }
   } else {
-    const isVariantRequired = command.productId.includes('variant_req');
-    if (isVariantRequired && !command.variantId) {
-       return {
-        status: 400,
-        data: { context, lines: [], summary: { totalQuantity: 0 }, errors: [{ code: 'CART_INVALID_VARIANT', message: 'Variant ID is required for this product' }] }
+    
+    const catalogResult = getCatalogProduct(command.productId);
+
+    if (catalogResult.status === 'NOT_FOUND') {
+      return {
+        status: 404,
+        data: { context, lines, summary: calculateSummary(lines), errors: [{ code: 'CART_INVALID_PRODUCT', message: 'Product not found' }] }
       };
+    }
+
+    if (catalogResult.status === 'UNAVAILABLE' || catalogResult.product?.status !== 'ACTIVE') {
+      return {
+        status: 400,
+        data: { context, lines, summary: calculateSummary(lines), errors: [{ code: 'CART_ADD_NOT_ALLOWED', message: 'Product is not available for purchase' }] }
+      };
+    }
+
+    const product = catalogResult.product;
+    // Variant validation
+    const targetVariantId = command.variantId || product.defaultVariantId;
+    if (product.variants && product.variants.length > 0) {
+        if (!targetVariantId) {
+            return {
+                status: 400,
+                data: { context, lines, summary: calculateSummary(lines), errors: [{ code: 'CART_INVALID_VARIANT', message: 'A variant must be selected for this product.' }] }
+            };
+        }
+        const isValidVariant = product.variants.some((v: CatalogVariantProjection) => v.variantId === targetVariantId);
+        if (!isValidVariant) {
+            return {
+                status: 400,
+                data: { context, lines, summary: calculateSummary(lines), errors: [{ code: 'CART_INVALID_VARIANT', message: 'The selected variant does not exist.' }] }
+            };
+        }
     }
 
     const priceResult = await resolvePrice({
       productId: command.productId,
-      variantId: command.variantId,
+      variantId: targetVariantId,
       storefrontId: command.storefrontId,
       quantity: command.quantity
     });
@@ -142,11 +172,11 @@ export async function addToCart(context: CartContext, command: AddToCartCommand)
     const newLine: CartLine = {
       lineId: randomUUID(),
       productId: command.productId,
-      variantId: command.variantId,
+      variantId: targetVariantId,
       storefrontId: command.storefrontId,
       quantity: command.quantity,
-      productName: `Simulated Product ${command.productId}`,
-      productStatus: 'ACTIVE',
+      productName: product.name, // Use actual product name
+      productStatus: product.status, // Use actual product status
       unitPrice: priceResult.price.activeUnitPrice,
       lineTotal: priceResult.price.activeUnitPrice * command.quantity,
       warnings,

@@ -1,9 +1,42 @@
 {
+  "references": [
+    {
+      "path": "../../packages/contracts"
+    },
+    {
+      "path": "../order"
+    },
+    {
+      "path": "../refund"
+    },
+    {
+      "path": "../cancel-return"
+    },
+    {
+      "path": "../finance-correction"
+    },
+    {
+      "path": "../risk"
+    },
+    {
+      "path": "../../packages/persistence"
+    },
+    {
+      "path": "../../packages/config"
+    }
+  ],
+
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
     "types": ["node"]
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

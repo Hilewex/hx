@@ -5,6 +5,12 @@ export type InteractionActorType =
   | 'SYSTEM';
 
 export type InteractionTargetType = 
+  | 'POST'
+  | 'STORY'
+  | 'VIDEO'
+  | 'QUESTION'
+  | 'ANSWER'
+  | 'MEDIA'
   | 'PRODUCT'
   | 'STORE_POST'
   | 'USER_PRODUCT_STORY'
@@ -30,9 +36,18 @@ export type InteractionVisibility =
   | 'PRIVATE'
   | 'PUBLIC_AGGREGATE_ONLY';
 
+export type InteractionTargetVisibility =
+  | 'PUBLIC'
+  | 'NOT_VISIBLE'
+  | 'PENDING'
+  | 'REJECTED'
+  | 'HIDDEN'
+  | 'REMOVED';
+
 export interface InteractionTargetRef {
   targetType: InteractionTargetType;
   targetId: string;
+  targetVisibility?: InteractionTargetVisibility;
   productId?: string;
   storefrontId?: string;
   variantId?: string;
@@ -79,6 +94,7 @@ export interface ToggleInteractionCommand {
   actorType?: InteractionActorType;
   target: InteractionTargetRef;
   actionType: InteractionActionType;
+  targetVisibility?: InteractionTargetVisibility;
   idempotencyKey?: string;
   optimisticClientMutationId?: string;
 }
@@ -87,6 +103,7 @@ export interface RemoveInteractionCommand {
   actorId: string;
   target: InteractionTargetRef;
   actionType: InteractionActionType;
+  targetVisibility?: InteractionTargetVisibility;
   idempotencyKey?: string;
 }
 
@@ -95,6 +112,7 @@ export interface ShareInteractionCommand {
   actorType?: InteractionActorType;
   target: InteractionTargetRef;
   channel?: string;
+  targetVisibility?: InteractionTargetVisibility;
   idempotencyKey?: string;
   optimisticClientMutationId?: string;
 }
@@ -119,6 +137,16 @@ export interface InteractionMutationResult {
   interaction?: InteractionRecord;
   state?: InteractionState;
   counters?: InteractionCounterSummary;
+  interactionId?: string;
+  actorId?: string;
+  targetType?: InteractionTargetType;
+  targetId?: string;
+  actionType?: InteractionActionType;
+  applied?: boolean;
+  idempotentReplay?: boolean;
+  counterDelta?: 0 | 1 | -1;
+  targetVisibilityAccepted?: boolean;
+  reasonCode?: string;
   errors?: string[];
   warnings?: string[];
 }

@@ -22,6 +22,7 @@ export type ModerationDecision =
   | 'REJECT' 
   | 'RESTRICT_VISIBILITY' 
   | 'HIDE' 
+  | 'REMOVE'
   | 'ARCHIVE' 
   | 'NO_ACTION' 
   | 'ESCALATE';
@@ -78,6 +79,7 @@ export interface ModerationCase {
   snapshots: ModerationSnapshot[];
   decision?: ModerationDecision;
   decisionNote?: string;
+  decisions?: ModerationDecisionRecord[];
   createdAt: string;
   updatedAt: string;
   reviewedAt?: string;
@@ -91,6 +93,44 @@ export interface ModerationCase {
   qaTruthMutated: false;
   interactionTruthMutated: false;
   warnings?: string[];
+}
+
+export interface ModerationDecisionActor {
+  actorId: string;
+  actorType: string;
+  role?: string;
+}
+
+export interface ModerationDecisionEvidence {
+  evidenceId: string;
+  evidenceType: string;
+  sourceType: string;
+  sourceId: string;
+  summary?: string;
+  createdAt: string;
+}
+
+export interface MakerCheckerContext {
+  makerActorId?: string;
+  checkerActorId: string;
+  submittedByActorId?: string;
+  requiresSeparateChecker: boolean;
+}
+
+export interface ModerationDecisionRecord {
+  decisionId: string;
+  caseId: string;
+  decisionType: ModerationDecision;
+  actor: ModerationDecisionActor;
+  reasonCode: ModerationReasonCode | string;
+  evidence: ModerationDecisionEvidence[];
+  makerCheckerContext?: MakerCheckerContext;
+  createdAt: string;
+  auditRecorded: boolean;
+  evidenceRecorded: boolean;
+  ownerHandoffCreated: boolean;
+  visibilityTruthMutatedByBff: false;
+  makerCheckerEnforced: boolean;
 }
 
 export interface CreateModerationCaseCommand {
@@ -107,6 +147,12 @@ export interface ReviewModerationCaseCommand {
   caseId: string;
   decision: ModerationDecision;
   note?: string;
+  actor?: ModerationDecisionActor;
+  reasonCode?: ModerationReasonCode | string;
+  evidence?: ModerationDecisionEvidence[];
+  makerCheckerContext?: MakerCheckerContext;
+  idempotencyKey?: string;
+  ownerHandoffCreated?: boolean;
 }
 
 export interface GetModerationCaseQuery {
@@ -125,7 +171,30 @@ export interface ListModerationCasesQuery {
 export interface ModerationMutationResult {
   success: boolean;
   caseId?: string;
+  decisionId?: string;
+  decisionType?: ModerationDecision;
+  actorId?: string;
+  reasonCode?: string;
+  evidenceRecorded?: boolean;
+  auditRecorded?: boolean;
+  ownerHandoffCreated?: boolean;
+  visibilityTruthMutatedByBff?: false;
+  makerCheckerEnforced?: boolean;
   warnings?: string[];
+}
+
+export interface ModerationDecisionResult extends ModerationMutationResult {
+  success: true;
+  decisionId: string;
+  caseId: string;
+  decisionType: ModerationDecision;
+  actorId: string;
+  reasonCode: string;
+  evidenceRecorded: boolean;
+  auditRecorded: boolean;
+  ownerHandoffCreated: boolean;
+  visibilityTruthMutatedByBff: false;
+  makerCheckerEnforced: boolean;
 }
 
 export interface ModerationCaseResponse {

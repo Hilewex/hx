@@ -6,5 +6,13 @@
   },
   "include": [
     "src/**/*"
+  ],
+  "references": [
+    { "path": "../catalog" },
+    { "path": "../pricing" },
+    { "path": "../stock" },
+    { "path": "../../packages/contracts" },
+    { "path": "../../packages/persistence" },
+    { "path": "../../packages/config" }
   ]
 }

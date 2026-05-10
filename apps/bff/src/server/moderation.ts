@@ -7,7 +7,12 @@ import {
 import { approvePostModerationResult, rejectPostModerationResult } from '@hx/post';
 import { approveReviewModerationResult, rejectReviewModerationResult } from '@hx/review';
 import { approveUgcModerationResult, rejectUgcModerationResult } from '@hx/ugc';
-import { approveQuestionModerationResult, rejectQuestionModerationResult } from '@hx/question-answer';
+import {
+  approveAnswerModerationResult,
+  approveQuestionModerationResult,
+  rejectAnswerModerationResult,
+  rejectQuestionModerationResult
+} from '@hx/question-answer';
 import * as response from './response';
 import { requireAuthenticated, requireModerationOperator, requireAdminOrOperator } from './guards';
 
@@ -34,7 +39,38 @@ export const handleReviewModerationCase = async (context: any, body: any) => {
     if (!body.caseId || !body.decision) {
       return response.badRequest('MISSING_FIELDS', 'Missing caseId or decision');
     }
-    const result = await reviewModerationCase(body);
+    const caseResponseBeforeDecision = await getModerationCase({ caseId: body.caseId });
+    const caseBeforeDecision = caseResponseBeforeDecision?.data;
+    const targetType = caseBeforeDecision?.target?.targetType;
+    const supportsOwnerHandoff = ['STORE_POST', 'REVIEW', 'UGC', 'QA_QUESTION', 'QA_ANSWER'].includes(targetType);
+    const actorId = context.actorId;
+    const actorType = context.role;
+    const decisionCommand = {
+      ...body,
+      actor: {
+        actorId,
+        actorType,
+        role: context.role,
+      },
+      reasonCode: body.reasonCode || 'UNKNOWN',
+      evidence: Array.isArray(body.evidence) && body.evidence.length > 0
+        ? body.evidence
+        : [{
+            evidenceId: `bff_mod_evidence_${Date.now()}`,
+            evidenceType: 'MODERATOR_NOTE',
+            sourceType: 'BFF_CONTEXT',
+            sourceId: body.caseId,
+            summary: body.note || body.reasonCode || 'Moderation decision submitted through protected BFF route',
+            createdAt: new Date().toISOString(),
+          }],
+      makerCheckerContext: body.makerCheckerContext || {
+        checkerActorId: actorId,
+        submittedByActorId: caseBeforeDecision?.target?.ownerActorId,
+        requiresSeparateChecker: true,
+      },
+      ownerHandoffCreated: supportsOwnerHandoff && (body.decision === 'APPROVE' || body.decision === 'REJECT'),
+    };
+    const result = await reviewModerationCase(decisionCommand);
 
     // [HARDENING-06C1] Moderation Decision Handoff: Trigger target owner transition if needed
     if (result.success && result.caseId) {
@@ -61,6 +97,9 @@ export const handleReviewModerationCase = async (context: any, body: any) => {
             } else if (targetType === 'QA_QUESTION') {
               if (decision === 'APPROVE') await approveQuestionModerationResult(targetId);
               else await rejectQuestionModerationResult(targetId, note);
+            } else if (targetType === 'QA_ANSWER') {
+              if (decision === 'APPROVE') await approveAnswerModerationResult(targetId);
+              else await rejectAnswerModerationResult(targetId, note);
             }
           } catch (handoffError) {
             console.error('[BFF] Moderation handoff delegation failed:', handoffError);
@@ -74,6 +113,17 @@ export const handleReviewModerationCase = async (context: any, body: any) => {
   } catch (error: any) {
     if (error.message === 'MODERATION_CASE_NOT_FOUND') {
       return response.notFound('MODERATION_CASE_NOT_FOUND', 'Moderation case not found');
+    }
+    if (error.message === 'MODERATION_DECISION_IDEMPOTENCY_CONFLICT') {
+      return response.conflict('MODERATION_DECISION_IDEMPOTENCY_CONFLICT', 'Same idempotency key was reused with a different moderation decision payload');
+    }
+    if (
+      error.message === 'MODERATION_DECISION_ACTOR_REQUIRED' ||
+      error.message === 'MODERATION_DECISION_REASON_REQUIRED' ||
+      error.message === 'MODERATION_DECISION_EVIDENCE_REQUIRED' ||
+      error.message === 'MODERATION_MAKER_CHECKER_SAME_ACTOR_FORBIDDEN'
+    ) {
+      return response.badRequest(error.message, 'Moderation decision failed validation');
     }
     return response.internalError();
   }

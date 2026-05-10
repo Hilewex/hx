@@ -12,18 +12,21 @@ importers:
         specifier: ^10.1.0
         version: 10.1.0
     devDependencies:
-      '@types/jest':
-        specifier: ^30.0.0
-        version: 30.0.0
       '@types/node':
         specifier: ^25.6.0
         version: 25.6.0
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.6.1
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
 
   apps/bff:
     dependencies:
+      '@hx/admin':
+        specifier: workspace:*
+        version: link:../../services/admin
       '@hx/analytics':
         specifier: workspace:*
         version: link:../../services/analytics
@@ -69,6 +72,9 @@ importers:
       '@hx/customer-support':
         specifier: workspace:*
         version: link:../../services/customer-support
+      '@hx/finance':
+        specifier: workspace:*
+        version: link:../../services/finance
       '@hx/finance-correction':
         specifier: workspace:*
         version: link:../../services/finance-correction
@@ -108,6 +114,9 @@ importers:
       '@hx/post':
         specifier: workspace:*
         version: link:../../services/post
+      '@hx/provider-callback':
+        specifier: workspace:*
+        version: link:../../services/provider-callback
       '@hx/question-answer':
         specifier: workspace:*
         version: link:../../services/question-answer
@@ -275,6 +284,13 @@ importers:
       zod:
         specifier: ^3.22.4
         version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.39
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
 
   packages/contracts:
     devDependencies:
@@ -317,13 +333,30 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
-  packages/shared-kernel: {}
+  packages/shared-kernel:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.39
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
 
   packages/testing: {}
 
   packages/types: {}
 
   packages/ui: {}
+
+  services/admin:
+    dependencies:
+      '@hx/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
 
   services/analytics:
     dependencies:
@@ -403,6 +436,9 @@ importers:
 
   services/checkout:
     dependencies:
+      '@hx/catalog':
+        specifier: workspace:*
+        version: link:../catalog
       '@hx/commerce':
         specifier: workspace:*
         version: link:../commerce
@@ -412,6 +448,9 @@ importers:
       '@hx/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@hx/customer-address':
+        specifier: workspace:*
+        version: link:../customer-address
       '@hx/persistence':
         specifier: workspace:*
         version: link:../../packages/persistence
@@ -434,6 +473,9 @@ importers:
 
   services/commerce:
     dependencies:
+      '@hx/catalog':
+        specifier: workspace:*
+        version: link:../catalog
       '@hx/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -854,6 +896,19 @@ importers:
         specifier: workspace:*
         version: link:../../packages/contracts
 
+  services/provider-callback:
+    dependencies:
+      '@hx/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@hx/persistence':
+        specifier: workspace:*
+        version: link:../../packages/persistence
+    devDependencies:
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+
   services/question-answer:
     dependencies:
       '@hx/contracts':
@@ -866,7 +921,11 @@ importers:
         specifier: workspace:*
         version: link:../risk
 
-  services/ranking: {}
+  services/ranking:
+    dependencies:
+      '@hx/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
 
   services/refund:
     dependencies:

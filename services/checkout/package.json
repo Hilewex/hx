@@ -13,7 +13,9 @@
     "@hx/stock": "workspace:*",
     "@hx/risk": "workspace:*",
     "@hx/persistence": "workspace:*",
-    "@hx/config": "workspace:*"
+    "@hx/config": "workspace:*",
+    "@hx/customer-address": "workspace:*",
+    "@hx/catalog": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

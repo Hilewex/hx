@@ -6,8 +6,8 @@ export async function handleGetOrderOpsOverview(context: any, query: any) {
   try {
     const typedQuery: OrderOpsContextQuery = {
       orderId: query.orderId,
-      actorType: query.actorType as SupportActorType,
-      actorId: query.actorId,
+      actorType: context?.role as SupportActorType | undefined,
+      actorId: context?.actorId || context?.sessionId,
       includeSupport: query.includeSupport === 'true',
       includeRisk: query.includeRisk === 'true'
     };

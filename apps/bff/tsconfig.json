@@ -1,4 +1,151 @@
 {
+  "references": [
+    {
+      "path": "../../services/analytics"
+    },
+    {
+      "path": "../../services/auth"
+    },
+    {
+      "path": "../../services/cancel-return"
+    },
+    {
+      "path": "../../services/catalog"
+    },
+    {
+      "path": "../../services/category"
+    },
+    {
+      "path": "../../services/checkout"
+    },
+    {
+      "path": "../../services/commerce"
+    },
+    {
+      "path": "../../packages/config"
+    },
+    {
+      "path": "../../packages/contracts"
+    },
+    {
+      "path": "../../services/customer"
+    },
+    {
+      "path": "../../services/customer-address"
+    },
+    {
+      "path": "../../services/customer-contribution"
+    },
+    {
+      "path": "../../services/customer-social"
+    },
+    {
+      "path": "../../services/customer-reward"
+    },
+    {
+      "path": "../../services/customer-support"
+    },
+    {
+      "path": "../../services/finance"
+    },
+    {
+      "path": "../../services/finance-correction"
+    },
+    {
+      "path": "../../services/follow"
+    },
+    {
+      "path": "../../services/interaction"
+    },
+    {
+      "path": "../../services/media"
+    },
+    {
+      "path": "../../services/moderation"
+    },
+    {
+      "path": "../../services/notification"
+    },
+    {
+      "path": "../../packages/observability"
+    },
+    {
+      "path": "../../services/order"
+    },
+    {
+      "path": "../../services/order-ops"
+    },
+    {
+      "path": "../../services/payment"
+    },
+    {
+      "path": "../../services/payout"
+    },
+    {
+      "path": "../../services/provider-callback"
+    },
+    {
+      "path": "../../services/pool"
+    },
+    {
+      "path": "../../services/post"
+    },
+    {
+      "path": "../../services/question-answer"
+    },
+    {
+      "path": "../../services/refund"
+    },
+    {
+      "path": "../../services/review"
+    },
+    {
+      "path": "../../services/risk"
+    },
+    {
+      "path": "../../services/search"
+    },
+    {
+      "path": "../../services/storefront"
+    },
+    {
+      "path": "../../services/settlement"
+    },
+    {
+      "path": "../../packages/shared-kernel"
+    },
+    {
+      "path": "../../services/shipment"
+    },
+    {
+      "path": "../../services/store-message"
+    },
+    {
+      "path": "../../services/store-post"
+    },
+    {
+      "path": "../../services/store-story"
+    },
+    {
+      "path": "../../services/story"
+    },
+    {
+      "path": "../../services/supplier-management"
+    },
+    {
+      "path": "../../services/support"
+    },
+    {
+      "path": "../../packages/types"
+    },
+    {
+      "path": "../../services/ugc"
+    },
+    {
+      "path": "../../packages/ui"
+    }
+  ],
+
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
@@ -7,10 +154,12 @@
       "@hx/question-answer": ["../../services/question-answer/src"],
       "@hx/review": ["../../services/review/src"],
       "@hx/notification": ["../../services/notification/src"],
-      "@hx/ugc": ["../../services/ugc/src"]
+      "@hx/ugc": ["../../services/ugc/src"],
+      "@hx/customer-support": ["../../services/customer-support/src"],
+      "@hx/supplier-management": ["../../services/supplier-management/src"]
     },
     "outDir": "./dist",
-    "rootDir": "../../.."
+    "rootDir": "."
   },
   "include": [
     "src/**/*"

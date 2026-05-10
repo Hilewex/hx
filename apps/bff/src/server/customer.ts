@@ -1,6 +1,16 @@
 
 import { Router } from 'express';
-import * as CustomerService from '../../../../services/customer/src';
+import { 
+    checkCustomerCapability,
+    createCustomerProfile,
+    updateCustomerProfile,
+    getCustomerProfile,
+    getCustomerProfileByActorId,
+    listCustomerProfiles,
+    suspendCustomerProfile,
+    reactivateCustomerProfile,
+    closeCustomerProfile
+} from '@hx/customer';
 import { withGuard, requireCustomer, requireAdminOrOperator, requireSelfOrAdmin, GuardResult } from './guards';
 
 const router: Router = Router();
@@ -26,7 +36,7 @@ const selfCustomerGuard = withGuard((context, req) => {
 router.post('/capability/check', guestOrCustomerGuard, async (req: any, res: any) => {
     try {
         const context = req.context;
-        const result = await CustomerService.checkCustomerCapability({
+        const result = await checkCustomerCapability({
             capability: req.body.capability,
             context: { actorId: context.actorId || 'guest', actorType: context.role },
         });
@@ -41,9 +51,9 @@ router.post('/profile', customerGuard, async (req: any, res: any) => {
     console.log('[BFF-CUSTOMER] POST /customer/profile received');
     try {
         const actorId = req.context.actorId || 'guest';
-        console.log(`[BFF-CUSTOMER] Calling CustomerService.createCustomerProfile with actorId: ${actorId}`);
-        const result = await CustomerService.createCustomerProfile({ ...req.body, actorId });
-        console.log('[BFF-CUSTOMER] CustomerService.createCustomerProfile returned:', result);
+        console.log(`[BFF-CUSTOMER] Calling createCustomerProfile with actorId: ${actorId}`);
+        const result = await createCustomerProfile({ ...req.body, actorId });
+        console.log('[BFF-CUSTOMER] createCustomerProfile returned:', result);
         res.status(201).json({ success: true, data: result });
     } catch (error: any) {
         console.error('[BFF-CUSTOMER] Error in POST /customer/profile:', error);
@@ -55,7 +65,7 @@ router.post('/profile', customerGuard, async (req: any, res: any) => {
 router.patch('/profile/:customerProfileId', selfCustomerGuard, async (req: any, res: any) => {
     try {
         const context = req.context;
-        const result = await CustomerService.updateCustomerProfile(req.params.customerProfileId, context.actorId || 'guest', context.role, req.body);
+        const result = await updateCustomerProfile(req.params.customerProfileId, context.actorId || 'guest', context.role, req.body);
         res.json({ success: true, data: result });
     } catch (error: any) {
         res.status(400).json({ success: false, error: { code: error.message } });
@@ -65,7 +75,7 @@ router.patch('/profile/:customerProfileId', selfCustomerGuard, async (req: any, 
 // GET /customer/profile/:customerProfileId
 router.get('/profile/:customerProfileId', selfCustomerGuard, async (req: any, res: any) => {
     try {
-        const profile = await CustomerService.getCustomerProfile(req.params.customerProfileId);
+        const profile = await getCustomerProfile(req.params.customerProfileId);
         if (!profile) {
             return res.status(404).json({ success: false, error: { code: 'CUSTOMER_NOT_FOUND' } });
         }
@@ -79,7 +89,7 @@ router.get('/profile/:customerProfileId', selfCustomerGuard, async (req: any, re
 router.get('/me', customerGuard, async (req: any, res: any) => {
     try {
         const actorId = req.context.actorId || 'guest';
-        const profile = await CustomerService.getCustomerProfileByActorId(actorId);
+        const profile = await getCustomerProfileByActorId(actorId);
         if (!profile) {
             return res.status(404).json({ success: false, error: { code: 'CUSTOMER_NOT_FOUND' } });
         }
@@ -93,7 +103,7 @@ router.get('/me', customerGuard, async (req: any, res: any) => {
 router.get('/admin/profiles', adminGuard, async (req: any, res: any) => {
     try {
         const actorType = req.context.role;
-        const profiles = await CustomerService.listCustomerProfiles(actorType);
+        const profiles = await listCustomerProfiles(actorType);
         res.json({ success: true, data: profiles });
     } catch (error: any) {
         res.status(400).json({ success: false, error: { code: error.message } });
@@ -103,7 +113,7 @@ router.get('/admin/profiles', adminGuard, async (req: any, res: any) => {
 // GET /customer/admin/profiles/:customerProfileId
 router.get('/admin/profiles/:customerProfileId', adminGuard, async (req: any, res: any) => {
     try {
-        const profile = await CustomerService.getCustomerProfile(req.params.customerProfileId);
+        const profile = await getCustomerProfile(req.params.customerProfileId);
         if (!profile) {
             return res.status(404).json({ success: false, error: { code: 'CUSTOMER_NOT_FOUND' } });
         }
@@ -117,7 +127,7 @@ router.get('/admin/profiles/:customerProfileId', adminGuard, async (req: any, re
 router.post('/admin/profiles/:customerProfileId/suspend', adminGuard, async (req: any, res: any) => {
     try {
         const actorType = req.context.role;
-        const result = await CustomerService.suspendCustomerProfile(req.params.customerProfileId, actorType, req.body);
+        const result = await suspendCustomerProfile(req.params.customerProfileId, actorType, req.body);
         res.json({ success: true, data: result });
     } catch (error: any) {
         res.status(400).json({ success: false, error: { code: error.message } });
@@ -128,7 +138,7 @@ router.post('/admin/profiles/:customerProfileId/suspend', adminGuard, async (req
 router.post('/admin/profiles/:customerProfileId/reactivate', adminGuard, async (req: any, res: any) => {
     try {
         const actorType = req.context.role;
-        const result = await CustomerService.reactivateCustomerProfile(req.params.customerProfileId, actorType, req.body);
+        const result = await reactivateCustomerProfile(req.params.customerProfileId, actorType, req.body);
         res.json({ success: true, data: result });
     } catch (error: any) {
         res.status(400).json({ success: false, error: { code: error.message } });
@@ -139,7 +149,7 @@ router.post('/admin/profiles/:customerProfileId/reactivate', adminGuard, async (
 router.post('/admin/profiles/:customerProfileId/close', adminGuard, async (req: any, res: any) => {
     try {
         const actorType = req.context.role;
-        const result = await CustomerService.closeCustomerProfile(req.params.customerProfileId, actorType, req.body);
+        const result = await closeCustomerProfile(req.params.customerProfileId, actorType, req.body);
         res.json({ success: true, data: result });
     } catch (error: any) {
         res.status(400).json({ success: false, error: { code: error.message } });

@@ -17,6 +17,11 @@ export type RefundReasonType =
   | 'OPERATIONAL_ADJUSTMENT'
   | 'MANUAL_REVIEW';
 
+export type RefundCouponSponsorReversalStatus =
+  | 'CALCULATED'
+  | 'BLOCKED'
+  | 'CONFLICT';
+
 export interface CreateRefundFromCancelReturnCommand {
   cancelReturnRequestId: string;
   idempotencyKey?: string;
@@ -34,6 +39,74 @@ export interface RefundLine {
   quantity: number;
   amount: number;
   currency: string;
+}
+
+export interface RefundCouponSponsorReversal {
+  reversalId: string;
+  refundId: string;
+  refundLineId?: string;
+  lineId?: string;
+  cartLineId?: string;
+  orderLineId?: string;
+  discountSnapshotId?: string;
+  allocationId?: string;
+  discountKind: 'COUPON' | 'CAMPAIGN';
+  sponsorType: 'PLATFORM' | 'CREATOR';
+  sponsorId?: string;
+  reversedAmount: number;
+  currency: string;
+  reversalReason: string;
+  idempotencyKey: string;
+  createdAt: string;
+}
+
+export interface RefundCouponSponsorReversalSummary {
+  platformReversalAmount: number;
+  creatorReversalAmount: number;
+  supplierReversalAmount: 0;
+  brandReversalAmount: 0;
+  totalReversalAmount: number;
+  settlementAdjustedCreated: false;
+  payoutReversalCreated: false;
+  ledgerEntryCreated: false;
+  orderStateMutated: false;
+  paymentStateMutated: false;
+  refundStateMutated: false;
+}
+
+export interface RefundCouponSponsorReversalCommand {
+  refundId: string;
+  refundLines: Array<{
+    refundLineId?: string;
+    lineId?: string;
+    cartLineId?: string;
+    orderLineId?: string;
+    refundAmount?: number;
+    originalLineAmount?: number;
+    currency: string;
+  }>;
+  discountLineAllocations: Array<{
+    allocationId: string;
+    discountSnapshotId: string;
+    discountKind: 'COUPON' | 'CAMPAIGN';
+    sponsorType?: 'PLATFORM' | 'SUPPLIER' | 'CREATOR' | 'BRAND' | 'MIXED';
+    sponsorId?: string;
+    lineId: string;
+    cartLineId?: string;
+    orderLineId?: string;
+    allocatedAmount: number;
+    currency: string;
+  }>;
+  idempotencyKey: string;
+  reversalReason?: string;
+}
+
+export interface RefundCouponSponsorReversalResult {
+  status: RefundCouponSponsorReversalStatus;
+  reversals: RefundCouponSponsorReversal[];
+  summary: RefundCouponSponsorReversalSummary;
+  errors: string[];
+  idempotencyKey: string;
 }
 
 export interface RefundAmountSummary {

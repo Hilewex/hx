@@ -34,7 +34,7 @@ export const searchConfigSchema = createServiceConfig({
 });
 
 export function resolveSearchConfig(env?: Record<string, string | undefined>): SearchServiceConfig {
-  const parsed = parseConfig(searchConfigSchema, env);
+  const parsed = parseConfig(searchConfigSchema, env ?? process.env);
   return {
     ...parsed,
     OPENSEARCH_NODE: parsed.OPENSEARCH_NODE || parsed.OPENSEARCH_URL

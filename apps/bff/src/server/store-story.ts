@@ -16,10 +16,10 @@ export interface StoreStoryActorContext {
 }
 
 export function extractStoreStoryActorContext(
-  req: http.IncomingMessage
+  req: http.IncomingMessage & { context?: { actorId?: string; role?: string } }
 ): StoreStoryActorContext | null {
-  const actorId = req.headers['x-actor-id'];
-  const actorType = req.headers['x-actor-type'];
+  const actorId = req.context?.actorId;
+  const actorType = req.context?.role;
   const storefrontId = req.headers['x-storefront-id'];
 
   if (

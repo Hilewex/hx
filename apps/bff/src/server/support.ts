@@ -5,10 +5,20 @@ import {
   transitionSupportTicket, 
   addSupportTicketMessage 
 } from '@hx/support';
+import { checkSupportVisibility, validateSupportProtectedAction } from '@hx/customer-support';
+import { SupportProtectedActionRequest, SupportVisibilityRequest } from '@hx/contracts';
 import * as response from './response';
 
+function resolveSupportActor(context: any) {
+  return {
+    actorType: context?.role,
+    actorId: context?.actorId || context?.sessionId,
+  };
+}
+
 export async function handleCreateSupportTicket(context: any, body: any) {
-  const { actorType, actorId, category, subtopic, title, description, channel, context: ticketContext, idempotencyKey } = body;
+  const { category, subtopic, title, description, channel, context: ticketContext, idempotencyKey } = body;
+  const { actorType, actorId } = resolveSupportActor(context);
 
   if (!actorType || !actorId) {
     return response.badRequest('INVALID_SUPPORT_ACTOR', 'Actor type and ID are required');
@@ -38,7 +48,8 @@ export async function handleCreateSupportTicket(context: any, body: any) {
 }
 
 export async function handleListSupportTickets(context: any, query: any) {
-  const { actorType, actorId, status, category, limit, cursor } = query;
+  const { status, category, limit, cursor } = query;
+  const { actorType, actorId } = resolveSupportActor(context);
 
   if (!actorType || !actorId) {
     return response.badRequest('INVALID_SUPPORT_ACTOR', 'Actor type and ID are required');
@@ -67,7 +78,8 @@ export async function handleGetSupportTicket(context: any, ticketId: string) {
 }
 
 export async function handleTransitionSupportTicket(context: any, body: any) {
-  const { ticketId, targetStatus, actorType, actorId, reasonCode, note } = body;
+  const { ticketId, targetStatus, reasonCode, note } = body;
+  const { actorType, actorId } = resolveSupportActor(context);
 
   const result = await transitionSupportTicket({
     ticketId,
@@ -87,7 +99,8 @@ export async function handleTransitionSupportTicket(context: any, body: any) {
 }
 
 export async function handleAddSupportTicketMessage(context: any, body: any) {
-  const { ticketId, authorType, authorId, body: messageBody, isInternalNote } = body;
+  const { ticketId, body: messageBody, isInternalNote } = body;
+  const { actorType: authorType, actorId: authorId } = resolveSupportActor(context);
 
   const result = await addSupportTicketMessage({
     ticketId,
@@ -105,4 +118,142 @@ export async function handleAddSupportTicketMessage(context: any, body: any) {
   }
 
   return response.ok(result);
+}
+
+export async function handleSupportProtectedActionValidate(
+  context: any,
+  reqBody: any,
+  headers: Record<string, string | string[] | undefined>
+) {
+  try {
+    const payload = reqBody as SupportProtectedActionRequest;
+    const authenticatedActorId = context?.isAuthenticated ? context.actorId : undefined;
+    const authenticatedActorRole = context?.isAuthenticated ? context.role : undefined;
+    const headerActorId = headers['x-actor-id'] as string | undefined;
+    const headerActorRole = headers['x-actor-role'] as string | undefined;
+
+    const actorId = authenticatedActorId || headerActorId || payload.actorId;
+    const actorRole = authenticatedActorRole || headerActorRole || payload.actorRole;
+
+    if (payload.actorId && actorId && payload.actorId !== actorId) {
+      const result = validateSupportProtectedAction({
+        ...payload,
+        actorId,
+        actorRole: actorRole || payload.actorRole
+      });
+      return {
+        status: 403,
+        body: {
+          ...result,
+          success: false,
+          error: 'Role spoofing blocked',
+          evidence: {
+            ...result.evidence,
+            roleSpoofingBlocked: true,
+            decision: 'REJECTED'
+          }
+        }
+      };
+    }
+
+    if (payload.actorRole && actorRole && payload.actorRole !== actorRole) {
+      const result = validateSupportProtectedAction({
+        ...payload,
+        actorId,
+        actorRole
+      });
+      return {
+        status: 403,
+        body: {
+          ...result,
+          success: false,
+          error: 'Role spoofing blocked',
+          evidence: {
+            ...result.evidence,
+            roleSpoofingBlocked: true,
+            decision: 'REJECTED'
+          }
+        }
+      };
+    }
+
+    const result = validateSupportProtectedAction({
+      ...payload,
+      actorId,
+      actorRole
+    });
+
+    return { status: result.success ? 200 : 403, body: result };
+  } catch {
+    return { status: 500, body: { success: false, error: 'Internal Server Error' } };
+  }
+}
+
+export async function handleSupportVisibilityCheck(
+  context: any,
+  reqBody: any,
+  headers: Record<string, string | string[] | undefined>
+) {
+  try {
+    const payload = reqBody as SupportVisibilityRequest;
+    const authenticatedActorId = context?.isAuthenticated ? context.actorId : undefined;
+    const authenticatedActorRole = context?.isAuthenticated ? context.role : undefined;
+    const headerActorId = headers['x-actor-id'] as string | undefined;
+    const headerActorRole = headers['x-actor-role'] as string | undefined;
+
+    const actorId = authenticatedActorId || headerActorId || payload.actorId;
+    const actorRole = authenticatedActorRole || headerActorRole || payload.actorRole;
+
+    if (payload.actorId && actorId && payload.actorId !== actorId) {
+      const result = checkSupportVisibility({
+        ...payload,
+        actorId,
+        actorRole: actorRole || payload.actorRole
+      });
+      return {
+        status: 403,
+        body: {
+          ...result,
+          success: false,
+          error: 'Role spoofing blocked',
+          evidence: {
+            ...result.evidence,
+            roleSpoofingBlocked: true,
+            decision: 'REJECTED'
+          }
+        }
+      };
+    }
+
+    if (payload.actorRole && actorRole && payload.actorRole !== actorRole) {
+      const result = checkSupportVisibility({
+        ...payload,
+        actorId,
+        actorRole
+      });
+      return {
+        status: 403,
+        body: {
+          ...result,
+          success: false,
+          error: 'Role spoofing blocked',
+          evidence: {
+            ...result.evidence,
+            roleSpoofingBlocked: true,
+            decision: 'REJECTED'
+          }
+        }
+      };
+    }
+
+    const result = checkSupportVisibility({
+      ...payload,
+      actorId,
+      actorRole
+    });
+
+    return { status: result.success ? 200 : 403, body: result };
+  } catch {
+    return { status: 500, body: { success: false, error: 'Internal Server Error' } };
+  }
 }

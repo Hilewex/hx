@@ -19,8 +19,10 @@ export const socialModerationSmoke: SmokeRunner = {
       const adminToken = issueDevAuthToken('admin-1', 'ADMIN');
 
       // Helper to find a case
-      const findCase = async (targetId: string) => {
-        const res = await fetch(`${baseUrl}/moderation/list`, {
+      const findCase = async (targetId: string, targetType?: string) => {
+        const params = new URLSearchParams({ limit: '100' });
+        if (targetType) params.set('targetType', targetType);
+        const res = await fetch(`${baseUrl}/moderation/list?${params.toString()}`, {
           headers: { 'Authorization': `Bearer ${adminToken}` }
         });
         const cases = (await json(res)).data.items;
@@ -55,7 +57,8 @@ export const socialModerationSmoke: SmokeRunner = {
       if (postList1.some((p: any) => p.postId === postId)) return { result: 'FAIL', message: 'Pending Post visible in public list' };
 
       // Approve it
-      const postCase = await findCase(postId);
+      const postCase = await findCase(postId, 'STORE_POST');
+      if (!postCase?.caseId) return { result: 'FAIL', message: 'Moderation case for Post not found' };
       await moderate(postCase.caseId, 'APPROVE');
 
       // Public list should show it
@@ -78,7 +81,8 @@ export const socialModerationSmoke: SmokeRunner = {
       if (revList1.some((r: any) => r.reviewId === reviewId)) return { result: 'FAIL', message: 'Pending Review visible in public list' };
 
       // Reject it
-      const reviewCase = await findCase(reviewId);
+      const reviewCase = await findCase(reviewId, 'REVIEW');
+      if (!reviewCase?.caseId) return { result: 'FAIL', message: 'Moderation case for Review not found' };
       await moderate(reviewCase.caseId, 'REJECT');
 
       // Public list should still not show it
@@ -101,7 +105,8 @@ export const socialModerationSmoke: SmokeRunner = {
       if (ugcList1.some((u: any) => u.ugcId === ugcId)) return { result: 'FAIL', message: 'Pending UGC visible in public list' };
 
       // Approve it
-      const ugcCase = await findCase(ugcId);
+      const ugcCase = await findCase(ugcId, 'UGC');
+      if (!ugcCase?.caseId) return { result: 'FAIL', message: 'Moderation case for UGC not found' };
       await moderate(ugcCase.caseId, 'APPROVE');
 
       // Public list should show it
@@ -117,6 +122,7 @@ export const socialModerationSmoke: SmokeRunner = {
         },
         body: JSON.stringify({ productTag: { productId }, body: 'Question' })
       });
+      if (!createQaRes.ok) return { result: 'FAIL', message: `QA question create failed: ${createQaRes.status}` };
       const questionId = (await json(createQaRes)).data.question.questionId;
 
       // Public list should not show it
@@ -124,7 +130,8 @@ export const socialModerationSmoke: SmokeRunner = {
       if (qaList1.some((q: any) => q.questionId === questionId)) return { result: 'FAIL', message: 'Pending Question visible in public list' };
 
       // Reject it
-      const qaCase = await findCase(questionId);
+      const qaCase = await findCase(questionId, 'QA_QUESTION');
+      if (!qaCase?.caseId) return { result: 'FAIL', message: 'Moderation case for QA question not found' };
       await moderate(qaCase.caseId, 'REJECT');
 
       // Public list should still not show it

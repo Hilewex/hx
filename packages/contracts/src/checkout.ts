@@ -1,3 +1,5 @@
+import type { CheckoutDiscountInput, CheckoutDiscountSnapshot } from './coupon';
+
 export type CheckoutState = 
   | 'STARTED'
   | 'VALIDATING'
@@ -35,11 +37,28 @@ export interface CheckoutSummary {
   currency: string;
 }
 
+
+export interface CheckoutAddressSnapshot {
+  kind: 'REGISTERED_ADDRESS' | 'GUEST_ADDRESS';
+  addressId?: string;
+  recipientName?: string;
+  phone?: string;
+  city?: string;
+  district?: string;
+  addressLine?: string;
+  country?: string;
+  postalCode?: string;
+}
+
 export interface StartCheckoutCommand {
   cartContext: {
     actorType: 'GUEST' | 'CUSTOMER';
     actorId: string;
   };
+  addressSnapshot?: CheckoutAddressSnapshot;
+  couponCode?: string;
+  campaignId?: string;
+  discountInputs?: CheckoutDiscountInput[];
 }
 
 export interface CheckoutReviewResponse {
@@ -54,4 +73,6 @@ export interface CheckoutReviewResponse {
   summary: CheckoutSummary;
   errors: string[];
   warnings: string[];
+  addressSnapshot?: CheckoutAddressSnapshot;
+  discountSnapshots?: CheckoutDiscountSnapshot[];
 }

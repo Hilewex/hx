@@ -6,11 +6,11 @@ import { checkCustomerContributionEligibility } from '@hx/customer-contribution'
 
 export default async function customerContributionRouter(req: any, res: any, next: any) {
   if (req.url === '/customer/contribution-eligibility/check' && req.method === 'POST') {
-    const actorId = req.headers['x-actor-id'] as string;
-    const actorType = req.headers['x-actor-type'] as string;
+    const actorId = req.context?.actorId || req.context?.sessionId;
+    const actorType = req.context?.role;
 
     if (!actorId || !actorType) {
-      return res.status(401).json({ error: 'Unauthorized: Missing actor headers' });
+      return res.status(401).json({ error: 'Unauthorized: missing actor context' });
     }
 
     const { context, contributionType } = req.body as CheckCustomerContributionEligibilityCommand;
@@ -24,7 +24,7 @@ export default async function customerContributionRouter(req: any, res: any, nex
       return res.status(400).json({ error: 'Bad Request: Invalid contributionType' });
     }
 
-    // Override actor in context with headers for security
+    // Override actor in context with authenticated BFF context for security.
     const secureContext = {
       ...context,
       actorId,

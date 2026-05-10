@@ -1,7 +1,7 @@
 import { 
   ModerationCase, 
   ListModerationCasesQuery,
-  ModerationSnapshot
+  ModerationDecisionResult
 } from '@hx/contracts';
 import { query } from '@hx/persistence';
 import { IModerationRepository } from './interface';
@@ -104,5 +104,23 @@ export class PostgresModerationRepository implements IModerationRepository {
     // Ensure table exists (simple approach for foundation)
     await query('CREATE TABLE IF NOT EXISTS _idempotency (key TEXT PRIMARY KEY, case_id TEXT NOT NULL)');
     await query('INSERT INTO _idempotency (key, case_id) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING', [key, caseId]);
+  }
+
+  async findDecisionByIdempotencyKey(key: string): Promise<{ fingerprint: string; result: ModerationDecisionResult } | null> {
+    await query('CREATE TABLE IF NOT EXISTS _moderation_decision_idempotency (key TEXT PRIMARY KEY, fingerprint TEXT NOT NULL, result JSONB NOT NULL)');
+    const res = await query('SELECT fingerprint, result FROM _moderation_decision_idempotency WHERE key = $1', [key]);
+    if (res.rowCount === 0) return null;
+    return {
+      fingerprint: res.rows[0].fingerprint,
+      result: res.rows[0].result as ModerationDecisionResult,
+    };
+  }
+
+  async saveDecisionIdempotencyKey(key: string, fingerprint: string, result: ModerationDecisionResult): Promise<void> {
+    await query('CREATE TABLE IF NOT EXISTS _moderation_decision_idempotency (key TEXT PRIMARY KEY, fingerprint TEXT NOT NULL, result JSONB NOT NULL)');
+    await query(
+      'INSERT INTO _moderation_decision_idempotency (key, fingerprint, result) VALUES ($1, $2, $3) ON CONFLICT (key) DO NOTHING',
+      [key, fingerprint, JSON.stringify(result)]
+    );
   }
 }

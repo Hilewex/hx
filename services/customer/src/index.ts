@@ -50,7 +50,7 @@ export async function getCustomerProfile(id: string): Promise<any> {
 }
 
 export async function getCustomerProfileByActorId(actorId: string): Promise<any> {
-    return null; // Mock
+    return customerService.getProfile(actorId);
 }
 
 export async function listCustomerProfiles(actorType: string): Promise<any> {

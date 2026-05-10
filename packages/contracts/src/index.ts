@@ -11,6 +11,7 @@ export * from './actions';
 export * from './catalog';
 
 export * from './cart';
+export * from './coupon';
 export * from './pricing';
 export * from './stock';
 export * from './checkout';
@@ -57,3 +58,10 @@ export * from './customer-social';
 export * from './customer-reward';
 export * from './customer-support';
 export * from './provider';
+export * from './finance';
+export * from './projection';
+export * from './ranking';
+export * from './recommendation';
+export * from './admin'; 
+export * from './creator';
+export * from './supplier';

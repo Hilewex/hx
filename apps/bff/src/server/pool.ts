@@ -28,10 +28,10 @@ import { PoolResult } from "@hx/contracts";
 const poolService = new PoolService();
 
 export function extractPoolActorContext(
-  req: http.IncomingMessage,
+  req: http.IncomingMessage & { context?: { actorId?: string; role?: string } },
 ): PoolActorContext | null {
-  const actorId = req.headers["x-actor-id"];
-  const actorType = req.headers["x-actor-type"];
+  const actorId = req.context?.actorId;
+  const actorType = req.context?.role;
   const supplierId = req.headers["x-supplier-id"];
   const creatorStoreId = req.headers["x-creator-store-id"];
 

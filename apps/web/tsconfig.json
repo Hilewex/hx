@@ -5,5 +5,16 @@
   },
   "include": [
     "src/**/*"
+  ],
+  "references": [
+    { "path": "../../packages/config" },
+    { "path": "../../packages/contracts" },
+    { "path": "../../packages/events" },
+    { "path": "../../packages/types" },
+    { "path": "../../packages/shared-kernel" },
+    { "path": "../../packages/observability" },
+    { "path": "../../packages/testing" },
+    { "path": "../../packages/ui" }
   ]
 }
+

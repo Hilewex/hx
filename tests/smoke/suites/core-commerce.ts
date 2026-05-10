@@ -18,6 +18,7 @@ async function createCustomerAndStorefront(baseUrl: string) {
     method: 'POST',
     headers: getCustomerHeaders(actorId),
     body: JSON.stringify({
+      id: actorId,
       firstName: 'Core',
       lastName: 'Commerce',
       email: customerEmail,
@@ -60,6 +61,34 @@ async function createCustomerAndStorefront(baseUrl: string) {
   return { actorId, customerId, storefrontId, customerEmail };
 }
 
+async function createShippingAddress(baseUrl: string, actorId: string): Promise<string> {
+  const res = await fetch(`${baseUrl}/customer/address`, {
+    method: 'POST',
+    headers: getCustomerHeaders(actorId),
+    body: JSON.stringify({
+      type: 'SHIPPING',
+      firstName: 'Core',
+      lastName: 'Commerce',
+      phone: '+905551112233',
+      city: 'Istanbul',
+      district: 'Kadikoy',
+      neighborhood: 'Smoke',
+      fullAddress: 'Core commerce smoke address',
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to create shipping address: ${res.status} ${await res.text()}`);
+  }
+
+  const json = await res.json();
+  const addressId = json.data?.id;
+  if (!addressId) {
+    throw new Error('Address ID not found in creation response');
+  }
+  return addressId;
+}
+
 
 export const coreCommerceSmoke: SmokeRunner = {
   name: 'core-commerce',
@@ -98,9 +127,15 @@ async function runPhase1(baseUrl: string): Promise<{ result: SmokeResult; messag
     });
 
     await runStep('PDP Read (Fixture)', async () => {
-        context.productId = 'prod-smoke-1';
-        context.variantId = 'var-smoke-1-a';
+        context.productId = 'p_valid';
+        context.variantId = 'v_1';
+        context.storefrontId = 's_feno_1';
         return { productId: context.productId, variantId: context.variantId };
+    });
+
+    await runStep('Create Shipping Address', async () => {
+        context.addressId = await createShippingAddress(baseUrl, context.actorId);
+        return { addressId: context.addressId };
     });
 
     await runStep('Add to Cart', async () => {
@@ -112,7 +147,9 @@ async function runPhase1(baseUrl: string): Promise<{ result: SmokeResult; messag
         if (!res.ok) throw new Error(`Add to cart failed: ${res.status} ${await res.text()}`);
         const responseJson = await res.json();
         const cartData = responseJson.data?.data;
-        if (!cartData || !cartData.lines || cartData.lines.length === 0) throw new Error('Cart data is invalid or lines are missing in response.');
+        if (!cartData || !cartData.lines || cartData.lines.length === 0 || cartData.errors?.length) {
+          throw new Error(`Cart data is invalid or lines are missing in response: ${JSON.stringify(responseJson)}`);
+        }
         context.cartId = cartData.id;
         return cartData;
     });
@@ -121,7 +158,7 @@ async function runPhase1(baseUrl: string): Promise<{ result: SmokeResult; messag
         const res = await fetch(`${baseUrl}/checkout/start`, {
             method: 'POST',
             headers: getCustomerHeaders(context.actorId),
-            body: JSON.stringify({ cartId: context.cartId }),
+            body: JSON.stringify({ cartId: context.cartId, addressSnapshot: { addressId: context.addressId } }),
         });
         if (!res.ok) throw new Error(`Checkout start failed: ${res.status} ${await res.text()}`);
         const responseJson = await res.json();

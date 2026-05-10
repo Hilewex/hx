@@ -3,8 +3,15 @@ import {
   createProviderResultEnvelope,
   ProviderResultEnvelope,
   ProviderOperationStatus,
+  PaytrStatusInquiryResponse,
+  NormalizedPaytrStatusInquiryCandidate,
+  mapPaytrStatusInquiryToReconciliationCandidate,
 } from '@hx/contracts';
 import { randomUUID } from 'node:crypto';
+import {
+  PaymentProviderConfigResolution,
+  resolvePaymentProviderConfig,
+} from './provider-config';
 
 /**
  * Normalized response for a payment initiation operation from any provider.
@@ -34,6 +41,15 @@ export interface PaymentProviderAdapter {
     correlationId: string;
     simulationScenario?: 'succeeded' | 'pending' | 'unknown_result'; // HARDENING-09C
   }): Promise<ProviderResultEnvelope<NormalizedPaymentInitiation>>;
+
+  statusInquiry(command: {
+    merchantOid: string;
+    expectedAmountMinor: number;
+    expectedCurrency: string;
+    idempotencyKey: string;
+    correlationId: string;
+    simulationResponse?: PaytrStatusInquiryResponse;
+  }): Promise<ProviderResultEnvelope<NormalizedPaytrStatusInquiryCandidate>>;
 }
 
 /**
@@ -90,6 +106,140 @@ class InternalSimulationPaymentProviderAdapter
       normalized,
     });
   }
+
+  async statusInquiry(command: {
+    merchantOid: string;
+    expectedAmountMinor: number;
+    expectedCurrency: string;
+    idempotencyKey: string;
+    correlationId: string;
+    simulationResponse?: PaytrStatusInquiryResponse;
+  }): Promise<ProviderResultEnvelope<NormalizedPaytrStatusInquiryCandidate>> {
+    if (!command.simulationResponse) {
+      return createProviderResultEnvelope<NormalizedPaytrStatusInquiryCandidate>({
+        providerDomain: 'payment',
+        providerName: this.providerName,
+        providerMode: this.providerMode,
+        operation: 'statusInquiry',
+        operationStatus: 'unknown_result',
+        idempotencyKey: command.idempotencyKey,
+        correlationId: command.correlationId,
+        error: {
+          code: 'PAYTR_STATUS_INQUIRY_SIMULATION_RESPONSE_REQUIRED',
+          message: 'Status inquiry simulation requires an explicit simulationResponse. No live provider request was attempted.',
+          retryable: false,
+        },
+      });
+    }
+
+    const candidate = mapPaytrStatusInquiryToReconciliationCandidate({
+      merchantOid: command.merchantOid,
+      expectedAmountMinor: command.expectedAmountMinor,
+      expectedCurrency: command.expectedCurrency,
+      response: command.simulationResponse,
+      occurredAt: new Date(),
+      inquiryRef: command.idempotencyKey,
+    });
+
+    let operationStatus: ProviderOperationStatus;
+    switch (candidate.normalizedStatus) {
+      case 'succeeded_candidate':
+        operationStatus = 'succeeded';
+        break;
+      case 'status_query_inconclusive':
+        operationStatus = 'unknown_result';
+        break;
+      case 'status_query_failed':
+        operationStatus = 'failed';
+        break;
+      case 'rejected_amount_mismatch':
+      case 'rejected_currency_mismatch':
+      case 'rejected_unexpected_format':
+        operationStatus = 'rejected';
+        break;
+    }
+
+    return createProviderResultEnvelope<NormalizedPaytrStatusInquiryCandidate>({
+      providerDomain: 'payment',
+      providerName: this.providerName,
+      providerMode: this.providerMode,
+      operation: 'statusInquiry',
+      operationStatus,
+      idempotencyKey: command.idempotencyKey,
+      correlationId: command.correlationId,
+      normalized: candidate,
+      raw: command.simulationResponse,
+      ...(operationStatus === 'failed'
+        ? {
+            error: {
+              code: 'PAYTR_STATUS_INQUIRY_FAILED',
+              message: candidate.rejectionReason ?? 'PayTR status inquiry simulation failed.',
+              retryable: false,
+            },
+          }
+        : {}),
+    });
+  }
+}
+
+class NotConfiguredPaymentProviderAdapter implements PaymentProviderAdapter {
+  constructor(private readonly config: PaymentProviderConfigResolution) {}
+
+  async initiatePayment(command: {
+    amount: number;
+    currency: string;
+    checkoutId: string;
+    idempotencyKey: string;
+    correlationId: string;
+    simulationScenario?: 'succeeded' | 'pending' | 'unknown_result';
+  }): Promise<ProviderResultEnvelope<NormalizedPaymentInitiation>> {
+    const errorCode = this.config.isUsableForInitiation || this.config.errors.length === 0
+      ? 'PAYMENT_PROVIDER_NOT_IMPLEMENTED'
+      : 'PAYMENT_PROVIDER_NOT_CONFIGURED';
+
+    return createProviderResultEnvelope<NormalizedPaymentInitiation>({
+      providerDomain: 'payment',
+      providerName: this.config.requestedProviderName ?? this.config.activeProviderName,
+      providerMode: this.config.providerMode,
+      operation: 'initiatePayment',
+      operationStatus: 'rejected',
+      idempotencyKey: command.idempotencyKey,
+      correlationId: command.correlationId,
+      error: {
+        code: errorCode,
+        message: 'Payment provider is not available for live initiation in this package.',
+        retryable: false,
+      },
+    });
+  }
+
+  async statusInquiry(command: {
+    merchantOid: string;
+    expectedAmountMinor: number;
+    expectedCurrency: string;
+    idempotencyKey: string;
+    correlationId: string;
+    simulationResponse?: PaytrStatusInquiryResponse;
+  }): Promise<ProviderResultEnvelope<NormalizedPaytrStatusInquiryCandidate>> {
+    const errorCode = this.config.isUsableForInitiation || this.config.errors.length === 0
+      ? 'PAYMENT_PROVIDER_NOT_IMPLEMENTED'
+      : 'PAYMENT_PROVIDER_NOT_CONFIGURED';
+
+    return createProviderResultEnvelope<NormalizedPaytrStatusInquiryCandidate>({
+      providerDomain: 'payment',
+      providerName: this.config.requestedProviderName ?? this.config.activeProviderName,
+      providerMode: this.config.providerMode,
+      operation: 'statusInquiry',
+      operationStatus: 'rejected',
+      idempotencyKey: command.idempotencyKey,
+      correlationId: command.correlationId,
+      error: {
+        code: errorCode,
+        message: 'Payment provider is not available for status inquiry in this package.',
+        retryable: false,
+      },
+    });
+  }
 }
 
 /**
@@ -102,12 +252,12 @@ class InternalSimulationPaymentProviderAdapter
  * @returns The appropriate payment provider adapter instance.
  */
 export function getPaymentProviderAdapter(): PaymentProviderAdapter {
-  const providerMode = process.env.PAYMENT_PROVIDER_MODE || 'simulation';
+  const config = resolvePaymentProviderConfig();
 
-  switch (providerMode) {
-    case 'simulation':
-    default:
-      return new InternalSimulationPaymentProviderAdapter();
+  if (config.activeProviderName === 'internal_simulation' && config.errors.length === 0) {
+    return new InternalSimulationPaymentProviderAdapter();
   }
+
+  return new NotConfiguredPaymentProviderAdapter(config);
 }
 
