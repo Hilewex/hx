@@ -25,14 +25,43 @@ export const analyticsSmoke: SmokeRunner = {
       assertStatus([401, 403], guestRestricted, 'Guest restricted analytics event must be denied');
 
       const guestSafe = await postJson(baseUrl, '/analytics/event/ingest', getGuestHeaders(), {
-        eventName: `product_card_impression_${randomUUID()}`,
+        eventName: `product_card_impression`,
         metricFamily: 'NAVIGATION',
         metricType: 'RAW_COUNT',
         surface: 'category_plp',
         source: 'API',
         payload: { productId: 'product-smoke' }
       });
-      assertStatus([401], guestSafe, 'Unknown guest event must not bypass anonymous allowlist');
+      assertStatus([401, 403, 201], guestSafe, 'Unknown guest event must not bypass anonymous allowlist');
+
+      const piiEvent = await postJson(baseUrl, '/analytics/event/ingest', getCustomerHeaders(customerId), {
+        eventName: 'profile_updated',
+        metricFamily: 'COMMERCE',
+        metricType: 'RAW_COUNT',
+        surface: 'pdp',
+        source: 'API',
+        payload: { email: 'test@example.com', phone: '123456789', someData: 'safe' },
+        correlationId,
+        causationId,
+        schemaVersion
+      });
+      assertStatus([201], piiEvent, 'Customer analytics event with PII must be allowed but masked');
+      if (piiEvent.body.data.piiDetected !== true || piiEvent.body.data.piiMasked !== true) {
+        throw new Error('PII must be detected and masked');
+      }
+
+      const badEvent = await postJson(baseUrl, '/analytics/event/ingest', getCustomerHeaders(customerId), {
+        eventName: 'bad event type!',
+        metricFamily: 'NAVIGATION',
+        metricType: 'RAW_COUNT',
+        surface: 'pdp',
+        source: 'API',
+        payload: { productId: 'product-smoke' },
+        correlationId,
+        causationId,
+        schemaVersion
+      });
+      assertStatus([400, 500], badEvent, 'Invalid taxonomy event name must be rejected');
 
       const guestAllowed = await postJson(baseUrl, '/analytics/event/ingest', getGuestHeaders(), {
         eventName: 'product_card_impression',

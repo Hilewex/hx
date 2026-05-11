@@ -54,6 +54,9 @@ importers:
       '@hx/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@hx/creator-management':
+        specifier: workspace:*
+        version: link:../../services/creator-management
       '@hx/customer':
         specifier: workspace:*
         version: link:../../services/customer
@@ -81,6 +84,9 @@ importers:
       '@hx/follow':
         specifier: workspace:*
         version: link:../../services/follow
+      '@hx/fraud':
+        specifier: workspace:*
+        version: link:../../services/fraud
       '@hx/interaction':
         specifier: workspace:*
         version: link:../../services/interaction
@@ -156,6 +162,9 @@ importers:
       '@hx/story':
         specifier: workspace:*
         version: link:../../services/story
+      '@hx/supplier-management':
+        specifier: workspace:*
+        version: link:../../services/supplier-management
       '@hx/support':
         specifier: workspace:*
         version: link:../../services/support
@@ -502,7 +511,15 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  services/creator-management: {}
+  services/creator-management:
+    dependencies:
+      '@hx/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
 
   services/customer:
     dependencies:
@@ -632,6 +649,22 @@ importers:
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.39
+
+  services/fraud:
+    dependencies:
+      '@hx/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@hx/persistence':
+        specifier: workspace:*
+        version: link:../../packages/persistence
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.16
+        version: 20.19.39
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
 
   services/interaction:
     dependencies:
@@ -1139,7 +1172,15 @@ importers:
         specifier: ^20.0.0
         version: 20.19.39
 
-  services/supplier-management: {}
+  services/supplier-management:
+    dependencies:
+      '@hx/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
 
   services/support:
     dependencies:

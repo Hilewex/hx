@@ -99,6 +99,23 @@ export interface AnalyticsEventRecord {
   riskDecisionTruth: false;
   eventTruthMutated: false;
   outboxDeliveryGuaranteed: false;
+  analyticsEventOnly: true;
+  ownerTruthMutatedByAnalytics: false;
+  orderTruthMutated: false;
+  paymentTruthMutated: false;
+  payoutTruthMutated: false;
+  financeTruthMutated: false;
+  moderationTruthMutated: false;
+  customerTruthMutated: false;
+  bffTruthMutated: false;
+  uiTruthMutated: false;
+  piiDetected?: boolean;
+  piiMasked?: boolean;
+  piiMinimized?: boolean;
+  piiDroppedFields?: string[];
+  allowedEventType?: string;
+  eventTaxonomyChecked: true;
+  auditEvidenceRequired: true;
 }
 
 export interface MetricSnapshotRecord {
@@ -194,6 +211,22 @@ export interface AnalyticsMutationResult {
   riskDecisionTruth: false;
   eventTruthMutated: false;
   outboxDeliveryGuaranteed: false;
+  analyticsEventOnly: true;
+  ownerTruthMutatedByAnalytics: false;
+  financeTruthMutated: false;
+  moderationTruthMutated: false;
+  customerTruthMutated: false;
+  bffTruthMutated: false;
+  uiTruthMutated: false;
+  piiDetected?: boolean;
+  piiMasked?: boolean;
+  piiMinimized?: boolean;
+  piiDroppedFields?: string[];
+  allowedEventType?: string;
+  eventTaxonomyChecked: true;
+  auditEvidenceRequired: true;
+  duplicate?: boolean;
+  alreadyProcessed?: boolean;
   warnings?: string[];
 }
 

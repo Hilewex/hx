@@ -30,6 +30,7 @@
     "@hx/finance": "workspace:*",
     "@hx/finance-correction": "workspace:*",
     "@hx/follow": "workspace:*",
+    "@hx/fraud": "workspace:*",
     "@hx/interaction": "workspace:*",
     "@hx/media": "workspace:*",
     "@hx/moderation": "workspace:*",

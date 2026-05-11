@@ -30,6 +30,7 @@ export * from './follow';
 export * from './feed';
 export * from './ugc';
 export * from './risk';
+export * from './fraud';
 export * from './order-ops';
 export * from './payout';
 export * from './finance-correction';

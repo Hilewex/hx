@@ -64,6 +64,7 @@ export interface NotificationDeliverySummary {
   notificationTruthMutated: boolean;
   businessTruthMutated: false;
   ownerStateMutated: false;
+  ownerTruthMutatedByNotification: false;
   deliveryTruth: false;
   actualProviderDeliveryPerformed: false;
   outboxDeliveryGuaranteed: false;
@@ -72,6 +73,18 @@ export interface NotificationDeliverySummary {
   refundTruthMutated: false;
   settlementTruthMutated: false;
   payoutTruthMutated: false;
+  financeTruthMutated: false;
+  moderationTruthMutated: false;
+  customerTruthMutated: false;
+  supportTruthMutated: false;
+  bffTruthMutated: false;
+  uiTruthMutated: false;
+  providerBoundaryChecked: boolean;
+  templateRendered: boolean;
+  piiDetected: boolean;
+  piiMasked: boolean;
+  piiMinimized: boolean;
+  piiDroppedFields: string[];
 }
 
 export interface NotificationRecord extends NotificationDeliverySummary {
@@ -103,6 +116,8 @@ export interface NotificationRecord extends NotificationDeliverySummary {
   preferenceOverridable: boolean;
   errors?: string[];
   warnings?: string[];
+  duplicate?: boolean;
+  alreadyProcessed?: boolean;
 }
 
 export interface CreateNotificationCommand {
@@ -168,7 +183,27 @@ export interface NotificationMutationResult {
   notificationTruthMutated?: boolean;
   businessTruthMutated?: false;
   ownerStateMutated?: false;
+  ownerTruthMutatedByNotification?: false;
   deliveryTruth?: false;
   actualProviderDeliveryPerformed?: false;
   outboxDeliveryGuaranteed?: false;
+  paymentTruthMutated?: false;
+  orderTruthMutated?: false;
+  refundTruthMutated?: false;
+  settlementTruthMutated?: false;
+  payoutTruthMutated?: false;
+  financeTruthMutated?: false;
+  moderationTruthMutated?: false;
+  customerTruthMutated?: false;
+  supportTruthMutated?: false;
+  bffTruthMutated?: false;
+  uiTruthMutated?: false;
+  providerBoundaryChecked?: boolean;
+  templateRendered?: boolean;
+  piiDetected?: boolean;
+  piiMasked?: boolean;
+  piiMinimized?: boolean;
+  piiDroppedFields?: string[];
+  duplicate?: boolean;
+  alreadyProcessed?: boolean;
 }

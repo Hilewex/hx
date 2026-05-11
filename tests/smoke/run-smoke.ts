@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { spawn } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import { healthSmoke } from './suites/health';
 import { catalogSmoke, commerceSmoke, socialSmoke, searchSmoke, customerSmoke, storefrontSmoke } from './suites/others';
 import { coreCommerceSmoke } from './suites/core-commerce';
@@ -11,6 +11,7 @@ import { commercePermissionSmoke } from './suites/commerce-permission';
 import { moderationWorkflowSmoke } from './suites/moderation-workflow';
 import { socialModerationSmoke } from './suites/social-moderation';
 import { riskSignalSmoke } from './suites/risk-signal';
+import { fraudSignalReviewFalsePositiveGuardSmoke } from './suites/fraud-signal-review-false-positive-guard';
 import { socialAbuseSignalSmoke } from './suites/social-abuse-signal';
 import { bffActorSpoofingGuardSmoke } from './suites/bff-actor-spoofing-guard';
 import { interactionIdempotencyDuplicatePreventionSmoke } from './suites/interaction-idempotency-duplicate-prevention';
@@ -52,6 +53,7 @@ import { paytrCallbackLiveBffMappingSmoke } from './suites/paytr-callback-live-b
 
 import { paytrStatusInquiryMappingSmoke } from './suites/paytr-status-inquiry-mapping';
 import { paytrStatusInquiryAdapterBoundarySmoke } from './suites/paytr-status-inquiry-adapter-boundary';
+import { phase09SmokeCoverageFoundationSmoke } from './suites/phase09-smoke-coverage-foundation';
 import { paymentReconciliationDecisionSmoke } from './suites/payment-reconciliation-decision';
 import { paymentReconciliationTaskPersistenceSmoke } from './suites/payment-reconciliation-task-persistence';
 import { paymentReconciliationWorkerDryRunSmoke } from './suites/payment-reconciliation-worker-dry-run';
@@ -105,6 +107,7 @@ const suites = {
   'moderation-workflow': moderationWorkflowSmoke,
   'social-moderation': socialModerationSmoke,
   'risk-signal': riskSignalSmoke,
+  'fraud-signal-review-false-positive-guard': fraudSignalReviewFalsePositiveGuardSmoke,
   'social-abuse-signal': socialAbuseSignalSmoke,
   'bff-actor-spoofing-guard': bffActorSpoofingGuardSmoke,
   'interaction-idempotency-duplicate-prevention': interactionIdempotencyDuplicatePreventionSmoke,
@@ -168,6 +171,7 @@ const suites = {
   'support-visibility-order-access-pii-guard': supportVisibilityOrderAccessPiiGuardSmoke,
   'panel-audit-evidence-maker-checker-readiness': panelAuditEvidenceMakerCheckerReadinessSmoke,
   'panel-smoke-coverage-foundation': panelSmokeCoverageFoundationSmoke,
+  'phase09-smoke-coverage-foundation': phase09SmokeCoverageFoundationSmoke,
 };
 
 async function waitForServer(url: string, timeout = 10000): Promise<boolean> {
@@ -186,7 +190,7 @@ async function waitForServer(url: string, timeout = 10000): Promise<boolean> {
 
 function stopServerProcess(serverProcess: ReturnType<typeof spawn>) {
   if (serverProcess.pid && process.platform === 'win32') {
-    spawn('taskkill', ['/PID', String(serverProcess.pid), '/T', '/F'], {
+    spawnSync('taskkill', ['/PID', String(serverProcess.pid), '/T', '/F'], {
       stdio: 'ignore',
       shell: false
     });
@@ -203,6 +207,7 @@ function stopServerProcess(serverProcess: ReturnType<typeof spawn>) {
 async function run() {
   const target = process.argv[2] || 'all';
   const useExistingBff = process.env.SMOKE_USE_EXISTING_BFF === 'true';
+  const useInProcessBff = !useExistingBff && target === 'notification';
   const smokePort = process.env.SMOKE_BFF_PORT || String(3100 + Math.floor(Math.random() * 1000));
   const baseUrl = (useExistingBff
     ? (process.env.SMOKE_BFF_BASE_URL || process.env.BFF_BASE_URL || `http://localhost:${smokePort}`)
@@ -211,23 +216,35 @@ async function run() {
   
   // Set memory mode for foundational tests
   process.env.PERSISTENCE_MODE = 'memory';
+  process.env.PORT = smokePort;
+  process.env.BFF_PORT = smokePort;
   
-  const cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+  const cmd = process.execPath;
+  const serverArgs = ['--import', 'tsx', 'tests/smoke/start-bff.ts'];
   let serverProcess: ReturnType<typeof spawn> | null = null;
+  let inProcessServer: { start: () => void; stop: () => void } | null = null;
 
   if (!useExistingBff) {
-    console.log(`Starting local BFF server for smoke tests (PERSISTENCE_MODE=${process.env.PERSISTENCE_MODE})...`);
-    serverProcess = spawn(cmd, ['tsx', '--no-cache', 'tests/smoke/start-bff.ts'], {
-      stdio: 'inherit',
-      shell: true,
-      env: { ...process.env, PORT: smokePort, BFF_PORT: smokePort, SMOKE_BFF_BASE_URL: baseUrl, BFF_BASE_URL: baseUrl }
-    });
+    if (useInProcessBff) {
+      console.log(`Starting in-process BFF server for smoke tests (PERSISTENCE_MODE=${process.env.PERSISTENCE_MODE})...`);
+      const { createServer } = await import('../../apps/bff/src/server/index');
+      inProcessServer = createServer();
+      inProcessServer.start();
+    } else {
+      console.log(`Starting local BFF server for smoke tests (PERSISTENCE_MODE=${process.env.PERSISTENCE_MODE})...`);
+      serverProcess = spawn(cmd, serverArgs, {
+        stdio: 'inherit',
+        shell: false,
+        env: { ...process.env, PORT: smokePort, BFF_PORT: smokePort, SMOKE_BFF_BASE_URL: baseUrl, BFF_BASE_URL: baseUrl }
+      });
+    }
   }
 
   const isUp = await waitForServer(baseUrl);
   if (!isUp) {
     console.error('Failed to start local BFF server');
     if (serverProcess) stopServerProcess(serverProcess);
+    if (inProcessServer) inProcessServer.stop();
     process.exit(1);
   }
 
@@ -250,6 +267,7 @@ async function run() {
   }
   
   if (serverProcess) stopServerProcess(serverProcess);
+  if (inProcessServer) inProcessServer.stop();
   setTimeout(() => process.exit(hasFailure ? 1 : 0), 100);
 }
 

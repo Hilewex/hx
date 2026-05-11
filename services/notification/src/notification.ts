@@ -31,10 +31,57 @@ const notificationBoundary = {
   notificationTruthMutated: true,
   businessTruthMutated: false as const,
   ownerStateMutated: false as const,
+  ownerTruthMutatedByNotification: false as const,
   deliveryTruth: false as const,
   actualProviderDeliveryPerformed: false as const,
   outboxDeliveryGuaranteed: false as const,
+  paymentTruthMutated: false as const,
+  orderTruthMutated: false as const,
+  refundTruthMutated: false as const,
+  settlementTruthMutated: false as const,
+  payoutTruthMutated: false as const,
+  financeTruthMutated: false as const,
+  moderationTruthMutated: false as const,
+  customerTruthMutated: false as const,
+  supportTruthMutated: false as const,
+  bffTruthMutated: false as const,
+  uiTruthMutated: false as const,
 };
+
+function redactPII(text: string): { redactedText: string, piiDetected: boolean, piiMasked: boolean, piiMinimized: boolean, piiDroppedFields: string[] } {
+  let redacted = text;
+  let piiDetected = false;
+  const piiDroppedFields: string[] = [];
+
+  // Very naive PII redaction for foundation
+  if (redacted.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/)) {
+    piiDetected = true;
+    piiDroppedFields.push('email');
+    redacted = redacted.replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, '[REDACTED_EMAIL]');
+  }
+  
+  // Phone numbers naive regex
+  if (redacted.match(/\b\+?\d{10,14}\b/)) {
+    piiDetected = true;
+    piiDroppedFields.push('phone');
+    redacted = redacted.replace(/\b\+?\d{10,14}\b/g, '[REDACTED_PHONE]');
+  }
+
+  // Address naive regex
+  if (redacted.match(/\b([A-Za-z0-9\s]+Mahallesi|[A-Za-z0-9\s]+Sokak|[A-Za-z0-9\s]+Caddesi)\b/)) {
+     piiDetected = true;
+     piiDroppedFields.push('address');
+     redacted = redacted.replace(/\b([A-Za-z0-9\s]+Mahallesi|[A-Za-z0-9\s]+Sokak|[A-Za-z0-9\s]+Caddesi)\b/g, '[REDACTED_ADDRESS]');
+  }
+
+  return {
+    redactedText: redacted,
+    piiDetected,
+    piiMasked: piiDetected,
+    piiMinimized: piiDetected,
+    piiDroppedFields
+  };
+}
 
 export async function createNotification(command: CreateNotificationCommand): Promise<NotificationMutationResult> {
   const repository = getNotificationRepository();
@@ -55,12 +102,26 @@ export async function createNotification(command: CreateNotificationCommand): Pr
     const existingId = await repository.checkIdempotency(idempotencyKey);
     if (existingId) {
       const existingRecord = await repository.findById(existingId);
-      return { success: true, record: existingRecord || undefined, ...notificationBoundary };
+      return { 
+        success: true, 
+        record: existingRecord || undefined, 
+        duplicate: true,
+        alreadyProcessed: true,
+        ...notificationBoundary 
+      };
     }
   }
 
   const notificationId = randomUUID();
   const warnings: string[] = [];
+  
+  const redactedTitle = redactPII(title);
+  const redactedBody = redactPII(body);
+
+  const piiDetected = redactedTitle.piiDetected || redactedBody.piiDetected;
+  const piiMasked = redactedTitle.piiMasked || redactedBody.piiMasked;
+  const piiMinimized = redactedTitle.piiMinimized || redactedBody.piiMinimized;
+  const piiDroppedFields = [...new Set([...redactedTitle.piiDroppedFields, ...redactedBody.piiDroppedFields])];
 
   let isMandatory = false;
   let preferenceOverridable = true;
@@ -100,8 +161,8 @@ export async function createNotification(command: CreateNotificationCommand): Pr
     state: 'UNREAD',
     deliveryMode,
     channels,
-    title,
-    body,
+    title: redactedTitle.redactedText,
+    body: redactedBody.redactedText,
     objectType,
     objectId,
     correlationId,
@@ -114,6 +175,7 @@ export async function createNotification(command: CreateNotificationCommand): Pr
     notificationTruthMutated: true,
     businessTruthMutated: false,
     ownerStateMutated: false,
+    ownerTruthMutatedByNotification: false,
     deliveryTruth: false,
     actualProviderDeliveryPerformed: false,
     outboxDeliveryGuaranteed: false,
@@ -122,6 +184,18 @@ export async function createNotification(command: CreateNotificationCommand): Pr
     refundTruthMutated: false,
     settlementTruthMutated: false,
     payoutTruthMutated: false,
+    financeTruthMutated: false,
+    moderationTruthMutated: false,
+    customerTruthMutated: false,
+    supportTruthMutated: false,
+    bffTruthMutated: false,
+    uiTruthMutated: false,
+    providerBoundaryChecked: true,
+    templateRendered: true,
+    piiDetected,
+    piiMasked,
+    piiMinimized,
+    piiDroppedFields,
     deliveryAttempts: [],
     warnings: warnings.length > 0 ? warnings : undefined
   };

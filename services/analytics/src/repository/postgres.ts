@@ -194,7 +194,24 @@ export class PostgresAnalyticsRepository implements IAnalyticsRepository {
       eligibilityTruth: false,
       riskDecisionTruth: false,
       eventTruthMutated: false,
-      outboxDeliveryGuaranteed: false
+      outboxDeliveryGuaranteed: false,
+      analyticsEventOnly: true,
+      ownerTruthMutatedByAnalytics: false,
+      orderTruthMutated: false,
+      paymentTruthMutated: false,
+      payoutTruthMutated: false,
+      financeTruthMutated: false,
+      moderationTruthMutated: false,
+      customerTruthMutated: false,
+      bffTruthMutated: false,
+      uiTruthMutated: false,
+      piiDetected: row.piiDetected || false,
+      piiMasked: row.piiMasked || false,
+      piiMinimized: row.piiMinimized || false,
+      piiDroppedFields: row.piiDroppedFields || [],
+      allowedEventType: row.allowedEventType,
+      eventTaxonomyChecked: true,
+      auditEvidenceRequired: true
     };
   }
 

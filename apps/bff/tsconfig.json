@@ -55,6 +55,9 @@
       "path": "../../services/follow"
     },
     {
+      "path": "../../services/fraud"
+    },
+    {
       "path": "../../services/interaction"
     },
     {
@@ -154,6 +157,7 @@
       "@hx/question-answer": ["../../services/question-answer/src"],
       "@hx/review": ["../../services/review/src"],
       "@hx/notification": ["../../services/notification/src"],
+      "@hx/fraud": ["../../services/fraud/src"],
       "@hx/ugc": ["../../services/ugc/src"],
       "@hx/customer-support": ["../../services/customer-support/src"],
       "@hx/supplier-management": ["../../services/supplier-management/src"]

@@ -120,6 +120,12 @@ import {
   handleGetRiskCase,
   handleListRiskCases
 } from './risk';
+import {
+  handleCreateFraudSignal,
+  handleCreateFraudCase,
+  handleReviewFraudCase,
+  handleCreateFraudFalsePositiveReview
+} from './fraud';
 import { handleGetOrderOpsOverview } from './order-ops';
 import {
   handleCreateSettlementFromOrder,
@@ -762,6 +768,22 @@ export function createServer() {
       const url = new URL(req.url, `http://${req.headers.host}`);
       const query = Object.fromEntries(url.searchParams);
       return sendBffResponse(await handleListRiskCases({ query, context }));
+    }
+
+    if (pathname === '/fraud/signal' && req.method === 'POST') {
+      return sendBffResponse(await handleCreateFraudSignal({ body, context }));
+    }
+
+    if (pathname === '/fraud/case' && req.method === 'POST') {
+      return sendBffResponse(await handleCreateFraudCase({ body, context }));
+    }
+
+    if (pathname === '/fraud/review' && req.method === 'POST') {
+      return sendBffResponse(await handleReviewFraudCase({ body, context }));
+    }
+
+    if (pathname === '/fraud/false-positive/review' && req.method === 'POST') {
+      return sendBffResponse(await handleCreateFraudFalsePositiveReview({ body, context }));
     }
 
     if (req.url?.startsWith('/order-ops/overview') && req.method === 'GET') {

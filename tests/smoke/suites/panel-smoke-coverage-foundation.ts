@@ -36,7 +36,7 @@ const requiredRisks = [
 const coverageMatrix: CoverageEntry[] = [
   {
     area: 'Admin',
-    smoke: adminDirectWriteOwnerCommandGuardSmoke,
+    smoke: adminDirectWriteOwnerCommandGuardSmoke as any,
     risks: [
       'Panel direct write blocked',
       'Owner truth mutation blocked',
@@ -49,7 +49,7 @@ const coverageMatrix: CoverageEntry[] = [
   },
   {
     area: 'Creator',
-    smoke: creatorScopeStorefrontProductActionGuardSmoke,
+    smoke: creatorScopeStorefrontProductActionGuardSmoke as any,
     risks: [
       'Owner truth mutation blocked',
       'BFF truth mutation blocked',
@@ -64,7 +64,7 @@ const coverageMatrix: CoverageEntry[] = [
   },
   {
     area: 'Supplier',
-    smoke: supplierScopeProductIntakeStockPriceGuardSmoke,
+    smoke: supplierScopeProductIntakeStockPriceGuardSmoke as any,
     risks: [
       'Owner truth mutation blocked',
       'BFF truth mutation blocked',
@@ -80,7 +80,7 @@ const coverageMatrix: CoverageEntry[] = [
   },
   {
     area: 'Support',
-    smoke: supportVisibilityOrderAccessPiiGuardSmoke,
+    smoke: supportVisibilityOrderAccessPiiGuardSmoke as any,
     risks: [
       'Owner truth mutation blocked',
       'BFF truth mutation blocked',
@@ -95,7 +95,7 @@ const coverageMatrix: CoverageEntry[] = [
   },
   {
     area: 'Audit/evidence and maker-checker',
-    smoke: panelAuditEvidenceMakerCheckerReadinessSmoke,
+    smoke: panelAuditEvidenceMakerCheckerReadinessSmoke as any,
     risks: [
       'Owner truth mutation blocked',
       'BFF truth mutation blocked',
@@ -110,12 +110,12 @@ const coverageMatrix: CoverageEntry[] = [
   },
   {
     area: 'Permission',
-    smoke: adminPermissionSmoke,
+    smoke: adminPermissionSmoke as any,
     risks: ['Permission checked'],
   },
   {
     area: 'Moderation maker-checker',
-    smoke: moderationDecisionAuditMakerCheckerSmoke,
+    smoke: moderationDecisionAuditMakerCheckerSmoke as any,
     risks: [
       'Owner truth mutation blocked',
       'BFF truth mutation blocked',
@@ -126,7 +126,7 @@ const coverageMatrix: CoverageEntry[] = [
   },
   {
     area: 'Moderation workflow',
-    smoke: moderationWorkflowSmoke,
+    smoke: moderationWorkflowSmoke as any,
     risks: ['Owner truth mutation blocked', 'Panel direct write blocked'],
   },
 ];
@@ -163,6 +163,9 @@ export const panelSmokeCoverageFoundationSmoke: SmokeRunner = {
       for (const entry of coverageMatrix) {
         const result = await entry.smoke.run(baseUrl);
         results.push(`${entry.area}:${result.result}`);
+        if (result.result !== 'PASS') {
+            console.error(`[DEBUG] ${entry.area} failed with result:`, result);
+        }
         assert.strictEqual(
           result.result,
           'PASS',
@@ -175,7 +178,7 @@ export const panelSmokeCoverageFoundationSmoke: SmokeRunner = {
         message: `Coverage matrix verified; delegated smoke results: ${results.join(', ')}`,
       };
     } catch (error: any) {
-      return { result: 'FAIL', message: error.message };
+      return { result: 'FAIL', message: error instanceof Error ? error.message : JSON.stringify(error) };
     }
   },
 };

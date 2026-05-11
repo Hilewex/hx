@@ -2224,3 +2224,200 @@ Ana yön:
 - **Referans:** PHASE-07-CLOSURE-REPORT.md
 
 Kaynak: PHASE-07 closure kararları, açık limitation’lar ve PHASE-08 geçiş notları.
+
+
+
+************************
+---
+
+# PHASE-08 Sonrası Aktif Risk ve Karar Güncellemesi
+
+## Kayıt: DECISION-PHASE-08-CLOSURE
+
+- **Tür:** DECISION
+- **Durum:** CLOSED
+- **Karar:** PHASE-08 — Admin / Creator / Supplier / Support Panel Readiness fazı **PASS WITH LIMITATION** kararıyla kapatılmıştır.
+- **Gerekçe:** Admin, creator, supplier, support, audit/evidence, maker-checker ve panel smoke coverage alanlarında PHASE-08 hedefleri foundation seviyesinde kanıtlanmıştır.
+- **Production-ready claim:** Verilmedi.
+- **Sonraki Faz:** PHASE-09 — GO WITH LIMITATION.
+- **Referans:** PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: DECISION-PHASE-08-NOT-PRODUCTION-READY
+
+- **Tür:** DECISION
+- **Durum:** ACTIVE
+- **Karar:** PHASE-08 kapanışı platform genel production-ready anlamına gelmez.
+- **Gerekçe:** PHASE-08 yalnız panel boundary/readiness foundation kapsamını kapatmıştır. Full UI, durable audit/idempotency, durable approval queue, frontend route protection, entitlement registry, support SLA/escalation ve production workflow hardening açık kalmıştır.
+- **Etkisi:** Platform genel yayın hazırlığı kararı PHASE-10, PHASE-11 ve PHASE-12 tamamlanmadan verilemez.
+- **Referans:** PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: DECISION-SUPER-ADMIN-PLATFORM-OWNER-MODEL
+
+- **Tür:** DECISION
+- **Durum:** ACTIVE
+- **Karar:** `SUPER_ADMIN` / `PLATFORM_OWNER` rolü merkezi kontrol ve onay rolüdür; sınırsız direct-write yetkisi değildir.
+- **Gerekçe:** Platform sahibi ve üst yönetici tek panelden tüm ana operasyon modüllerine erişebilmelidir. Ancak bu erişim owner servisleri bypass eden doğrudan veri değiştirme yetkisi anlamına gelmez.
+- **Etkisi:** Süper yönetici admin, creator, supplier, support, moderation, finance, payout ve operation modüllerinde işlem başlatabilir; fakat kritik işlemlerde audit/evidence ve maker-checker sınırları korunur.
+- **Referans:** Sistem_Tasarimlari/40-admin sistemi.md, Sistem_Tasarimlari/25-kural -yetki sistemi.md, PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-08-FULL-PANEL-UI
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Full panel UI, admin UI, creator UI, supplier UI ve support UI production seviyesinde tamamlanmamıştır.
+- **Etkisi:** PHASE-08 backend/foundation kapanmış olsa da gerçek panel kullanıcı deneyimi production-ready değildir.
+- **Mevcut Azaltım:** BFF/service/contract foundation ve panel smoke coverage tamamlandı.
+- **Devredilen Faz:** PHASE-10 Frontend/Public Surface Readiness.
+- **Kapanış Kriteri:** Panel shell, role-based navigation, approval inbox, route protection ve frontend smoke PASS.
+- **Referans:** PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-08-FRONTEND-ROUTE-PROTECTION
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Frontend route protection smoke henüz yoktur.
+- **Etkisi:** UI üzerinden unauthorized route access veya actor/scope ihlali frontend seviyesinde doğrulanmamıştır.
+- **Mevcut Azaltım:** BFF/service guard foundation ve API-level smoke coverage mevcut.
+- **Devredilen Faz:** PHASE-10.
+- **Kapanış Kriteri:** Unauthorized route access, actor/scope UI smoke ve frontend route guard PASS.
+- **Referans:** PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-08-DURABLE-AUDIT-IDEMPOTENCY
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Audit evidence ve idempotency davranışı foundation/process-local seviyededir; durable persistence yoktur.
+- **Etkisi:** Production ortamında audit replay, idempotency conflict, queryability ve kalıcı izlenebilirlik tam garanti edilemez.
+- **Mevcut Azaltım:** Ortak panel audit/evidence foundation ve smoke coverage tamamlandı.
+- **Devredilen Faz:** PHASE-12 veya persistence/audit hardening.
+- **Kapanış Kriteri:** Durable audit event store, durable idempotency conflict/replay behavior ve query/replay smoke PASS.
+- **Referans:** PHASE-08-FIX-05, PHASE-08-FIX-06, PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-08-DURABLE-MAKER-CHECKER-APPROVAL-QUEUE
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Maker-checker foundation kurulmuştur; fakat durable approval queue ve full workflow engine yoktur.
+- **Etkisi:** Production seviyesinde onay kuyruğu, assignment, state machine ve kalıcı approval lifecycle henüz tamam değildir.
+- **Mevcut Azaltım:** Same actor maker-checker block ve different actor owner handoff foundation smoke ile doğrulandı.
+- **Devredilen Faz:** PHASE-12 veya panel workflow hardening.
+- **Kapanış Kriteri:** Durable approval queue, maker/checker assignment, state machine ve audit smoke PASS.
+- **Referans:** PHASE-08-FIX-05, PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-08-AUDIT-OBSERVABILITY-DASHBOARD
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Audit observability dashboard yoktur.
+- **Etkisi:** Production release öncesi audit queryability, alerting ve release evidence izlenebilirliği eksik kalır.
+- **Mevcut Azaltım:** Audit/evidence foundation mevcut; fakat dashboard yoktur.
+- **Devredilen Faz:** PHASE-12 Observability / Release Gate.
+- **Kapanış Kriteri:** Audit dashboard, queryability, alerting ve release gate evidence PASS.
+- **Referans:** PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-08-SUPPORT-SLA-ESCALATION
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Full support SLA/escalation engine tamamlanmamıştır.
+- **Etkisi:** Support production operasyon akışı, SLA assignment, escalation cycle ve breach handling production-ready değildir.
+- **Mevcut Azaltım:** Support visibility, order access ve PII guard foundation tamamlandı.
+- **Devredilen Faz:** PHASE-12 veya support operations readiness.
+- **Kapanış Kriteri:** SLA assignment, escalation cycle, breach handling ve audit smoke PASS.
+- **Referans:** PHASE-08-FIX-04, PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-08-REAL-SUPPORT-TICKET-QUEUE-PERSISTENCE
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Real support ticket queue persistence yoktur.
+- **Etkisi:** Support ticket queue, ownership lookup ve operational queue production seviyesinde kalıcı olarak doğrulanmamıştır.
+- **Mevcut Azaltım:** Support visibility/PII foundation tamamlandı.
+- **Devredilen Faz:** PHASE-12 veya support persistence hardening.
+- **Kapanış Kriteri:** Durable queue, ownership lookup ve operational queue smoke PASS.
+- **Referans:** PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-08-CREATOR-STOREFRONT-ENTITLEMENT-REGISTRY
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Real creator-storefront entitlement registry yoktur.
+- **Etkisi:** Creator scope guard foundation seviyesinde çalışır; fakat durable entitlement lookup production seviyesinde tamam değildir.
+- **Mevcut Azaltım:** Actor spoofing ve cross-storefront access foundation smoke ile engellendi.
+- **Devredilen Faz:** PHASE-12 veya creator authorization package.
+- **Kapanış Kriteri:** Durable entitlement lookup ve cross-storefront enforcement PASS.
+- **Referans:** PHASE-08-FIX-02, PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-08-SUPPLIER-PRODUCT-ENTITLEMENT-REGISTRY
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Real supplier-product entitlement registry yoktur.
+- **Etkisi:** Supplier scope guard foundation seviyesinde çalışır; fakat durable supplier-product ownership lookup production seviyesinde tamam değildir.
+- **Mevcut Azaltım:** Actor spoofing ve cross-supplier access foundation smoke ile engellendi.
+- **Devredilen Faz:** PHASE-12 veya supplier authorization package.
+- **Kapanış Kriteri:** Durable supplier-product registry ve cross-supplier enforcement PASS.
+- **Referans:** PHASE-08-FIX-03, PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-08-PRODUCTION-PANEL-WORKFLOW-HARDENING
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Production panel workflow hardening tamamlanmamıştır.
+- **Etkisi:** End-to-end panel workflow, persistence, rollback ve observability production release seviyesinde henüz doğrulanmamıştır.
+- **Mevcut Azaltım:** Owner boundary, direct-write guard, non-mutation evidence ve smoke coverage foundation tamamlandı.
+- **Devredilen Faz:** PHASE-12 / Release Gate.
+- **Kapanış Kriteri:** End-to-end workflow, persistence, rollback ve observability PASS.
+- **Referans:** PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: RISK-PHASE-08-CANONICAL-EVIDENCE-PATH
+
+- **Tür:** RISK
+- **Durum:** ACTIVE / DEFERRED
+- **Risk:** Bazı zorunlu kaynaklar root yerine `planlama 2/` veya `planlama/` altında bulunmuştur.
+- **Etkisi:** Production release evidence yönetiminde yol/hiyerarşi karışıklığı oluşabilir.
+- **Mevcut Azaltım:** PHASE-08 closure raporunda gerçek yollar açıkça belirtilmiştir.
+- **Devredilen Faz:** PHASE-08 closure sonrası documentation hygiene veya PHASE-12 release evidence hygiene.
+- **Kapanış Kriteri:** Canonical evidence path kararı, kayıt yolu hizalama ve release evidence path doğrulaması.
+- **Referans:** PHASE-08-CLOSURE-REPORT.md
+
+---
+
+## Kayıt: DECISION-PHASE-09-GO-WITH-LIMITATION
+
+- **Tür:** DECISION
+- **Durum:** ACTIVE
+- **Karar:** PHASE-09 — Risk / Fraud / Analytics / Notification Readiness fazına **GO WITH LIMITATION** kararıyla geçilebilir.
+- **Gerekçe:** PHASE-08 kapsamındaki panel boundary blocker’lar foundation seviyesinde kapatılmıştır. Panel action evidence ve audit/maker-checker foundation artık PHASE-09 risk/fraud/analytics/notification değerlendirmelerinde kullanılabilir.
+- **Dikkat Noktaları:**
+  - Risk/fraud/analytics/notification business truth owner olmamalı.
+  - Event/notification/outbox business mutation yerine geçmemeli.
+  - Durable audit/event/notification/persistence açık limitation olarak takip edilmeli.
+  - PHASE-08’den gelen evidence foundation kullanılmalı ancak production-ready claim verilmemeli.
+- **Referans:** PHASE-08-CLOSURE-REPORT.md

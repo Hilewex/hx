@@ -39,6 +39,7 @@
     "smoke:social-moderation": "tsx tests/smoke/run-smoke.ts social-moderation",
     "smoke:core-commerce": "tsx tests/smoke/run-smoke.ts core-commerce",
     "smoke:risk-signal": "tsx tests/smoke/run-smoke.ts risk-signal",
+    "smoke:fraud-signal-review-false-positive-guard": "tsx tests/smoke/run-smoke.ts fraud-signal-review-false-positive-guard",
     "smoke:social-abuse-signal": "tsx tests/smoke/run-smoke.ts social-abuse-signal",
     "smoke:commerce-abuse-signal": "tsx tests/smoke/run-smoke.ts commerce-abuse-signal",
     "smoke:provider-boundary": "tsx tests/smoke/run-smoke.ts provider-boundary",
@@ -95,7 +96,8 @@
     "smoke:supplier-scope-product-intake-stock-price-guard": "tsx tests/smoke/run-smoke.ts supplier-scope-product-intake-stock-price-guard",
     "smoke:support-visibility-order-access-pii-guard": "tsx tests/smoke/run-smoke.ts support-visibility-order-access-pii-guard",
     "smoke:panel-audit-evidence-maker-checker-readiness": "tsx tests/smoke/run-smoke.ts panel-audit-evidence-maker-checker-readiness",
-    "smoke:panel-smoke-coverage-foundation": "cross-env PERSISTENCE_MODE=memory tsx tests/smoke/run-smoke.ts panel-smoke-coverage-foundation"
+    "smoke:panel-smoke-coverage-foundation": "cross-env PERSISTENCE_MODE=memory tsx tests/smoke/run-smoke.ts panel-smoke-coverage-foundation",
+    "smoke:phase09-smoke-coverage-foundation": "cross-env PERSISTENCE_MODE=memory tsx tests/smoke/run-smoke.ts phase09-smoke-coverage-foundation"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",

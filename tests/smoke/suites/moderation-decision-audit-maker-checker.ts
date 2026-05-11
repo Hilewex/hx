@@ -22,6 +22,7 @@ const createCase = async (targetId: string, targetType: any = 'REVIEW') => {
     reasonCodes: ['POLICY_VIOLATION'],
     contentText: `moderation smoke content ${targetId}`,
     idempotencyKey: `mod-case-${targetId}`,
+    correlationId: `corr-${targetId}`,
   });
   if (!result.caseId) throw new Error(`case not created for ${targetId}`);
   return result.caseId;
@@ -139,6 +140,7 @@ export const moderationDecisionAuditMakerCheckerSmoke: SmokeRunner = {
         reasonCode: 'UNKNOWN',
         metadata: { smoke: true },
         idempotencyKey: `risk-signal-${suffix}`,
+        correlationId: `corr-${suffix}`,
       });
       if (!signal.signalId) throw new Error('risk signal not created');
       const riskCase = await createRiskCase({
@@ -148,6 +150,7 @@ export const moderationDecisionAuditMakerCheckerSmoke: SmokeRunner = {
         reasonCode: 'UNKNOWN',
         signals: [signal.signalId],
         idempotencyKey: `risk-case-${suffix}`,
+        correlationId: `corr-${suffix}`,
       });
       if (!riskCase.caseId) throw new Error('risk case not created from signal');
 
@@ -201,7 +204,8 @@ export const moderationDecisionAuditMakerCheckerSmoke: SmokeRunner = {
         message: 'Decision actor/reason/evidence, audit, idempotency, maker-checker guard, risk boundary, BFF boundary flags, owner handoff path, and public leak regression verified',
       };
     } catch (error: any) {
-      return { result: 'FAIL', message: error.message };
+      console.error('[DEBUG] moderation-decision-audit-maker-checker error:', error);
+      return { result: 'FAIL', message: error instanceof Error ? error.message : JSON.stringify(error) };
     }
   },
 };

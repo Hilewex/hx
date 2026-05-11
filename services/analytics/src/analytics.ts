@@ -25,6 +25,55 @@ const VALID_METRIC_TYPES = new Set(['RAW_COUNT', 'DERIVED_RATE', 'DURATION', 'DI
 const VALID_QUALITY_STATES = new Set(['VALID', 'DUPLICATE_IGNORED', 'REPLAY_IGNORED', 'UNKNOWN_RESULT', 'CORRECTED', 'DEGRADED', 'INVALID']);
 const MAX_ANALYTICS_PAYLOAD_BYTES = 16 * 1024;
 
+const ALLOWED_EVENT_NAMES_REGEX = /^[a-z0-9_\-]+$/;
+const PII_FIELDS = new Set(['email', 'phone', 'fullname', 'address', 'tckn', 'nationalid', 'card', 'bank', 'ipaddress', 'deviceid', 'password', 'token', 'secret']);
+
+function sanitizePII(payload: Record<string, any>): { sanitized: Record<string, any>, piiDetected: boolean, piiDroppedFields: string[] } {
+    let piiDetected = false;
+    const piiDroppedFields: string[] = [];
+    const sanitized: Record<string, any> = {};
+
+    for (const [key, value] of Object.entries(payload)) {
+        const lowerKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+        let isPii = false;
+        for (const piiField of PII_FIELDS) {
+            if (lowerKey.includes(piiField)) {
+                isPii = true;
+                break;
+            }
+        }
+
+        if (isPii) {
+            piiDetected = true;
+            piiDroppedFields.push(key);
+            sanitized[key] = '[REDACTED]';
+        } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            const nested = sanitizePII(value);
+            sanitized[key] = nested.sanitized;
+            if (nested.piiDetected) {
+                piiDetected = true;
+                piiDroppedFields.push(...nested.piiDroppedFields.map(k => `${key}.${k}`));
+            }
+        } else if (Array.isArray(value)) {
+            sanitized[key] = value.map(v => {
+                if (typeof v === 'object' && v !== null) {
+                    const nested = sanitizePII(v);
+                    if (nested.piiDetected) {
+                        piiDetected = true;
+                        piiDroppedFields.push(`${key}[]`);
+                    }
+                    return nested.sanitized;
+                }
+                return v;
+            });
+        } else {
+            sanitized[key] = value;
+        }
+    }
+
+    return { sanitized, piiDetected, piiDroppedFields };
+}
+
 export class AnalyticsService {
   constructor(private repo: IAnalyticsRepository = getAnalyticsRepository()) {}
 
@@ -47,6 +96,14 @@ export class AnalyticsService {
     const schemaVersion = normalizeSafeString(command.schemaVersion) || 'v1';
     const correlationId = normalizeSafeString(command.correlationId) || `analytics_${randomUUID()}`;
     const causationId = normalizeSafeString(command.causationId);
+    
+    // Taxonomy check
+    if (!ALLOWED_EVENT_NAMES_REGEX.test(eventName)) {
+        throw new Error('ANALYTICS_UNKNOWN_EVENT_TYPE');
+    }
+
+    const { sanitized: piiSanitizedPayload, piiDetected, piiDroppedFields } = sanitizePII(command.payload);
+
     const metadata = {
       ...(command.metadata || {}),
       eventType,
@@ -90,6 +147,20 @@ export class AnalyticsService {
           riskDecisionTruth: false,
           eventTruthMutated: false,
           outboxDeliveryGuaranteed: false,
+          analyticsEventOnly: true,
+          ownerTruthMutatedByAnalytics: false,
+          financeTruthMutated: false,
+          moderationTruthMutated: false,
+          customerTruthMutated: false,
+          bffTruthMutated: false,
+          uiTruthMutated: false,
+          piiDetected: false,
+          piiMasked: false,
+          piiMinimized: false,
+          eventTaxonomyChecked: true,
+          auditEvidenceRequired: true,
+          duplicate: true,
+          alreadyProcessed: true,
           warnings
         };
       }
@@ -110,7 +181,7 @@ export class AnalyticsService {
       causationId,
       schemaVersion,
       dataQualityState,
-      payload: command.payload,
+      payload: piiSanitizedPayload,
       idempotencyKey: command.idempotencyKey,
       metadata,
       analyticsTruth: true,
@@ -120,7 +191,24 @@ export class AnalyticsService {
       eligibilityTruth: false,
       riskDecisionTruth: false,
       eventTruthMutated: false,
-      outboxDeliveryGuaranteed: false
+      outboxDeliveryGuaranteed: false,
+      analyticsEventOnly: true,
+      ownerTruthMutatedByAnalytics: false,
+      orderTruthMutated: false,
+      paymentTruthMutated: false,
+      payoutTruthMutated: false,
+      financeTruthMutated: false,
+      moderationTruthMutated: false,
+      customerTruthMutated: false,
+      bffTruthMutated: false,
+      uiTruthMutated: false,
+      piiDetected,
+      piiMasked: piiDetected,
+      piiMinimized: piiDetected,
+      piiDroppedFields: piiDetected ? piiDroppedFields : [],
+      allowedEventType: eventName,
+      eventTaxonomyChecked: true,
+      auditEvidenceRequired: true
     };
 
     const savedEvent = await this.repo.createEvent(eventRecord);
@@ -200,6 +288,20 @@ export class AnalyticsService {
       riskDecisionTruth: false,
       eventTruthMutated: false,
       outboxDeliveryGuaranteed: false,
+      analyticsEventOnly: true,
+      ownerTruthMutatedByAnalytics: false,
+      financeTruthMutated: false,
+      moderationTruthMutated: false,
+      customerTruthMutated: false,
+      bffTruthMutated: false,
+      uiTruthMutated: false,
+      piiDetected,
+      piiMasked: piiDetected,
+      piiMinimized: piiDetected,
+      piiDroppedFields: piiDetected ? piiDroppedFields : [],
+      allowedEventType: eventName,
+      eventTaxonomyChecked: true,
+      auditEvidenceRequired: true,
       warnings
     };
   }

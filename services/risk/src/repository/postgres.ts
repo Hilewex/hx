@@ -1,6 +1,77 @@
 import { Pool } from 'pg';
-import { RiskSignal, RiskCase } from '@hx/contracts';
+import { RiskSignal, RiskCase, RiskBoundaryFlags, RiskLevel, RiskSignalType, RiskTargetType } from '@hx/contracts';
 import { IRiskRepository } from './interface';
+
+const boundaryFlags: RiskBoundaryFlags = {
+  riskSignalOnly: true,
+  businessTruthMutated: false,
+  ownerTruthMutatedByRisk: false,
+  orderTruthMutated: false,
+  paymentTruthMutated: false,
+  payoutTruthMutated: false,
+  financeTruthMutated: false,
+  moderationTruthMutated: false,
+  bffTruthMutated: false,
+  uiTruthMutated: false,
+};
+
+function scoreFor(level: RiskLevel, category: RiskSignalType) {
+  const scoreByLevel: Record<RiskLevel, number> = { LOW: 25, MEDIUM: 55, HIGH: 80, CRITICAL: 95 };
+  return {
+    score: scoreByLevel[level],
+    severity: level,
+    category,
+    decisionStatus: level === 'LOW' ? 'NO_ACTION_MONITOR' as const : level === 'MEDIUM' ? 'REVIEW_REQUIRED' as const : 'OWNER_HANDOFF_REQUIRED' as const,
+    riskSignalOnly: true as const,
+  };
+}
+
+function ownerDomainForTarget(targetType: RiskTargetType): string | null {
+  const ownerByTarget: Record<RiskTargetType, string | null> = {
+    ACCOUNT: 'AUTH_ACCESS_OWNER',
+    CHECKOUT: 'COMMERCE_OWNER',
+    PAYMENT: 'PAYMENT_OWNER',
+    ORDER: 'ORDER_OPERATIONS_OWNER',
+    REFUND: 'FINANCE_REFUND_OWNER',
+    PAYOUT: 'PAYOUT_OWNER',
+    COUPON: 'COMMERCE_PROMOTION_OWNER',
+    POINT: 'REWARD_POINT_OWNER',
+    INTERACTION: 'SOCIAL_OWNER',
+    REVIEW: 'MODERATION_OWNER',
+    STORY: 'MODERATION_OWNER',
+    STORE: 'CREATOR_LIFECYCLE_OWNER',
+    SUPPLIER: 'SUPPLIER_LIFECYCLE_OWNER',
+    CREATOR: 'CREATOR_LIFECYCLE_OWNER',
+  };
+  return ownerByTarget[targetType] ?? null;
+}
+
+function handoffEvidence(row: any, score: ReturnType<typeof scoreFor>, reasonCode: any, correlationId: string, idempotencyKey: string) {
+  const ownerDomainHandoff = ownerDomainForTarget(row.target_type);
+  const handoffRequired = score.decisionStatus !== 'NO_ACTION_MONITOR';
+
+  return {
+    ...boundaryFlags,
+    targetDomain: ownerDomainHandoff || 'NO_OWNER_HANDOFF',
+    targetType: row.target_type,
+    targetId: row.target_id,
+    riskScore: score,
+    severity: score.severity,
+    reasonCode,
+    correlationId,
+    idempotencyKey,
+    decisionStatus: score.decisionStatus,
+    handoffRequired,
+    ownerHandoffRequired: handoffRequired,
+    ownerHandoffNotRequiredReason: handoffRequired ? undefined : 'LOW_RISK_MONITOR_ONLY',
+    ownerDomainHandoff: handoffRequired ? ownerDomainHandoff : null,
+    auditEvidenceRequired: true as const,
+    reasonCodeRequired: true as const,
+    systemActorId: 'risk-service',
+    requestedAt: row.created_at,
+    createdAt: row.created_at,
+  };
+}
 
 export class PostgresRiskRepository implements IRiskRepository {
   constructor(private pool: Pool) {}
@@ -161,27 +232,7 @@ export class PostgresRiskRepository implements IRiskRepository {
 
     return {
       total: parseInt(countResult.rows[0].count, 10),
-      signals: rowsResult.rows.map(row => ({
-        signalId: row.signal_id,
-        target: {
-          targetId: row.target_id,
-          targetType: row.target_type,
-        },
-        type: row.type,
-        level: row.level,
-        source: row.source,
-        reasonCode: row.reason_code,
-        metadata: row.metadata,
-        idempotencyKey: row.idempotency_key || undefined,
-        createdAt: row.created_at,
-        riskTruthMutated: row.risk_truth_mutated,
-        targetTruthMutated: row.target_truth_mutated,
-        paymentTruthMutated: row.payment_truth_mutated,
-        orderTruthMutated: row.order_truth_mutated,
-        refundTruthMutated: row.refund_truth_mutated,
-        financeTruthMutated: row.finance_truth_mutated,
-        moderationTruthMutated: row.moderation_truth_mutated,
-      })),
+      signals: rowsResult.rows.map(row => this.mapSignalToDomain(row)),
     };
   }
 
@@ -198,7 +249,13 @@ export class PostgresRiskRepository implements IRiskRepository {
   }
 
   private mapToDomain(row: any): RiskCase {
+    const score = scoreFor(row.level, 'MANUAL_REPORT');
+    const correlationId = row.correlation_id || row.case_id;
+    const idempotencyKey = row.idempotency_key || row.case_id;
+    const evidence = handoffEvidence(row, score, row.reason_code, correlationId, idempotencyKey);
+
     return {
+      ...boundaryFlags,
       caseId: row.case_id,
       target: {
         targetId: row.target_id,
@@ -206,21 +263,63 @@ export class PostgresRiskRepository implements IRiskRepository {
       },
       status: row.status,
       level: row.level,
+      score,
       source: row.source,
       decision: row.decision || undefined,
       reasonCode: row.reason_code,
+      correlationId,
       notes: row.notes || undefined,
       signals: typeof row.signals === 'string' ? JSON.parse(row.signals) : row.signals,
-      idempotencyKey: row.idempotency_key || undefined,
+      idempotencyKey,
+      systemActorId: 'risk-service',
+      requestedAt: row.created_at,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
+      decisionStatus: evidence.decisionStatus,
+      ownerHandoffRequired: evidence.ownerHandoffRequired,
+      ownerDomainHandoff: evidence.ownerDomainHandoff,
+      ownerHandoffEvidence: evidence,
+      auditEvidenceRequired: true,
+      reasonCodeRequired: true,
       riskTruthMutated: row.risk_truth_mutated,
       targetTruthMutated: row.target_truth_mutated,
-      paymentTruthMutated: row.payment_truth_mutated,
-      orderTruthMutated: row.order_truth_mutated,
       refundTruthMutated: row.refund_truth_mutated,
-      financeTruthMutated: row.finance_truth_mutated,
-      moderationTruthMutated: row.moderation_truth_mutated,
+    };
+  }
+
+  private mapSignalToDomain(row: any): RiskSignal {
+    const score = scoreFor(row.level, row.type);
+    const correlationId = row.correlation_id || row.signal_id;
+    const idempotencyKey = row.idempotency_key || row.signal_id;
+    const evidence = handoffEvidence(row, score, row.reason_code, correlationId, idempotencyKey);
+
+    return {
+      ...boundaryFlags,
+      signalId: row.signal_id,
+      target: {
+        targetId: row.target_id,
+        targetType: row.target_type,
+      },
+      type: row.type,
+      level: row.level,
+      score,
+      source: row.source,
+      reasonCode: row.reason_code,
+      correlationId,
+      metadata: row.metadata,
+      idempotencyKey,
+      systemActorId: 'risk-service',
+      requestedAt: row.created_at,
+      createdAt: row.created_at,
+      decisionStatus: score.decisionStatus,
+      ownerHandoffRequired: evidence.ownerHandoffRequired,
+      ownerDomainHandoff: evidence.ownerDomainHandoff,
+      ownerHandoffEvidence: evidence,
+      auditEvidenceRequired: true,
+      reasonCodeRequired: true,
+      riskTruthMutated: row.risk_truth_mutated,
+      targetTruthMutated: row.target_truth_mutated,
+      refundTruthMutated: row.refund_truth_mutated,
     };
   }
 }

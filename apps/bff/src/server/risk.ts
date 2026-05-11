@@ -26,9 +26,14 @@ export async function handleCreateRiskSignal(req: any) {
     if (!command.target?.targetId || !command.target?.targetType || !command.type) {
       return response.badRequest('REQUEST_MISSING_FIELD', 'Missing required fields for risk signal');
     }
+    const evidenceError = validateRiskEvidence(command);
+    if (evidenceError) return evidenceError;
     const result = await createRiskSignal(command);
     return response.created(result);
   } catch (error: any) {
+    if (error?.code?.startsWith('RISK_')) {
+      return response.badRequest(error.code, error.message);
+    }
     return response.internalError('RISK_SIGNAL_FAILED', 'Failed to create risk signal');
   }
 }
@@ -62,9 +67,14 @@ export async function handleCreateRiskCase(req: any) {
     if (!command.target?.targetId || !command.target?.targetType || !command.level) {
       return response.badRequest('REQUEST_MISSING_FIELD', 'Missing required fields for risk case');
     }
+    const evidenceError = validateRiskEvidence(command);
+    if (evidenceError) return evidenceError;
     const result = await createRiskCase(command);
     return response.created(result);
   } catch (error: any) {
+    if (error?.code?.startsWith('RISK_')) {
+      return response.badRequest(error.code, error.message);
+    }
     return response.internalError('RISK_CASE_CREATION_FAILED', 'Failed to create risk case');
   }
 }
@@ -79,14 +89,36 @@ export async function handleReviewRiskCase(req: any) {
     if (!command.caseId || !command.reviewerId || !command.decision) {
       return response.badRequest('REQUEST_MISSING_FIELD', 'Missing required fields for risk review');
     }
+    const evidenceError = validateRiskEvidence(command);
+    if (evidenceError) return evidenceError;
     const result = await reviewRiskCase(command);
     return response.ok(result);
   } catch (error: any) {
+    if (error?.code?.startsWith('RISK_')) {
+      return response.badRequest(error.code, error.message);
+    }
     if (response.isNotFoundError(error)) {
       return response.notFound('RISK_CASE_NOT_FOUND', 'Risk case not found for review');
     }
     return response.internalError('RISK_REVIEW_FAILED', 'Failed to review risk case');
   }
+}
+
+function validateRiskEvidence(command: {
+  reasonCode?: string;
+  correlationId?: string;
+  idempotencyKey?: string;
+}) {
+  if (!command.reasonCode) {
+    return response.badRequest('RISK_REASON_CODE_REQUIRED', 'reasonCode is required');
+  }
+  if (!command.correlationId) {
+    return response.badRequest('RISK_CORRELATION_ID_REQUIRED', 'correlationId is required');
+  }
+  if (!command.idempotencyKey) {
+    return response.badRequest('RISK_IDEMPOTENCY_KEY_REQUIRED', 'idempotencyKey is required');
+  }
+  return null;
 }
 
 export async function handleGetRiskCase(req: any) {

@@ -12,6 +12,7 @@ async function run() {
     source: 'SYSTEM_RULE',
     reasonCode: 'SUSPICIOUS_VELOCITY',
     idempotencyKey: signalKey,
+    correlationId: 'corr_sig_1',
   });
   console.log('Signal 1 created:', sigRes1.signalId);
 
@@ -23,6 +24,7 @@ async function run() {
     source: 'SYSTEM_RULE',
     reasonCode: 'SUSPICIOUS_VELOCITY',
     idempotencyKey: signalKey,
+    correlationId: 'corr_sig_1',
   });
   console.log('Signal 2 (duplicate) created:', sigRes2.signalId);
   if (sigRes1.signalId !== sigRes2.signalId) throw new Error('Idempotency failed for signal');
@@ -36,6 +38,7 @@ async function run() {
     reasonCode: 'PAYMENT_ANOMALY',
     signals: [sigRes1.signalId!],
     idempotencyKey: caseKey,
+    correlationId: 'corr_case_1',
   });
   console.log('Case created:', caseRes1.caseId);
 
@@ -43,8 +46,11 @@ async function run() {
   await reviewRiskCase({
     caseId: caseRes1.caseId!,
     decision: 'RECOMMEND_HOLD',
+    reasonCode: 'PAYMENT_ANOMALY',
     notes: 'Advisory hold recommended due to high velocity',
     reviewerId: 'admin_1',
+    correlationId: 'corr_review_1',
+    idempotencyKey: 'idemp_review_1',
   });
   console.log('Case reviewed with RECOMMEND_HOLD');
 
