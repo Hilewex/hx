@@ -240,6 +240,24 @@ export interface ReviewFraudCaseCommand {
   notes?: string;
 }
 
+export interface OwnerDomainFraudReviewCommand extends ReviewFraudCaseCommand {
+  ownerDomainInternalOnly?: true;
+  deprecatedForOperationalWorkflow?: true;
+  operationalIntentOnly?: false;
+  enforcementExecuted?: false;
+  ownerMutationTruth?: true;
+  payoutBlockedTruth?: false;
+}
+
+export interface LegacyFraudReviewCommandDeprecated extends ReviewFraudCaseCommand {
+  deprecatedForOperationalWorkflow: true;
+  internalOnly: true;
+  operationalIntentOnly: false;
+  enforcementExecuted?: false;
+  ownerMutationTruth?: true;
+  payoutBlockedTruth?: false;
+}
+
 export interface CreateFraudFalsePositiveReviewCommand {
   fraudCaseId: string;
   requestedByActorId?: string;

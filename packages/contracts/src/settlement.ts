@@ -3,6 +3,12 @@ import type { CheckoutDiscountLineAllocation } from './coupon';
 export type SettlementSourceType =
   | 'ORDER'
   | 'ORDER_LINE'
+  | 'COMMERCIAL_POOL_PRODUCT'
+  | 'CREATOR_STORE_PRODUCT'
+  | 'CREATOR_STORE'
+  | 'SUPPLIER'
+  | 'DISCOUNT_ALLOCATION'
+  | 'COUPON_SNAPSHOT'
   | 'LEDGER_ENTRY'
   | 'REFUND'
   | 'MANUAL_ADJUSTMENT'
@@ -55,6 +61,17 @@ export type SettlementLineStatus =
   | 'CANCELLED'
   | 'CLOSED';
 
+export type SettlementPayableEarningStatus =
+  | 'PENDING'
+  | 'HELD'
+  | 'RELEASE_ELIGIBLE'
+  | 'REVERSED'
+  | 'PAYOUT_READY';
+
+export type SettlementPayableEarningPartyType =
+  | 'SUPPLIER'
+  | 'CREATOR';
+
 export type SettlementReasonCode =
   | 'ORDER_CREATED_FOUNDATION'
   | 'DELIVERY_PENDING'
@@ -81,10 +98,16 @@ export interface SettlementAmountSummary {
   grossAmount: number;
   discountAmount?: number;
   netAmount: number;
+  supplierBaseAmount?: number;
+  poolBasePriceAmount?: number;
+  creatorSelectedPriceAmount?: number;
+  platformMarginAmount?: number;
   platformShareAmount?: number;
   creatorMarginAmount?: number;
   creatorShareAmount?: number;
   supplierShareAmount?: number;
+  economicsSnapshotAvailable?: boolean;
+  economicsSnapshotStatus?: 'COMPLETE' | 'DEGRADED';
   ruleSourceAvailable: boolean;
   calculationFinalized: boolean;
 }
@@ -206,6 +229,190 @@ export interface SettlementLine {
   warnings: string[];
 }
 
+export interface SettlementPayableEarningBoundaryFlags {
+  payoutCreated: false;
+  ledgerEntryCreated: false;
+  providerPayoutExecuted: false;
+}
+
+export interface SettlementPayableEarningReversalBoundaryFlags {
+  ledgerEntryCreated: false;
+  providerPayoutReversed: false;
+  payoutMutationPerformed: false;
+  financeCorrectionCreated: false;
+}
+
+export interface SettlementPayableEarningReleaseBoundaryFlags {
+  payoutCreated: false;
+  ledgerEntryCreated: false;
+  providerPayoutExecuted: false;
+  paymentInstructionCreated: false;
+}
+
+export type SettlementPayableEarningReversalStatus =
+  | 'REVERSED'
+  | 'IDEMPOTENT'
+  | 'REJECTED'
+  | 'REVIEW_REQUIRED';
+
+export interface SettlementSupplierPayable {
+  payableId: string;
+  settlementLineId: string;
+  orderId: string;
+  orderLineId: string;
+  partyType: 'SUPPLIER';
+  partyId: string;
+  amount: number;
+  currency: string;
+  sourceRefs: SettlementSourceRef[];
+  status: SettlementPayableEarningStatus;
+  holdReasonCode?: SettlementReasonCode;
+  riskHoldActive?: boolean;
+  refundImpactPending?: boolean;
+  financeCorrectionPending?: boolean;
+  externalReviewRequired?: boolean;
+  createdAt: string;
+  updatedAt: string;
+  boundaryFlags: SettlementPayableEarningBoundaryFlags;
+}
+
+export interface SettlementCreatorEarning {
+  earningId: string;
+  settlementLineId: string;
+  orderId: string;
+  orderLineId: string;
+  partyType: 'CREATOR';
+  partyId: string;
+  amount: number;
+  currency: string;
+  sourceRefs: SettlementSourceRef[];
+  status: SettlementPayableEarningStatus;
+  holdReasonCode?: SettlementReasonCode;
+  riskHoldActive?: boolean;
+  refundImpactPending?: boolean;
+  financeCorrectionPending?: boolean;
+  externalReviewRequired?: boolean;
+  createdAt: string;
+  updatedAt: string;
+  boundaryFlags: SettlementPayableEarningBoundaryFlags;
+}
+
+export interface ReverseSettlementSupplierPayableCommand {
+  sourceRefundId?: string;
+  refundId?: string;
+  settlementLineId: string;
+  payableId: string;
+  reasonCode: SettlementReasonCode;
+  reversalAmount: number;
+  actorId?: string;
+  systemActor?: string;
+  idempotencyKey: string;
+  sourceRefs?: SettlementSourceRef[];
+  createdAt?: string;
+}
+
+export interface ReverseSettlementCreatorEarningCommand {
+  sourceRefundId?: string;
+  refundId?: string;
+  settlementLineId: string;
+  earningId: string;
+  reasonCode: SettlementReasonCode;
+  reversalAmount: number;
+  actorId?: string;
+  systemActor?: string;
+  idempotencyKey: string;
+  sourceRefs?: SettlementSourceRef[];
+  createdAt?: string;
+}
+
+export interface EvaluateSupplierPayableReleaseCommand {
+  settlementLineId: string;
+  payableId: string;
+  actorId?: string;
+  systemActor?: string;
+  evaluatedAt?: string;
+}
+
+export interface EvaluateCreatorEarningReleaseCommand {
+  settlementLineId: string;
+  earningId: string;
+  actorId?: string;
+  systemActor?: string;
+  evaluatedAt?: string;
+}
+
+export interface SettlementSupplierPayableReversal {
+  reversalId: string;
+  sourceRefundId?: string;
+  refundId?: string;
+  settlementLineId: string;
+  payableId: string;
+  reasonCode: SettlementReasonCode;
+  reversalAmount: number;
+  actorId?: string;
+  systemActor?: string;
+  idempotencyKey: string;
+  sourceRefs: SettlementSourceRef[];
+  createdAt: string;
+  boundaryFlags: SettlementPayableEarningReversalBoundaryFlags;
+}
+
+export interface SettlementCreatorEarningReversal {
+  reversalId: string;
+  sourceRefundId?: string;
+  refundId?: string;
+  settlementLineId: string;
+  earningId: string;
+  reasonCode: SettlementReasonCode;
+  reversalAmount: number;
+  actorId?: string;
+  systemActor?: string;
+  idempotencyKey: string;
+  sourceRefs: SettlementSourceRef[];
+  createdAt: string;
+  boundaryFlags: SettlementPayableEarningReversalBoundaryFlags;
+}
+
+export interface SettlementSupplierPayableReversalResult {
+  success: boolean;
+  status: SettlementPayableEarningReversalStatus;
+  payable?: SettlementSupplierPayable;
+  reversal?: SettlementSupplierPayableReversal;
+  errors?: string[];
+  warnings?: string[];
+  boundaryFlags: SettlementPayableEarningReversalBoundaryFlags;
+}
+
+export interface SupplierPayableReleaseEvaluationResult {
+  eligible: boolean;
+  statusBefore?: SettlementPayableEarningStatus;
+  statusAfter?: SettlementPayableEarningStatus;
+  payable?: SettlementSupplierPayable;
+  warnings: string[];
+  blockingReasons: string[];
+  boundaryFlags: SettlementPayableEarningReleaseBoundaryFlags;
+}
+
+export interface CreatorEarningReleaseEvaluationResult {
+  eligible: boolean;
+  statusBefore?: SettlementPayableEarningStatus;
+  statusAfter?: SettlementPayableEarningStatus;
+  earning?: SettlementCreatorEarning;
+  warnings: string[];
+  blockingReasons: string[];
+  boundaryFlags: SettlementPayableEarningReleaseBoundaryFlags;
+}
+
+export interface SettlementCreatorEarningReversalResult {
+  success: boolean;
+  status: SettlementPayableEarningReversalStatus;
+  earning?: SettlementCreatorEarning;
+  reversal?: SettlementCreatorEarningReversal;
+  errors?: string[];
+  warnings?: string[];
+  boundaryFlags: SettlementPayableEarningReversalBoundaryFlags;
+}
+
 export interface CreateSettlementFromOrderCommand {
   orderId: string;
   idempotencyKey?: string;
@@ -235,11 +442,23 @@ export interface ListSettlementLinesQuery {
   offset?: number;
 }
 
+export interface ListSettlementPayableEarningsQuery {
+  settlementLineId?: string;
+  orderId?: string;
+  orderLineId?: string;
+  partyId?: string;
+  status?: SettlementPayableEarningStatus;
+  limit?: number;
+  offset?: number;
+}
+
 export interface SettlementMutationResult {
   success: boolean;
   settlementLineId?: string;
   settlementLine?: SettlementLine;
   settlementLines?: SettlementLine[];
+  supplierPayables?: SettlementSupplierPayable[];
+  creatorEarnings?: SettlementCreatorEarning[];
   errors?: string[];
   warnings?: string[];
 }
@@ -250,5 +469,15 @@ export interface SettlementLineResponse {
 
 export interface SettlementLineListResponse {
   settlementLines: SettlementLine[];
+  total: number;
+}
+
+export interface SettlementSupplierPayableListResponse {
+  supplierPayables: SettlementSupplierPayable[];
+  total: number;
+}
+
+export interface SettlementCreatorEarningListResponse {
+  creatorEarnings: SettlementCreatorEarning[];
   total: number;
 }

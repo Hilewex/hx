@@ -2,7 +2,10 @@ import {
   CreateOrderCommand,
   OrderResponse,
   OrderDetailResponse,
-  OrderLine
+  OrderLine,
+  OrderLineEconomicsSnapshot,
+  CheckoutLineValidation,
+  CheckoutReviewResponse
 } from '@hx/contracts';
 import { getCheckoutReview } from '@hx/checkout';
 import { getPayment } from '@hx/payment';
@@ -10,6 +13,18 @@ import { createInternalRiskSignal } from '@hx/risk';
 import { randomUUID } from 'node:crypto';
 import { getOrderRepository } from './repository/index';
 import { getAuditEventRepositories } from '@hx/persistence';
+
+const UNKNOWN_ECONOMICS_FIELDS = [
+  'creatorStoreId',
+  'supplierId',
+  'supplierSubmittedProductId',
+  'supplierVariantId',
+  'poolBasePriceAmount',
+  'creatorSelectedPriceAmount',
+  'platformMarginAmount',
+  'creatorMarginAmount',
+  'supplierBaseAmount',
+];
 
 export async function getOrderById(orderId: string): Promise<OrderResponse | undefined> {
   return getOrderRepository().getById(orderId);
@@ -159,16 +174,28 @@ export async function createOrderFromPayment(command: CreateOrderCommand): Promi
   const orderId = randomUUID();
   const orderNumber = `ORD-${Date.now()}-${orderId.slice(0, 8).toUpperCase()}`;
 
-  const lines: OrderLine[] = checkout.lines.map(cl => ({
-    orderLineId: randomUUID(),
-    productId: cl.productId,
-    variantId: cl.variantId,
-    storefrontId: cl.storefrontId,
-    quantity: cl.quantity,
-    productNameSnapshot: `Product ${cl.productId}`,
-    unitPriceSnapshot: cl.unitPrice || 0,
-    lineTotalSnapshot: cl.lineTotal || 0
-  }));
+  const lines: OrderLine[] = checkout.lines.map(cl => {
+    const orderLineId = randomUUID();
+    const unitPriceSnapshot = cl.unitPrice || 0;
+    const lineTotalSnapshot = cl.lineTotal || 0;
+
+    return {
+      orderLineId,
+      productId: cl.productId,
+      variantId: cl.variantId,
+      storefrontId: cl.storefrontId,
+      quantity: cl.quantity,
+      productNameSnapshot: `Product ${cl.productId}`,
+      unitPriceSnapshot,
+      lineTotalSnapshot,
+      economicsSnapshot: buildOrderLineEconomicsSnapshot({
+        checkout,
+        checkoutLine: cl,
+        unitPriceSnapshot,
+        lineTotalSnapshot,
+      }),
+    };
+  });
 
   const response: OrderResponse = {
     orderId,
@@ -224,6 +251,126 @@ export async function createOrderFromPayment(command: CreateOrderCommand): Promi
     response.warnings.push('AUDIT_EVENT_APPEND_FAILED_AFTER_TRUTH_WRITE');
   }
   return response;
+}
+
+function buildOrderLineEconomicsSnapshot(input: {
+  checkout: CheckoutReviewResponse;
+  checkoutLine: CheckoutLineValidation;
+  unitPriceSnapshot: number;
+  lineTotalSnapshot: number;
+}): OrderLineEconomicsSnapshot {
+  const { checkout, checkoutLine, unitPriceSnapshot, lineTotalSnapshot } = input;
+  const discountAllocationRefs = (checkout.discountSnapshots ?? [])
+    .flatMap((snapshot) => snapshot.lineAllocations ?? [])
+    .filter((allocation) => allocation.lineId === checkoutLine.lineId)
+    .map((allocation) => ({
+      allocationId: allocation.allocationId,
+      discountSnapshotId: allocation.discountSnapshotId,
+      discountCode: allocation.discountCode,
+      discountKind: allocation.discountKind,
+      sponsorType: allocation.sponsorType,
+      sponsorId: allocation.sponsorId,
+      allocatedAmount: allocation.allocatedAmount,
+      currency: allocation.currency,
+    }));
+
+  const couponSnapshotRefs = (checkout.discountSnapshots ?? [])
+    .filter((snapshot) =>
+      snapshot.sourceType === 'COUPON' &&
+      (snapshot.lineAllocations ?? []).some((allocation) => allocation.lineId === checkoutLine.lineId),
+    )
+    .map((snapshot) => ({
+      discountSnapshotId: snapshot.discountSnapshotId,
+      sourceType: snapshot.sourceType,
+      code: snapshot.code,
+      discountAmount: snapshot.discountAmount,
+      sponsorType: snapshot.sponsorType,
+      sponsorId: snapshot.sponsorId,
+    }));
+
+  const sourceFields = {
+    creatorStoreId: checkoutLine.creatorStoreId,
+    supplierId: checkoutLine.supplierId,
+    supplierSubmittedProductId: checkoutLine.supplierSubmittedProductId,
+    supplierVariantId: checkoutLine.supplierVariantId,
+    poolBasePriceAmount: checkoutLine.poolBasePriceAmount,
+    creatorSelectedPriceAmount: checkoutLine.creatorSelectedPriceAmount,
+    platformMarginAmount: undefined as number | undefined,
+    creatorMarginAmount: undefined as number | undefined,
+    supplierBaseAmount: checkoutLine.supplierBaseAmount,
+  };
+  const warnings = [
+    'ORDER_LINE_ECONOMICS_SNAPSHOT_FOUNDATION_ONLY',
+  ];
+
+  if (
+    sourceFields.poolBasePriceAmount !== undefined &&
+    sourceFields.supplierBaseAmount !== undefined
+  ) {
+    if (sourceFields.poolBasePriceAmount >= sourceFields.supplierBaseAmount) {
+      sourceFields.platformMarginAmount = sourceFields.poolBasePriceAmount - sourceFields.supplierBaseAmount;
+    } else {
+      warnings.push('PLATFORM_MARGIN_PRICE_RELATION_INVALID');
+    }
+  }
+
+  if (
+    sourceFields.creatorSelectedPriceAmount !== undefined &&
+    sourceFields.poolBasePriceAmount !== undefined
+  ) {
+    if (sourceFields.creatorSelectedPriceAmount >= sourceFields.poolBasePriceAmount) {
+      sourceFields.creatorMarginAmount = sourceFields.creatorSelectedPriceAmount - sourceFields.poolBasePriceAmount;
+    } else {
+      warnings.push('CREATOR_MARGIN_PRICE_RELATION_INVALID');
+    }
+  }
+
+  const unknownFields = UNKNOWN_ECONOMICS_FIELDS.filter((field) => {
+    const value = sourceFields[field as keyof typeof sourceFields];
+    return value === undefined || value === null;
+  });
+
+  if (!checkoutLine.commercialPoolProductId) {
+    unknownFields.push('commercialPoolProductId');
+    warnings.push('COMMERCIAL_POOL_PRODUCT_SOURCE_UNKNOWN');
+  }
+
+  if (!checkoutLine.creatorStoreProductId) {
+    unknownFields.push('creatorStoreProductId');
+    warnings.push('CREATOR_STORE_PRODUCT_SOURCE_UNKNOWN');
+  }
+  if (unknownFields.length > 0) {
+    warnings.push('ORDER_LINE_ECONOMICS_SOURCE_DEGRADED');
+  }
+  if (
+    unknownFields.includes('platformMarginAmount') ||
+    unknownFields.includes('creatorMarginAmount') ||
+    unknownFields.includes('supplierBaseAmount')
+  ) {
+    warnings.push('SUPPLIER_POOL_CREATOR_MARGIN_SOURCE_UNAVAILABLE');
+  }
+
+  return {
+    commercialPoolProductId: checkoutLine.commercialPoolProductId,
+    creatorStoreProductId: checkoutLine.creatorStoreProductId,
+    ...sourceFields,
+    unitPriceSnapshot,
+    lineTotalSnapshot,
+    discountAllocationRefs,
+    couponSnapshotRefs,
+    priceSource: 'CHECKOUT_LINE',
+    economicsSnapshotCreatedAt: new Date().toISOString(),
+    status: unknownFields.length === 0 ? 'COMPLETE' : 'DEGRADED',
+    unknownFields,
+    warnings,
+    boundaryFlags: {
+      economicsSnapshotOnly: true,
+      settlementCreated: false,
+      payoutCreated: false,
+      ledgerEntryCreated: false,
+      payableCreated: false,
+    },
+  };
 }
 
 function createErrorResponse(

@@ -74,6 +74,15 @@ export interface CatalogProductReadProjection extends Omit<ProductDetail, 'varia
   projectionSource: CatalogProjectionSource;
   commercialPoolProductId?: string;
   creatorStoreProductId?: string;
+  creatorStoreId?: string;
+  supplierId?: string;
+  supplierSubmittedProductId?: string;
+  supplierVariantId?: string;
+  poolBasePriceAmount?: number;
+  creatorSelectedPriceAmount?: number;
+  platformMarginAmount?: number;
+  creatorMarginAmount?: number;
+  supplierBaseAmount?: number;
   storefrontId?: string;
   visibility?: 'VISIBLE' | 'HIDDEN';
   priceTruth: false;

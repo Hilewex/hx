@@ -81,12 +81,59 @@ export function requireFinanceRole(context: ActorContext): GuardResult {
   return requireActorType(context, ['ADMIN', 'FINANCE']);
 }
 
+export function requireRefundOperationalRole(context: ActorContext): GuardResult {
+  return requireActorType(context, ['ADMIN', 'FINANCE', 'OPERATOR']);
+}
+
 export function requireRiskOperator(context: ActorContext): GuardResult {
   return requireActorType(context, ['ADMIN', 'RISK_OPERATOR']);
 }
 
 export function requireModerationOperator(context: ActorContext): GuardResult {
   return requireActorType(context, ['ADMIN', 'MODERATOR']);
+}
+
+export function requireInternalService(context: ActorContext): GuardResult {
+  const roleCheck = requireActorType(context, ['INTERNAL_SERVICE']);
+  if (!roleCheck.allowed) return roleCheck;
+  if (!context.isAuthenticated || !context.actorId || !context.internalService) {
+    return {
+      allowed: false,
+      response: forbidden(
+        'INTERNAL_SERVICE_SIGNED_TOKEN_REQUIRED',
+        'Signed internal service token with explicit caller identity is required',
+      ),
+    };
+  }
+
+  if (context.internalService.callerId !== context.actorId) {
+    return {
+      allowed: false,
+      response: forbidden(
+        'INTERNAL_SERVICE_CALLER_ID_MISMATCH',
+        'Internal service caller identity must match the authenticated internal actor',
+      ),
+    };
+  }
+
+  const allowedCallers = (process.env.INTERNAL_SERVICE_ACTOR_ALLOWLIST || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+  if (allowedCallers.length === 0) {
+    console.warn('[BFF] INTERNAL_SERVICE_ACTOR_ALLOWLIST is empty; signed internal token is required but caller allowlist is not enforced.');
+  }
+  if (allowedCallers.length > 0 && !allowedCallers.includes(context.actorId)) {
+    return {
+      allowed: false,
+      response: forbidden(
+        'INTERNAL_SERVICE_CALLER_NOT_ALLOWLISTED',
+        'Internal service caller is not allowlisted for owner-domain legacy routes',
+      ),
+    };
+  }
+
+  return { allowed: true };
 }
 
 export function denyUnauthorized(reason: string): GuardResult {

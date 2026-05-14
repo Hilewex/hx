@@ -153,6 +153,11 @@ export interface RefundDetailResponse extends RefundResponse {}
 export interface RefundTransitionCommand {
   refundId: string;
   targetState: RefundState;
+  idempotencyKey: string;
+  reasonCode?: string;
+  evidenceRefs?: string[];
+  forcedTransition?: boolean;
+  manualOverride?: boolean;
   note?: string;
 }
 
@@ -160,6 +165,155 @@ export interface RefundTransitionResult {
   success: boolean;
   refund?: RefundResponse;
   error?: string;
+}
+
+export interface RefundProcessCommand {
+  refundId: string;
+  idempotencyKey: string;
+  reasonCode?: string;
+  evidenceRefs: string[];
+  note?: string;
+}
+
+export interface RefundReviewCommand {
+  refundId: string;
+  idempotencyKey: string;
+  makerActorId: string;
+  checkerActorId?: string;
+  reasonCode: string;
+  evidenceRefs: string[];
+  decision?: 'APPROVE_FOR_OWNER_REVIEW' | 'REJECT' | 'ESCALATE' | 'MANUAL_OVERRIDE';
+  note?: string;
+}
+
+export interface ManualRefundEscalationCommand {
+  refundId: string;
+  idempotencyKey: string;
+  makerActorId: string;
+  checkerActorId?: string;
+  reasonCode: string;
+  evidenceRefs: string[];
+  escalationTarget?: 'FINANCE' | 'RISK' | 'SUPPORT' | 'OPERATIONS';
+  note?: string;
+}
+
+export interface RefundOperationalBoundaryFlags {
+  refundExecutionTruth: false;
+  settlementTruth: false;
+  payoutTruth: false;
+  providerRefundTruth: false;
+  auditMutationTruth: false;
+}
+
+export interface RefundAuditEvidenceProjection {
+  requiredEvidenceRefs: string[];
+  providedEvidenceRefs: string[];
+  reasonCodeProjectionText: string;
+  auditIntentPreview: string[];
+  missingEvidenceWarnings: string[];
+  auditIntentRecordedProjection: boolean;
+  auditIntentPersistedProjection: boolean;
+  latestAuditIntentText?: string;
+  auditMutationTruth: false;
+}
+
+export interface RefundEscalationProjection {
+  escalationStateProjection: 'none' | 'recommended' | 'required' | 'manual_escalation_visible' | 'degraded';
+  escalationTargetProjection?: 'FINANCE' | 'RISK' | 'SUPPORT' | 'OPERATIONS';
+  visibilityText: string;
+  escalationDecisionTruth: false;
+}
+
+export interface RefundMakerCheckerProjection {
+  makerActorProjectionText: string;
+  checkerActorProjectionText: string;
+  reviewWorkflowStateProjection: RefundReviewWorkflowState;
+  sameActorApprovalBlockedProjection: true;
+  latestDecisionProjectionText: string;
+  dualApprovalRequiredProjection: boolean;
+  ownerStateMachineReady: true;
+  makerCheckerTruth: false;
+}
+
+export type RefundReviewWorkflowState =
+  | 'prepared'
+  | 'checker_required'
+  | 'checked'
+  | 'rejected'
+  | 'escalated'
+  | 'owner_handoff_pending'
+  | 'owner_handoff_ready';
+
+export interface RefundReviewQueueItemProjection {
+  refundId: string;
+  cancelReturnRequestId: string;
+  sourceTypeProjection: RefundSourceType | 'UNKNOWN';
+  statusProjection: RefundState | 'UNAVAILABLE';
+  amountProjectionText: string;
+  reasonPreviewText: string;
+  evidencePreviewText: string;
+  riskContextProjectionText: string;
+  supportContextProjectionText: string;
+  orderContextProjectionText: string;
+  escalation: RefundEscalationProjection;
+  auditEvidence: RefundAuditEvidenceProjection;
+  makerChecker: RefundMakerCheckerProjection;
+  detailHref: string;
+  boundaryFlags: RefundOperationalBoundaryFlags;
+  warnings?: string[];
+}
+
+export interface RefundReviewQueueProjection {
+  items: RefundReviewQueueItemProjection[];
+  totalProjection: number;
+  emptyState?: boolean;
+  degradedStateText?: string;
+  boundaryFlags: RefundOperationalBoundaryFlags;
+  warnings?: string[];
+}
+
+export interface RefundReviewDetailProjection extends RefundReviewQueueItemProjection {
+  lines: Array<{
+    refundLineId: string;
+    orderLineId: string;
+    productId: string;
+    quantityProjectionText: string;
+    amountProjectionText: string;
+    refundLineTruth: false;
+  }>;
+  paymentContextProjectionText: string;
+  settlementContextProjectionText: string;
+  payoutContextProjectionText: string;
+  providerContextProjectionText: string;
+  actionIntent: {
+    reviewIntentAllowed: true;
+    manualEscalationIntentAllowed: true;
+    evidenceRequiredIntentAllowed: true;
+    ownerCommandRequired: true;
+    directExecutionAllowed: false;
+    uiMutationTruth: false;
+  };
+}
+
+export type RefundCommandIntentStatus =
+  | 'accepted_for_owner_handoff'
+  | 'maker_submitted'
+  | 'checker_required'
+  | 'checked_for_owner_handoff'
+  | 'rejected_by_checker'
+  | 'escalated'
+  | 'validation_failed'
+  | 'permission_denied'
+  | 'evidence_required'
+  | 'owner_unavailable';
+
+export interface RefundCommandIntentResultProjection {
+  status: RefundCommandIntentStatus;
+  message: string;
+  idempotencyKey?: string;
+  reviewWorkflowState?: RefundReviewWorkflowState;
+  auditIntentPersisted: boolean;
+  boundaryFlags: RefundOperationalBoundaryFlags;
 }
 
 export interface ProviderRefundSimulationInput {

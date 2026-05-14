@@ -64,16 +64,8 @@ export async function simulateRefundFlow(requestId: string, orderRes: any) {
     const detailRes = await request(`/refund/${refund.refundId}`, 'GET');
     console.log('Refund Detail:', JSON.stringify(detailRes.data, null, 2));
 
-    // 6. Invalid transition
-    console.log('\nScenario 6: Attempting invalid transition (CREATED -> SUCCEEDED)...');
-    const transRes = await request('/refund/transition', 'POST', { refundId: refund.refundId, targetState: 'SUCCEEDED' });
-    console.log('Invalid Transition Result (Expected 400):', transRes.status, transRes.data?.error);
-
-    // 5. Process simulation
-    console.log('\nScenario 5: Processing refund simulation...');
-    const processRes = await request('/refund/process', 'POST', { refundId: refund.refundId });
-    console.log('Processed Refund:', JSON.stringify(processRes.data, null, 2));
-    console.log('Final State:', processRes.data.state);
+    console.log('\nScenario 5: Protected refund operational commands are not called from web bootstrap.');
+    console.log('Refund process, review, transition, and manual escalation require authenticated finance/admin/operator actor context.');
   }
 
   // 7. Unknown refund GET

@@ -641,8 +641,19 @@ export async function startCheckout(command: StartCheckoutCommand): Promise<Chec
     }
 
     const product = catalogResult.product;
+    lineValidation.commercialPoolProductId = product.commercialPoolProductId;
+    lineValidation.creatorStoreProductId = product.creatorStoreProductId;
+    lineValidation.creatorStoreId = product.creatorStoreId;
+    lineValidation.supplierId = product.supplierId;
+    lineValidation.supplierSubmittedProductId = product.supplierSubmittedProductId;
+    lineValidation.poolBasePriceAmount = product.poolBasePriceAmount;
+    lineValidation.creatorSelectedPriceAmount = product.creatorSelectedPriceAmount;
+    lineValidation.platformMarginAmount = product.platformMarginAmount;
+    lineValidation.creatorMarginAmount = product.creatorMarginAmount;
+    lineValidation.supplierBaseAmount = product.supplierBaseAmount;
     const targetVariantId = line.variantId || product.defaultVariantId;
     lineValidation.variantId = targetVariantId;
+    lineValidation.supplierVariantId = product.supplierVariantId;
 
     if (product.variants && product.variants.length > 0) {
         if (!targetVariantId || !product.variants.some((v: CatalogVariantProjection) => v.variantId === targetVariantId)) {

@@ -43,6 +43,89 @@ export interface CartResponse {
   errors?: { code: CartErrorCode; message: string }[];
 }
 
+export type CartProjectionStatus = 'available' | 'empty' | 'partial' | 'degraded' | 'unavailable' | 'timeout' | 'error';
+export type CartLineProjectionStatus = 'available' | 'partial' | 'degraded' | 'unavailable';
+export type CartCheckoutHandoffStatus = 'available_projection' | 'unavailable_projection' | 'degraded' | 'validation_required';
+
+export interface CartContextProjection {
+  cartId: string;
+  actorType: CartActorType;
+  actorLabel: string;
+  contextTruth: false;
+  warnings?: string[];
+}
+
+export interface CartMediaPreviewProjection {
+  mediaId: string;
+  url?: string;
+  alt: string;
+  status: 'available' | 'degraded' | 'unavailable';
+  mediaTruth: false;
+  warnings?: string[];
+}
+
+export interface CartLineItemProjection {
+  lineId: string;
+  productId: string;
+  variantId?: string;
+  storefrontId: string;
+  title: string;
+  creatorStoreText: string;
+  quantityText: string;
+  safePriceText: string;
+  media: CartMediaPreviewProjection;
+  status: CartLineProjectionStatus;
+  warningText?: string;
+  actionPlaceholderText: string;
+  productTruth: false;
+  priceTruth: false;
+  stockTruth: false;
+  availabilityTruth: false;
+  purchaseEligibilityTruth: false;
+  warnings?: string[];
+}
+
+export interface CartSummaryProjection {
+  itemCountText: string;
+  safeSubtotalText: string;
+  couponPlaceholderText: string;
+  summaryTruth: false;
+  priceTruth: false;
+  discountTruth: false;
+  campaignTruth: false;
+  warnings?: string[];
+}
+
+export interface CartCheckoutHandoffProjection {
+  status: CartCheckoutHandoffStatus;
+  ctaText: string;
+  helperText: string;
+  checkoutReadinessTruth: false;
+  paymentOrderTruth: false;
+  purchaseEligibilityTruth: false;
+  warnings?: string[];
+}
+
+export interface CartSurfaceProjection {
+  cartId: string;
+  status: CartProjectionStatus;
+  context: CartContextProjection;
+  lines: CartLineItemProjection[];
+  summary: CartSummaryProjection;
+  checkoutHandoff: CartCheckoutHandoffProjection;
+  boundaryFlags: {
+    projectionTruth: false;
+    priceTruth: false;
+    stockTruth: false;
+    availabilityTruth: false;
+    checkoutReadinessTruth: false;
+    paymentOrderTruth: false;
+    couponCampaignTruth: false;
+    purchaseEligibilityTruth: false;
+  };
+  warnings?: string[];
+}
+
 export interface AddToCartCommand {
   productId: string;
   variantId?: string;

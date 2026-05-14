@@ -16,6 +16,16 @@ export interface AuthenticatedActor extends BaseActor {
   isAuthenticated: true;
   actorId: string;
   sessionId: string;
+  internalService?: {
+    serviceName: string;
+    callerId: string;
+    issuedAt: number;
+    expiresAt: number;
+    allowedAudience: string[];
+    routeScope: string;
+    signature: string;
+    signedTokenRequired: true;
+  };
 }
 
 export type ActorContext = GuestActor | AuthenticatedActor;

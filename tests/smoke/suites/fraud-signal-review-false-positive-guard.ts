@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { getAdminHeaders, getCreatorHeaders, getCustomerHeaders, getGuestHeaders } from '../auth-utils';
+import { getAdminHeaders, getCreatorHeaders, getCustomerHeaders, getGuestHeaders, getInternalServiceHeaders } from '../auth-utils';
 import { SmokeRunner } from '../types';
 
 export const fraudSignalReviewFalsePositiveGuardSmoke: SmokeRunner = {
@@ -18,6 +18,7 @@ export const fraudSignalReviewFalsePositiveGuardSmoke: SmokeRunner = {
     };
 
     const adminHeaders = getAdminHeaders('admin-1');
+    const internalHeaders = getInternalServiceHeaders('fraud-owner-internal-1');
     const customerHeaders = getCustomerHeaders(`cust-${randomUUID()}`);
     const creatorHeaders = getCreatorHeaders(`creator-${randomUUID()}`);
     const guestHeaders = { ...getGuestHeaders(), 'session-id': `sess-${randomUUID()}` };
@@ -195,8 +196,8 @@ export const fraudSignalReviewFalsePositiveGuardSmoke: SmokeRunner = {
       assertNonMutationEvidence(json.data);
     });
 
-    await runStep('Fraud review produces owner handoff evidence without owner mutation', async () => {
-      const res = await fetch(`${baseUrl}/fraud/review`, {
+    await runStep('Fraud legacy review is internal-only', async () => {
+      const adminRes = await fetch(`${baseUrl}/fraud/review`, {
         method: 'POST',
         headers: adminHeaders,
         body: JSON.stringify({
@@ -209,10 +210,28 @@ export const fraudSignalReviewFalsePositiveGuardSmoke: SmokeRunner = {
           notes: 'Recommend owner action only'
         }),
       });
+      if (adminRes.status !== 403) throw new Error(`Admin fraud review should be internal-only 403, got ${adminRes.status}`);
+
+      const res = await fetch(`${baseUrl}/fraud/review`, {
+        method: 'POST',
+        headers: internalHeaders,
+        body: JSON.stringify({
+          fraudCaseId,
+          decision: 'FRAUD_RECOMMEND_OWNER_ACTION',
+          reviewerId: 'fraud-owner-internal-1',
+          reasonCode: 'PAYOUT_ABUSE',
+          correlationId: `review-internal-corr-${randomUUID()}`,
+          idempotencyKey: `review-internal-idem-${randomUUID()}`,
+          notes: 'Internal owner-domain fraud review only'
+        }),
+      });
       if (!res.ok) throw new Error(`Review fraud case failed: ${res.status}`);
       const json = await res.json();
       if (json.data.decisionStatus !== 'FRAUD_OWNER_HANDOFF_REQUIRED') {
         throw new Error(`Expected FRAUD_OWNER_HANDOFF_REQUIRED, got ${json.data.decisionStatus}`);
+      }
+      if (json.data.routeClassification !== 'owner-domain internal route') {
+        throw new Error('Internal fraud review missing owner-domain route classification');
       }
       assertNonMutationEvidence(json.data);
     });

@@ -1,6 +1,6 @@
 import { SmokeRunner } from '../types';
 import { randomUUID } from 'crypto';
-import { getCustomerHeaders, getGuestHeaders, getAdminHeaders, getCreatorHeaders } from '../auth-utils';
+import { getCustomerHeaders, getGuestHeaders, getAdminHeaders, getCreatorHeaders, getInternalServiceHeaders } from '../auth-utils';
 
 export const riskSignalSmoke: SmokeRunner = {
   name: 'risk-signal',
@@ -20,6 +20,7 @@ export const riskSignalSmoke: SmokeRunner = {
     };
 
     const adminHeaders = getAdminHeaders('admin-1');
+    const internalHeaders = getInternalServiceHeaders('risk-owner-internal-1');
     const customerHeaders = getCustomerHeaders(`cust-${randomUUID()}`);
     const creatorHeaders = getCreatorHeaders(`creator-${randomUUID()}`);
     const guestHeaders = { ...getGuestHeaders(), 'session-id': `sess-${randomUUID()}` };
@@ -231,8 +232,8 @@ export const riskSignalSmoke: SmokeRunner = {
        assertNonMutationEvidence({ ownerHandoffEvidence: signal.ownerHandoffEvidence });
     });
 
-    // 8. Risk case and review path with owner handoff evidence
-    await runStep('Risk case review produces owner handoff evidence without owner mutation', async () => {
+    // 8. Risk case operational intent and internal-only owner review separation
+    await runStep('Risk legacy review is internal-only and operational intent does not mutate payout/enforcement', async () => {
       const targetId = `risk-case-${randomUUID()}`;
       const createCaseRes = await fetch(`${baseUrl}/risk/case`, {
         method: 'POST',
@@ -253,7 +254,7 @@ export const riskSignalSmoke: SmokeRunner = {
       if (!createCaseJson.data.caseId) throw new Error('No caseId in response');
       assertNonMutationEvidence(createCaseJson.data);
 
-      const reviewRes = await fetch(`${baseUrl}/risk/case/review`, {
+      const adminReviewRes = await fetch(`${baseUrl}/risk/case/review`, {
         method: 'POST',
         headers: adminHeaders,
         body: JSON.stringify({
@@ -266,12 +267,52 @@ export const riskSignalSmoke: SmokeRunner = {
           idempotencyKey: `review-idem-${randomUUID()}`,
         }),
       });
-      if (!reviewRes.ok) throw new Error(`Review case failed: ${reviewRes.status}`);
-      const reviewJson = await reviewRes.json();
-      if (reviewJson.data.decisionStatus !== 'OWNER_HANDOFF_REQUIRED') {
-        throw new Error(`Expected OWNER_HANDOFF_REQUIRED, got ${reviewJson.data.decisionStatus}`);
+      if (adminReviewRes.status !== 403) {
+        throw new Error(`Admin legacy risk review should be internal-only 403, got ${adminReviewRes.status}`);
       }
-      assertNonMutationEvidence(reviewJson.data);
+
+      const intentRes = await fetch(`${baseUrl}/risk/intent`, {
+        method: 'POST',
+        headers: adminHeaders,
+        body: JSON.stringify({
+          caseId: createCaseJson.data.caseId,
+          kind: 'recommend-payout-hold',
+          decision: 'RECOMMEND_HOLD',
+          makerActorId: 'admin-1',
+          checkerActorId: 'risk-checker-1',
+          reasonCode: 'SUSPICIOUS_VELOCITY',
+          evidenceRefs: [`risk-case-${createCaseJson.data.caseId}`],
+          idempotencyKey: `risk-intent-${randomUUID()}`,
+        }),
+      });
+      if (!intentRes.ok) throw new Error(`Risk intent failed: ${intentRes.status}`);
+      const intentJson = await intentRes.json();
+      if (intentJson.data.accepted !== true || intentJson.data.boundaryFlags?.enforcementExecuted !== false) {
+        throw new Error('Risk intent must be accepted without enforcement execution');
+      }
+      if (intentJson.data.boundaryFlags?.payoutBlockedTruth !== false) {
+        throw new Error('Risk intent must not create payout blocked truth');
+      }
+
+      const internalReviewRes = await fetch(`${baseUrl}/risk/case/review`, {
+        method: 'POST',
+        headers: internalHeaders,
+        body: JSON.stringify({
+          caseId: createCaseJson.data.caseId,
+          decision: 'RECOMMEND_HOLD',
+          reasonCode: 'SUSPICIOUS_VELOCITY',
+          reviewerId: 'risk-owner-internal-1',
+          notes: 'Internal owner-domain review only',
+          correlationId: `review-internal-corr-${randomUUID()}`,
+          idempotencyKey: `review-internal-idem-${randomUUID()}`,
+        }),
+      });
+      if (!internalReviewRes.ok) throw new Error(`Internal review case failed: ${internalReviewRes.status}`);
+      const internalReviewJson = await internalReviewRes.json();
+      if (internalReviewJson.data.routeClassification !== 'owner-domain internal route') {
+        throw new Error('Internal risk review missing owner-domain route classification');
+      }
+      assertNonMutationEvidence(internalReviewJson.data);
     });
 
     const finalResult = steps.every(s => s.status === 'PASS') ? 'PASS' : 'FAIL';

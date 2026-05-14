@@ -4,7 +4,9 @@ import {
   ListPayoutItemsQuery,
   ListPayoutBatchesQuery,
   PayoutItemListResponse,
-  PayoutBatchListResponse
+  PayoutBatchListResponse,
+  PayoutCandidate,
+  PayoutCandidateListResponse
 } from '@hx/contracts';
 
 export interface IPayoutRepository {
@@ -22,4 +24,11 @@ export interface IPayoutRepository {
   getBatchIdByIdempotencyKey(idempotencyKey: string): Promise<string | null>;
   saveItemIdempotencyKey(idempotencyKey: string, payoutItemIds: string[]): Promise<void>;
   saveBatchIdempotencyKey(idempotencyKey: string, batchId: string): Promise<void>;
+
+  createPayoutCandidate(candidate: PayoutCandidate): Promise<void>;
+  updatePayoutCandidate(payoutCandidateId: string, updates: Partial<PayoutCandidate>): Promise<void>;
+  getPayoutCandidateById(payoutCandidateId: string): Promise<PayoutCandidate | null>;
+  getPayoutCandidateBySourceFingerprint(sourceFingerprint: string): Promise<PayoutCandidate | null>;
+  savePayoutCandidateSourceFingerprint(sourceFingerprint: string, payoutCandidateId: string): Promise<void>;
+  listPayoutCandidates(): Promise<PayoutCandidateListResponse>;
 }

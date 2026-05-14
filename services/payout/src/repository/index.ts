@@ -26,3 +26,7 @@ export function getPayoutRepository(): IPayoutRepository {
 
   return repository;
 }
+
+export function resetPayoutRepositoryForTesting(): void {
+  repository = undefined as unknown as IPayoutRepository;
+}

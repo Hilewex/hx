@@ -224,6 +224,39 @@ export interface ReviewRiskCaseCommand {
   requestedAt?: string;
 }
 
+export interface RiskOperationalIntentRequest {
+  caseId: string;
+  kind: 'review' | 'escalation' | 'require-evidence' | 'recommend-payout-hold';
+  makerActorId: string;
+  checkerActorId?: string;
+  reasonCode: string;
+  evidenceRefs: string[];
+  idempotencyKey: string;
+  decision?: string;
+  operationalIntentOnly: true;
+  enforcementExecuted?: false;
+  ownerMutationTruth?: false;
+  payoutBlockedTruth?: false;
+}
+
+export interface OwnerDomainRiskReviewCommand extends ReviewRiskCaseCommand {
+  ownerDomainInternalOnly?: true;
+  operationalIntentOnly?: false;
+  enforcementExecuted?: false;
+  ownerMutationTruth?: true;
+  payoutBlockedTruth?: false;
+}
+
+export interface LegacyRiskReviewCommandDeprecated extends ReviewRiskCaseCommand {
+  deprecatedForOperationalWorkflow: true;
+  replacementRoute: '/risk/intent';
+  internalOnly: true;
+  operationalIntentOnly: false;
+  enforcementExecuted?: false;
+  ownerMutationTruth?: true;
+  payoutBlockedTruth?: false;
+}
+
 export interface GetRiskCaseQuery {
   caseId: string;
 }
@@ -275,4 +308,114 @@ export interface RiskCaseListResponse {
 
 export interface RiskSignalResponse {
   signal: RiskSignal;
+}
+
+export interface RiskOperationalBoundaryFlags {
+  moderationTruthMutated: false;
+  riskTruthMutated: false;
+  payoutBlockedTruth: false;
+  enforcementExecuted: false;
+  auditMutationTruth: false;
+}
+
+export interface RiskEvidenceProjection {
+  evidenceId: string;
+  evidenceTypeProjection: string;
+  sourceProjection: string;
+  summaryProjectionText: string;
+  createdAtProjectionText: string;
+  evidenceOwnerMutationTruth: false;
+}
+
+export interface RiskEscalationProjection {
+  escalationStateProjection: 'none' | 'visible' | 'recommended' | 'required';
+  escalationTargetProjection: string;
+  visibilityText: string;
+  escalationDecisionTruth: false;
+}
+
+export interface RiskPayoutHoldRecommendationProjection {
+  recommendationStateProjection: 'not_applicable' | 'visible' | 'recommended';
+  recommendationText: string;
+  payoutBlockedTruth: false;
+}
+
+export interface RiskReviewQueueItemProjection {
+  caseId: string;
+  targetTypeProjection: string;
+  targetIdProjection: string;
+  riskLevelProjection: RiskLevel | 'UNAVAILABLE';
+  scoreProjectionText: string;
+  statusProjection: string;
+  sourceProjection: string;
+  relatedContextProjectionText: string;
+  evidencePreviewText: string;
+  escalation: RiskEscalationProjection;
+  payoutHoldRecommendation: RiskPayoutHoldRecommendationProjection;
+  detailHref: string;
+  boundaryFlags: RiskOperationalBoundaryFlags;
+  warnings?: string[];
+}
+
+export interface RiskReviewQueueProjection {
+  items: RiskReviewQueueItemProjection[];
+  totalProjection?: number;
+  emptyState?: boolean;
+  degradedStateText?: string;
+  boundaryFlags: RiskOperationalBoundaryFlags;
+  warnings?: string[];
+}
+
+export interface RiskReviewDetailProjection extends RiskReviewQueueItemProjection {
+  fraudSignalProjectionText: string;
+  relatedOrderStoreUserPostContextProjectionText: string;
+  evidence: RiskEvidenceProjection[];
+  auditEvidence: {
+    requiredEvidenceRefs: string[];
+    providedEvidenceRefs: string[];
+    reasonCodeProjectionText: string;
+    auditIntentPreview: string[];
+    auditIntentRecordedProjection: boolean;
+    auditIntentPersistedProjection: boolean;
+    latestAuditIntentText?: string;
+    auditMutationTruth: false;
+  };
+  makerChecker: {
+    makerActorProjectionText: string;
+    checkerActorProjectionText: string;
+    workflowStateProjection: 'prepared' | 'checker_required' | 'checked' | 'rejected' | 'escalated' | 'owner_handoff_pending' | 'owner_handoff_ready';
+    sameActorApprovalBlockedProjection: true;
+    ownerHandoffRequiredProjection: true;
+    makerCheckerTruth: false;
+  };
+  actionIntent: {
+    reviewIntentAllowed: true;
+    escalationIntentAllowed: true;
+    requireEvidenceIntentAllowed: true;
+    recommendPayoutHoldIntentAllowed: true;
+    ownerCommandRequired: true;
+    directExecutionAllowed: false;
+    uiMutationTruth: false;
+  };
+}
+
+export type RiskCommandIntentStatus =
+  | 'maker_submitted'
+  | 'checker_required'
+  | 'checked_for_owner_handoff'
+  | 'rejected_by_checker'
+  | 'escalated'
+  | 'evidence_required'
+  | 'payout_hold_recommended'
+  | 'validation_failed'
+  | 'permission_denied'
+  | 'owner_unavailable';
+
+export interface RiskCommandIntentResultProjection {
+  status: RiskCommandIntentStatus;
+  message: string;
+  idempotencyKey: string;
+  workflowState?: 'prepared' | 'checker_required' | 'checked' | 'rejected' | 'escalated' | 'owner_handoff_pending' | 'owner_handoff_ready';
+  auditIntentPersisted: boolean;
+  boundaryFlags: RiskOperationalBoundaryFlags;
 }

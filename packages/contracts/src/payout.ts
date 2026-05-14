@@ -31,6 +31,104 @@ export type PayoutHoldReasonCode = 'RISK_REVIEW_OPEN' | 'FINANCE_CORRECTION_PEND
 
 export type PayoutActionType = 'PLACE_HOLD' | 'RELEASE_HOLD' | 'MARK_ELIGIBLE' | 'ADD_TO_BATCH' | 'MARK_PROCESSING' | 'MARK_PAID' | 'MARK_FAILED' | 'MARK_RETURNED' | 'CANCEL' | 'CLOSE';
 
+export type PayoutCandidatePartyType = 'SUPPLIER' | 'CREATOR';
+
+export type PayoutCandidateStatus = 'PREPARED' | 'REJECTED' | 'REVIEW_REQUIRED';
+
+export type PayoutCandidateReviewStatus =
+  | 'PENDING_REVIEW'
+  | 'REVIEW_REQUIRED'
+  | 'REVIEW_BLOCKED'
+  | 'REVIEW_APPROVED_FOUNDATION';
+
+export type PayoutCandidateReviewReasonCode =
+  | 'REVIEW_NOT_REQUIRED'
+  | 'REVIEW_REQUIRED_FLAG'
+  | 'INCONSISTENT_SOURCE_CHAIN_REVIEW_REQUIRED'
+  | 'DUPLICATE_PAYABLE_OR_EARNING_REFS_REVIEW_REQUIRED'
+  | 'EXTERNAL_REVIEW_REQUIRED'
+  | 'HIGH_AMOUNT_THRESHOLD_REVIEW_REQUIRED'
+  | 'MISSING_REFS_WARNING'
+  | 'OPS_MANUAL_BLOCK';
+
+export interface PayoutCandidateReviewNote {
+  noteId: string;
+  actorId: string;
+  note: string;
+  reasonCode: PayoutCandidateReviewReasonCode;
+  createdAt: string;
+  foundationOnly: true;
+}
+
+export interface PayoutCandidateReviewTrailEntry {
+  trailId: string;
+  actorId: string;
+  action: 'REVIEW_REQUESTED' | 'OPS_BLOCKED' | 'FOUNDATION_APPROVED';
+  reasonCode: PayoutCandidateReviewReasonCode;
+  note?: string;
+  createdAt: string;
+  makerCheckerTruth: false;
+}
+
+export type PayoutCandidateBlockingReason =
+  | 'STATUS_NOT_RELEASE_ELIGIBLE'
+  | 'RECORD_HELD'
+  | 'RECORD_REVERSED'
+  | 'SOURCE_REFS_REQUIRED'
+  | 'PARTY_ID_REQUIRED'
+  | 'AMOUNT_MUST_BE_POSITIVE'
+  | 'RISK_HOLD_ACTIVE'
+  | 'REFUND_IMPACT_PENDING'
+  | 'FINANCE_CORRECTION_PENDING'
+  | 'EXTERNAL_REVIEW_REQUIRED'
+  | 'DUPLICATE_SOURCE_ALREADY_CANDIDATE';
+
+export type PayoutCandidateWarning =
+  | 'MIXED_CURRENCY_REVIEW_REQUIRED'
+  | 'MISSING_REFS_REJECTED'
+  | 'NEGATIVE_AMOUNT_REJECTED'
+  | 'INCONSISTENT_SOURCE_CHAIN_REVIEW_REQUIRED'
+  | 'DUPLICATE_PAYABLE_OR_EARNING_REFS_REVIEW_REQUIRED';
+
+export interface PayoutCandidateBoundaryFlags {
+  payoutExecuted: false;
+  providerInstructionCreated: false;
+  ledgerEntryCreated: false;
+}
+
+export interface PayoutCandidate {
+  payoutCandidateId: string;
+  partyType: PayoutCandidatePartyType;
+  partyId: string;
+  sourcePayableIds: string[];
+  sourceEarningIds: string[];
+  totalAmount: number;
+  currency: string;
+  status: PayoutCandidateStatus;
+  blockingReasons: PayoutCandidateBlockingReason[];
+  warnings: PayoutCandidateWarning[];
+  sourceRefs: PayoutSourceRef[];
+  reviewRequired: boolean;
+  reviewStatus: PayoutCandidateReviewStatus;
+  reviewReasonCodes: PayoutCandidateReviewReasonCode[];
+  reviewNotes: PayoutCandidateReviewNote[];
+  blockedByOps?: boolean;
+  blockedAt?: string;
+  blockedBy?: string;
+  reviewRequestedAt?: string;
+  reviewCompletedAt?: string;
+  reviewedBy?: string;
+  approvedBy?: string;
+  reviewTrail: PayoutCandidateReviewTrailEntry[];
+  createdAt: string;
+  updatedAt: string;
+  boundaryFlags: PayoutCandidateBoundaryFlags;
+}
+
+export interface PayoutCandidateReviewConfig {
+  highAmountReviewThresholds?: Record<string, number>;
+}
+
 export interface PayoutAmountSummary {
   currency: string;
   grossPayableAmount: number;
@@ -183,6 +281,31 @@ export interface CreatePayoutBatchCommand {
   correlationId?: string;
 }
 
+export interface PreparePayoutCandidatesCommand {
+  supplierPayableIds?: string[];
+  creatorEarningIds?: string[];
+  groupCandidates?: boolean;
+  reviewConfig?: PayoutCandidateReviewConfig;
+  idempotencyKey?: string;
+  correlationId?: string;
+}
+
+export interface BlockPayoutCandidateForReviewCommand {
+  payoutCandidateId: string;
+  actorId: string;
+  reasonCode?: PayoutCandidateReviewReasonCode;
+  note: string;
+  correlationId?: string;
+}
+
+export interface PayoutCandidateReviewActionResult {
+  success: boolean;
+  status: 'BLOCKED' | 'REJECTED';
+  candidate?: PayoutCandidate;
+  errors?: string[];
+  boundaryFlags: PayoutCandidateBoundaryFlags;
+}
+
 export interface ApplyPayoutItemActionCommand {
   payoutItemId: string;
   action: PayoutActionType;
@@ -241,6 +364,16 @@ export interface PayoutMutationResult {
   warnings?: string[];
 }
 
+export interface PayoutCandidatePreparationResult {
+  success: boolean;
+  status: 'PREPARED' | 'PARTIAL' | 'REJECTED' | 'IDEMPOTENT';
+  candidates: PayoutCandidate[];
+  rejectedSourceIds: string[];
+  blockingReasons: PayoutCandidateBlockingReason[];
+  warnings: PayoutCandidateWarning[];
+  boundaryFlags: PayoutCandidateBoundaryFlags;
+}
+
 export interface PayoutItemResponse {
   payoutItem: PayoutItem;
 }
@@ -256,5 +389,10 @@ export interface PayoutItemListResponse {
 
 export interface PayoutBatchListResponse {
   batches: PayoutBatch[];
+  total: number;
+}
+
+export interface PayoutCandidateListResponse {
+  candidates: PayoutCandidate[];
   total: number;
 }

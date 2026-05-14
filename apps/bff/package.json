@@ -40,6 +40,7 @@
     "@hx/order-ops": "workspace:*",
     "@hx/payment": "workspace:*",
     "@hx/payout": "workspace:*",
+    "@hx/persistence": "workspace:*",
     "@hx/pool": "workspace:*",
     "@hx/post": "workspace:*",
     "@hx/provider-callback": "workspace:*",

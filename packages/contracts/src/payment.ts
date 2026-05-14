@@ -75,6 +75,137 @@ export interface PaymentInitiationResponse {
   providerEnvelope?: ProviderResultEnvelope;
 }
 
+export type PaymentSurfaceStatus =
+  | 'no_context'
+  | 'initiation_ready'
+  | 'pending'
+  | 'failed'
+  | 'unknown_result'
+  | 'support_required'
+  | 'provider_degraded'
+  | 'unavailable'
+  | 'timeout'
+  | 'error';
+
+export type PaymentSurfaceSeverity = 'info' | 'warning' | 'blocking';
+
+export interface PaymentContextProjection {
+  paymentId?: string;
+  checkoutId?: string;
+  paymentAttemptId?: string;
+  statusText: string;
+  paymentContextTruth: false;
+  checkoutReferenceTruth: false;
+  paymentAttemptTruth: false;
+  warnings?: string[];
+}
+
+export interface PaymentCheckoutReferenceProjection {
+  checkoutId?: string;
+  label: string;
+  amountDisplayText?: string;
+  checkoutReadinessText: string;
+  checkoutReadinessTruth: false;
+  amountCurrencyTruth: false;
+  orderTruth: false;
+  warnings?: string[];
+}
+
+export interface PaymentAttemptReferenceProjection {
+  paymentId?: string;
+  paymentAttemptId?: string;
+  label: string;
+  stateText: string;
+  paymentFinalityTruth: false;
+  providerFinalityTruth: false;
+  duplicatePaymentEngineTruth: false;
+  warnings?: string[];
+}
+
+export interface PaymentProviderRedirectProjection {
+  status: 'placeholder' | 'ready_projection' | 'unavailable' | 'degraded';
+  label: string;
+  helperText: string;
+  redirectUrl?: string;
+  providerRedirectTruth: false;
+  providerSecretExposed: false;
+  providerFinalityTruth: false;
+  warnings?: string[];
+}
+
+export interface PaymentStateGuidanceProjection {
+  title: string;
+  message: string;
+  severity: PaymentSurfaceSeverity;
+  retryText: string;
+  supportText: string;
+  duplicateSubmitWarning: string;
+  paymentSuccessTruth: false;
+  paymentFailureTruth: false;
+  orderCreatedTruth: false;
+  providerFinalityTruth: false;
+  settlementTruth: false;
+  warnings?: string[];
+}
+
+export interface PaymentSupportGuidanceProjection {
+  href: '/support';
+  label: string;
+  referenceText: string;
+  checkoutReferenceText: string;
+  helperText: string;
+  ticketCreationTruth: false;
+}
+
+export interface PaymentReturnNavigationProjection {
+  returnToCheckout: {
+    href: '/checkout';
+    label: string;
+  };
+  goToOrders: {
+    href: '/orders';
+    label: string;
+    orderCreatedTruth: false;
+  };
+  contactSupport: {
+    href: '/support';
+    label: string;
+  };
+  continueBrowsing: {
+    href: '/';
+    label: string;
+  };
+}
+
+export interface PaymentSurfaceProjection {
+  status: PaymentSurfaceStatus;
+  context: PaymentContextProjection;
+  checkoutReference: PaymentCheckoutReferenceProjection;
+  attemptReference: PaymentAttemptReferenceProjection;
+  providerRedirect: PaymentProviderRedirectProjection;
+  stateGuidance: PaymentStateGuidanceProjection;
+  retryGuidance: PaymentStateGuidanceProjection;
+  supportGuidance: PaymentSupportGuidanceProjection;
+  navigation: PaymentReturnNavigationProjection;
+  boundaryFlags: {
+    projectionTruth: false;
+    paymentSuccessTruth: false;
+    paymentFailureTruth: false;
+    paymentFinalityTruth: false;
+    providerFinalityTruth: false;
+    orderCreatedTruth: false;
+    checkoutReadinessTruth: false;
+    amountCurrencyTruth: false;
+    duplicatePaymentEngineTruth: false;
+    settlementTruth: false;
+    refundTruth: false;
+    payoutTruth: false;
+    rawProviderPayloadExposed: false;
+    providerSecretExposed: false;
+  };
+  warnings?: string[];
+}
+
 export interface SimulatePaymentSuccessResponse {
   paymentId: string;
   paymentAttemptId: string;

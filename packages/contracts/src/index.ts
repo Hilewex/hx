@@ -61,6 +61,8 @@ export * from './customer-support';
 export * from './provider';
 export * from './finance';
 export * from './projection';
+export * from './discovery';
+export * from './pdp';
 export * from './ranking';
 export * from './recommendation';
 export * from './admin'; 

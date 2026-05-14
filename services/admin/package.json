@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "dependencies": {
-    "@hx/contracts": "workspace:*"
+    "@hx/contracts": "workspace:*",
+    "@hx/finance": "workspace:*",
+    "@hx/finance-correction": "workspace:*",
+    "@hx/payout": "workspace:*",
+    "@hx/persistence": "workspace:*",
+    "@hx/settlement": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

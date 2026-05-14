@@ -4,13 +4,17 @@ import {
   ListPayoutItemsQuery,
   ListPayoutBatchesQuery,
   PayoutItemListResponse,
-  PayoutBatchListResponse
+  PayoutBatchListResponse,
+  PayoutCandidate,
+  PayoutCandidateListResponse
 } from '@hx/contracts';
 import { IPayoutRepository } from './interface';
 
 export class InMemoryPayoutRepository implements IPayoutRepository {
   private items = new Map<string, PayoutItem>();
   private batches = new Map<string, PayoutBatch>();
+  private candidates = new Map<string, PayoutCandidate>();
+  private candidateSourceFingerprints = new Map<string, string>();
   private itemKeys = new Map<string, string[]>();
   private batchKeys = new Map<string, string>();
 
@@ -90,5 +94,55 @@ export class InMemoryPayoutRepository implements IPayoutRepository {
 
   async saveBatchIdempotencyKey(idempotencyKey: string, batchId: string): Promise<void> {
     this.batchKeys.set(idempotencyKey, batchId);
+  }
+
+  async createPayoutCandidate(candidate: PayoutCandidate): Promise<void> {
+    this.candidates.set(candidate.payoutCandidateId, this.cloneCandidate(candidate));
+  }
+
+  async updatePayoutCandidate(payoutCandidateId: string, updates: Partial<PayoutCandidate>): Promise<void> {
+    const candidate = this.candidates.get(payoutCandidateId);
+    if (!candidate) return;
+    this.candidates.set(payoutCandidateId, this.cloneCandidate({
+      ...candidate,
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    }));
+  }
+
+  async getPayoutCandidateById(payoutCandidateId: string): Promise<PayoutCandidate | null> {
+    const candidate = this.candidates.get(payoutCandidateId);
+    return candidate ? this.cloneCandidate(candidate) : null;
+  }
+
+  async getPayoutCandidateBySourceFingerprint(sourceFingerprint: string): Promise<PayoutCandidate | null> {
+    const payoutCandidateId = this.candidateSourceFingerprints.get(sourceFingerprint);
+    return payoutCandidateId ? this.getPayoutCandidateById(payoutCandidateId) : null;
+  }
+
+  async savePayoutCandidateSourceFingerprint(sourceFingerprint: string, payoutCandidateId: string): Promise<void> {
+    this.candidateSourceFingerprints.set(sourceFingerprint, payoutCandidateId);
+  }
+
+  async listPayoutCandidates(): Promise<PayoutCandidateListResponse> {
+    const candidates = await Promise.all(
+      Array.from(this.candidates.keys()).map(candidateId => this.getPayoutCandidateById(candidateId)),
+    );
+    const filtered = candidates.filter((candidate): candidate is PayoutCandidate => Boolean(candidate));
+    return { candidates: filtered, total: filtered.length };
+  }
+
+  private cloneCandidate(candidate: PayoutCandidate): PayoutCandidate {
+    return {
+      ...candidate,
+      sourcePayableIds: [...candidate.sourcePayableIds],
+      sourceEarningIds: [...candidate.sourceEarningIds],
+      sourceRefs: candidate.sourceRefs.map(ref => ({ ...ref, metadata: ref.metadata ? { ...ref.metadata } : undefined })),
+      blockingReasons: [...candidate.blockingReasons],
+      warnings: [...candidate.warnings],
+      reviewReasonCodes: [...candidate.reviewReasonCodes],
+      reviewNotes: candidate.reviewNotes.map(note => ({ ...note })),
+      reviewTrail: candidate.reviewTrail.map(entry => ({ ...entry })),
+    };
   }
 }

@@ -62,8 +62,18 @@ import { paymentReconciliationControlledMutationSmoke } from './suites/payment-r
 import { paymentReconciliationE2eNoOrderHandoffSmoke } from './suites/payment-reconciliation-e2e-no-order-handoff';
 import { paymentReconciliationAuditOutboxFinalizationSmoke } from './suites/payment-reconciliation-audit-outbox-finalization';
 import { financeLedgerSmoke } from './suites/finance-ledger';
+import { financeLedgerPostgresDurabilitySmoke } from './suites/finance-ledger-postgres-durability';
 import { settlementCalculationFoundationSmoke } from './suites/settlement-calculation-foundation';
+import { settlementFromOrderEconomicsSnapshotFoundationSmoke } from './suites/settlement-from-order-economics-snapshot-foundation';
+import { settlementPayableEarningLifecycleFoundationSmoke } from './suites/settlement-payable-earning-lifecycle-foundation';
+import { settlementPayableEarningReversalFoundationSmoke } from './suites/settlement-payable-earning-reversal-foundation';
+import { settlementPayableEarningReleaseEligibilityFoundationSmoke } from './suites/settlement-payable-earning-release-eligibility-foundation';
+import { settlementPayableEarningSignalIntegrationFoundationSmoke } from './suites/settlement-payable-earning-signal-integration-foundation';
+import { payoutCandidatePreparationFoundationSmoke } from './suites/payout-candidate-preparation-foundation';
+import { payoutCandidateReviewOpsFoundationSmoke } from './suites/payout-candidate-review-ops-foundation';
 import { refundFinancialImpactFoundationSmoke } from './suites/refund-financial-impact-foundation';
+import { refundCommandSecurityHardeningSmoke } from './suites/refund-command-security-hardening';
+import { refundMakerCheckerAuditFoundationSmoke } from './suites/refund-maker-checker-audit-foundation';
 import { payablePayoutBoundaryFoundationSmoke } from './suites/payable-payout-boundary-foundation';
 import { poolBasePriceCorridorFoundationSmoke } from './suites/pool-base-price-corridor-foundation';
 import { creatorMarginSettlementFoundationSmoke } from './suites/creator-margin-settlement-foundation';
@@ -71,6 +81,7 @@ import { couponSponsorPolicyGuardSmoke } from './suites/coupon-sponsor-policy-gu
 import { couponLineAllocationSettlementImpactSmoke } from './suites/coupon-line-allocation-settlement-impact';
 import { refundCouponSponsorReversalFoundationSmoke } from './suites/refund-coupon-sponsor-reversal-foundation';
 import { rewardPointLifecycleFoundationSmoke } from './suites/reward-point-lifecycle-foundation';
+import { orderLineEconomicsSnapshotFoundationSmoke } from './suites/order-line-economics-snapshot-foundation';
 import { categorySmoke } from './suites/category';
 import { taxonomySmoke } from './suites/taxonomy';
 import { plpSmoke } from './suites/plp';
@@ -78,11 +89,15 @@ import { projectionConsumerFoundationSmoke } from './suites/projection-consumer-
 import { staleProjectionLeakSmoke } from './suites/stale-projection-leak';
 import { rankingRecommendationReadinessSmoke } from './suites/ranking-recommendation-readiness';
 import { adminDirectWriteOwnerCommandGuardSmoke } from './suites/admin-direct-write-owner-command-guard';
+import { adminFinanceOpsProjectionSmoke } from './suites/admin-finance-ops-projection';
 import { creatorScopeStorefrontProductActionGuardSmoke } from './suites/creator-scope-storefront-product-action-guard';
 import { supplierScopeProductIntakeStockPriceGuardSmoke } from './suites/supplier-scope-product-intake-stock-price-guard';
 import { supportVisibilityOrderAccessPiiGuardSmoke } from './suites/support-visibility-order-access-pii-guard';
 import { panelAuditEvidenceMakerCheckerReadinessSmoke } from './suites/panel-audit-evidence-maker-checker-readiness';
 import { panelSmokeCoverageFoundationSmoke } from './suites/panel-smoke-coverage-foundation';
+import { operationalOutboxWorkerDryRunSmoke } from './suites/operational-outbox-worker-dry-run';
+import { internalServiceAuthSmoke } from './suites/internal-service-auth';
+import { operationalOutboxWorkerLeaseSmoke } from './suites/operational-outbox-worker-lease';
 
 const suites = {
   health: healthSmoke,
@@ -149,8 +164,18 @@ const suites = {
   'payment-reconciliation-e2e-no-order-handoff': paymentReconciliationE2eNoOrderHandoffSmoke,
   'payment-reconciliation-audit-outbox-finalization': paymentReconciliationAuditOutboxFinalizationSmoke,
   'finance-ledger-foundation': financeLedgerSmoke,
+  'finance-ledger-postgres-durability': financeLedgerPostgresDurabilitySmoke,
   'settlement-calculation-foundation': settlementCalculationFoundationSmoke,
+  'settlement-from-order-economics-snapshot-foundation': settlementFromOrderEconomicsSnapshotFoundationSmoke,
+  'settlement-payable-earning-lifecycle-foundation': settlementPayableEarningLifecycleFoundationSmoke,
+  'settlement-payable-earning-reversal-foundation': settlementPayableEarningReversalFoundationSmoke,
+  'settlement-payable-earning-release-eligibility-foundation': settlementPayableEarningReleaseEligibilityFoundationSmoke,
+  'settlement-payable-earning-signal-integration-foundation': settlementPayableEarningSignalIntegrationFoundationSmoke,
+  'payout-candidate-preparation-foundation': payoutCandidatePreparationFoundationSmoke,
+  'payout-candidate-review-ops-foundation': payoutCandidateReviewOpsFoundationSmoke,
   'refund-financial-impact-foundation': refundFinancialImpactFoundationSmoke,
+  'refund-command-security-hardening': refundCommandSecurityHardeningSmoke,
+  'refund-maker-checker-audit-foundation': refundMakerCheckerAuditFoundationSmoke,
   'payable-payout-boundary-foundation': payablePayoutBoundaryFoundationSmoke,
   'pool-base-price-corridor-foundation': poolBasePriceCorridorFoundationSmoke,
   'pool-price-corridor-foundation': poolBasePriceCorridorFoundationSmoke,
@@ -159,6 +184,7 @@ const suites = {
   'coupon-line-allocation-settlement-impact': couponLineAllocationSettlementImpactSmoke,
   'refund-coupon-sponsor-reversal-foundation': refundCouponSponsorReversalFoundationSmoke,
   'reward-point-lifecycle-foundation': rewardPointLifecycleFoundationSmoke,
+  'order-line-economics-snapshot-foundation': orderLineEconomicsSnapshotFoundationSmoke,
   category: categorySmoke,
   taxonomy: taxonomySmoke,
   plp: plpSmoke,
@@ -166,11 +192,15 @@ const suites = {
   'stale-projection-leak': staleProjectionLeakSmoke,
   'ranking-recommendation-readiness': rankingRecommendationReadinessSmoke,
   'admin-direct-write-owner-command-guard': adminDirectWriteOwnerCommandGuardSmoke,
+  'admin-finance-ops-projection': adminFinanceOpsProjectionSmoke,
   'creator-scope-storefront-product-action-guard': creatorScopeStorefrontProductActionGuardSmoke,
   'supplier-scope-product-intake-stock-price-guard': supplierScopeProductIntakeStockPriceGuardSmoke,
   'support-visibility-order-access-pii-guard': supportVisibilityOrderAccessPiiGuardSmoke,
   'panel-audit-evidence-maker-checker-readiness': panelAuditEvidenceMakerCheckerReadinessSmoke,
   'panel-smoke-coverage-foundation': panelSmokeCoverageFoundationSmoke,
+  'operational-outbox-worker-dry-run': operationalOutboxWorkerDryRunSmoke,
+  'internal-service-auth': internalServiceAuthSmoke,
+  'operational-outbox-worker-lease': operationalOutboxWorkerLeaseSmoke,
   'phase09-smoke-coverage-foundation': phase09SmokeCoverageFoundationSmoke,
 };
 
@@ -206,16 +236,27 @@ function stopServerProcess(serverProcess: ReturnType<typeof spawn>) {
 
 async function run() {
   const target = process.argv[2] || 'all';
+  const noBffTargets = new Set([
+    'finance-ledger-postgres-durability',
+    'settlement-payable-earning-reversal-foundation',
+    'settlement-payable-earning-release-eligibility-foundation',
+    'settlement-payable-earning-signal-integration-foundation',
+    'payout-candidate-preparation-foundation',
+  ]);
+  const preservePersistenceModeTargets = new Set(['finance-ledger-postgres-durability']);
   const useExistingBff = process.env.SMOKE_USE_EXISTING_BFF === 'true';
   const useInProcessBff = !useExistingBff && target === 'notification';
+  const needsBff = !noBffTargets.has(target);
   const smokePort = process.env.SMOKE_BFF_PORT || String(3100 + Math.floor(Math.random() * 1000));
   const baseUrl = (useExistingBff
     ? (process.env.SMOKE_BFF_BASE_URL || process.env.BFF_BASE_URL || `http://localhost:${smokePort}`)
     : `http://localhost:${smokePort}`
   ).trim();
   
-  // Set memory mode for foundational tests
-  process.env.PERSISTENCE_MODE = 'memory';
+  // Set memory mode for foundational tests unless the target explicitly validates another store.
+  if (!preservePersistenceModeTargets.has(target)) {
+    process.env.PERSISTENCE_MODE = 'memory';
+  }
   process.env.PORT = smokePort;
   process.env.BFF_PORT = smokePort;
   
@@ -224,7 +265,7 @@ async function run() {
   let serverProcess: ReturnType<typeof spawn> | null = null;
   let inProcessServer: { start: () => void; stop: () => void } | null = null;
 
-  if (!useExistingBff) {
+  if (needsBff && !useExistingBff) {
     if (useInProcessBff) {
       console.log(`Starting in-process BFF server for smoke tests (PERSISTENCE_MODE=${process.env.PERSISTENCE_MODE})...`);
       const { createServer } = await import('../../apps/bff/src/server/index');
@@ -240,12 +281,14 @@ async function run() {
     }
   }
 
-  const isUp = await waitForServer(baseUrl);
-  if (!isUp) {
-    console.error('Failed to start local BFF server');
-    if (serverProcess) stopServerProcess(serverProcess);
-    if (inProcessServer) inProcessServer.stop();
-    process.exit(1);
+  if (needsBff) {
+    const isUp = await waitForServer(baseUrl);
+    if (!isUp) {
+      console.error('Failed to start local BFF server');
+      if (serverProcess) stopServerProcess(serverProcess);
+      if (inProcessServer) inProcessServer.stop();
+      process.exit(1);
+    }
   }
 
   console.log(`Running smoke tests against ${baseUrl}`);

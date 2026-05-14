@@ -9,6 +9,12 @@
     "src/**/*"
   ],
   "references": [
-    { "path": "../../packages/contracts" }
+    { "path": "../../packages/config" },
+    { "path": "../../packages/contracts" },
+    { "path": "../../packages/persistence" },
+    { "path": "../finance" },
+    { "path": "../finance-correction" },
+    { "path": "../payout" },
+    { "path": "../settlement" }
   ]
 }

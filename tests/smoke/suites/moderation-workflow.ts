@@ -206,9 +206,9 @@ export const moderationWorkflowSmoke: SmokeRunner = {
         }
       }
 
-      // 6. Admin Review Case -> Check decision boundary
+      // 6. Admin legacy review route must be isolated; operational flow uses intent only.
       const reviewCaseId = reviewCase.caseId;
-      const decisionRes = await fetch(`${baseUrl}/moderation/review`, {
+      const legacyDecisionRes = await fetch(`${baseUrl}/moderation/review`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -220,14 +220,31 @@ export const moderationWorkflowSmoke: SmokeRunner = {
           note: 'Looks good'
         })
       });
-      if (!decisionRes.ok) return { result: 'FAIL', message: `Moderation review failed: ${decisionRes.status}` };
-      const decisionData = (await json(decisionRes)).data;
-      
-      // Verify decision boundary: targetTruthMutated MUST be false
-      // In our implementation, the warning TARGET_TRUTH_NOT_MUTATED is returned
-      const hasWarning = decisionData.warnings?.includes('TARGET_TRUTH_NOT_MUTATED');
-      if (!hasWarning) {
-        return { result: 'FAIL', message: 'Expected TARGET_TRUTH_NOT_MUTATED warning in decision result' };
+      if (legacyDecisionRes.status !== 403) {
+        return { result: 'FAIL', message: `Admin legacy moderation review should be internal-only 403, got ${legacyDecisionRes.status}` };
+      }
+
+      const intentRes = await fetch(`${baseUrl}/moderation/intent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminToken}`
+        },
+        body: JSON.stringify({
+          caseId: reviewCaseId,
+          kind: 'review',
+          decision: 'APPROVE',
+          makerActorId: 'admin-1',
+          checkerActorId: 'moderation-checker-1',
+          reasonCode: 'POLICY_VIOLATION',
+          evidenceRefs: [`review-case-${reviewCaseId}`],
+          idempotencyKey: `mod-intent-${suffix}`
+        })
+      });
+      if (!intentRes.ok) return { result: 'FAIL', message: `Moderation intent failed: ${intentRes.status}` };
+      const intentData = (await json(intentRes)).data;
+      if (intentData.accepted !== true || intentData.boundaryFlags?.enforcementExecuted !== false) {
+        return { result: 'FAIL', message: 'Moderation intent must be accepted without enforcement execution' };
       }
 
       // Re-fetch cases to check status and truth flag. The current BFF route is exact-match for /moderation/get,
@@ -238,31 +255,29 @@ export const moderationWorkflowSmoke: SmokeRunner = {
       if (!updatedCasesRes.ok) return { result: 'FAIL', message: `Moderation list after review failed: ${updatedCasesRes.status}` };
       const updatedCases = (await json(updatedCasesRes)).data.items;
       const updatedCase = updatedCases.find((c: any) => c.caseId === reviewCaseId);
-      if (!updatedCase) return { result: 'FAIL', message: 'Reviewed moderation case not found after decision' };
-      if (updatedCase.status !== 'APPROVED') {
-        return { result: 'FAIL', message: `Case status expected APPROVED, got ${updatedCase.status}` };
+      if (!updatedCase) return { result: 'FAIL', message: 'Moderation case not found after intent' };
+      if (updatedCase.status === 'APPROVED' || updatedCase.status === 'REJECTED' || updatedCase.status === 'RESTRICTED') {
+        return { result: 'FAIL', message: `Operational intent must not owner-mutate case status, got ${updatedCase.status}` };
       }
       if (updatedCase.targetTruthMutated !== false) {
         return { result: 'FAIL', message: 'Boundary breach: targetTruthMutated is not false' };
       }
 
-      // 7. Verify Domain Owner Handoff - 06C1 allows the owner domain transition after
-      // moderation review, while the moderation case itself still must not claim target truth mutation.
-      const reviewListRes = await fetch(`${baseUrl}/review/list?actorId=${customerActorId}`, {
+      // 7. Verify no domain owner handoff occurred from the operational intent.
+      const reviewGetRes = await fetch(`${baseUrl}/review/${reviewId}`, {
         headers: { 'Authorization': `Bearer ${customerToken}` }
       });
-      if (!reviewListRes.ok) return { result: 'FAIL', message: `Review list failed: ${reviewListRes.status}` };
-      const reviewList = (await json(reviewListRes)).data.items;
-      const theReview = reviewList.find((r: any) => r.reviewId === reviewId);
-      if (!theReview) return { result: 'FAIL', message: 'Created review not found while checking domain truth after moderation decision' };
-      if (theReview.moderationStatus !== 'APPROVED') {
-        return { result: 'FAIL', message: `Review owner handoff expected moderationStatus APPROVED, got ${theReview.moderationStatus}` };
+      if (!reviewGetRes.ok) return { result: 'FAIL', message: `Review get failed: ${reviewGetRes.status}` };
+      const theReview = (await json(reviewGetRes)).data.review;
+      if (!theReview) return { result: 'FAIL', message: 'Created review not found while checking domain truth after moderation intent' };
+      if (theReview.moderationStatus !== 'PENDING') {
+        return { result: 'FAIL', message: `Operational intent must not approve review owner moderationStatus, got ${theReview.moderationStatus}` };
       }
-      if (theReview.status !== 'APPROVED') {
-        return { result: 'FAIL', message: `Review owner handoff expected status APPROVED, got ${theReview.status}` };
+      if (theReview.status !== 'SUBMITTED') {
+        return { result: 'FAIL', message: `Operational intent must not approve review owner status, got ${theReview.status}` };
       }
 
-      return { result: 'PASS', message: 'Moderation workflow and 06C1 owner handoff verified' };
+      return { result: 'PASS', message: 'Moderation workflow, legacy review isolation, and operational intent boundary verified' };
     } catch (error: any) {
       return { result: 'FAIL', message: error.message };
     }

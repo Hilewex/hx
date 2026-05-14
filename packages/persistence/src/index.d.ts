@@ -53,7 +53,9 @@ export declare function getDbPool(config?: PersistenceConfig): Pool;
 export declare function query<T extends QueryResultRow = any>(text: string, params?: any[]): Promise<QueryResult<T>>;
 export declare function closePool(): Promise<void>;
 export * from './audit-event';
+export * from './operational-intent';
 export * from './provider-callback';
 export * from './payment-reconciliation-task';
 export * from './finance-ledger';
+export * from './migrator';
 //# sourceMappingURL=index.d.ts.map

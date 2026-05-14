@@ -15,6 +15,10 @@ export function seedProjection(product: CatalogProductReadProjection) {
   projections.set(product.productId, product);
 }
 
+export function resetProjectionStore() {
+  projections.clear();
+}
+
 // Track processed keys to prevent duplicate effects
 const processedIdempotencyKeys = new Set<string>();
 

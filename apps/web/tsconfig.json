@@ -1,20 +1,64 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "noEmit": true,
+    "jsx": "preserve",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "allowJs": true,
+    "isolatedModules": true,
+    "incremental": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "es2022"
+    ],
+    "types": [
+      "node",
+      "react",
+      "react-dom"
+    ],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "resolveJsonModule": true
   },
   "include": [
-    "src/**/*"
+    "app/**/*",
+    "next-env.d.ts",
+    "src/**/*",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
   ],
   "references": [
-    { "path": "../../packages/config" },
-    { "path": "../../packages/contracts" },
-    { "path": "../../packages/events" },
-    { "path": "../../packages/types" },
-    { "path": "../../packages/shared-kernel" },
-    { "path": "../../packages/observability" },
-    { "path": "../../packages/testing" },
-    { "path": "../../packages/ui" }
+    {
+      "path": "../../packages/config"
+    },
+    {
+      "path": "../../packages/contracts"
+    },
+    {
+      "path": "../../packages/events"
+    },
+    {
+      "path": "../../packages/types"
+    },
+    {
+      "path": "../../packages/shared-kernel"
+    },
+    {
+      "path": "../../packages/observability"
+    },
+    {
+      "path": "../../packages/testing"
+    },
+    {
+      "path": "../../packages/ui"
+    }
   ]
 }
-

@@ -97,3 +97,124 @@ export type CreatorActionResult = {
   evidence: CreatorProtectedActionEvidence;
   error?: string;
 };
+
+export type CreatorProjectionStatus =
+  | 'PROJECTED'
+  | 'NOT_CONFIGURED'
+  | 'PENDING_REVIEW'
+  | 'HIDDEN_BY_PROJECTION'
+  | 'DEGRADED'
+  | 'UNAVAILABLE';
+
+export type CreatorProductProjectionState =
+  | 'LISTED_PROJECTION'
+  | 'HIDDEN_PROJECTION'
+  | 'PENDING_REVIEW_PROJECTION'
+  | 'UNAVAILABLE_PROJECTION';
+
+export type CreatorContentProjectionKind = 'STORY' | 'POST' | 'MEDIA';
+
+export type CreatorContentProjectionState =
+  | 'DRAFT_PROJECTION'
+  | 'PENDING_REVIEW_PROJECTION'
+  | 'PUBLISHED_PROJECTION'
+  | 'HIDDEN_PROJECTION'
+  | 'MEDIA_DEGRADED_PROJECTION';
+
+export interface CreatorContextProjection {
+  actorId?: string;
+  creatorId?: string;
+  storefrontId?: string;
+  authenticatedProjection: boolean;
+  storefrontOwnerVerifiedProjection?: boolean;
+  scopeStatus: CreatorProjectionStatus;
+  warnings?: string[];
+}
+
+export interface CreatorStorefrontProfileProjection {
+  storefrontId?: string;
+  displayName?: string;
+  slug?: string;
+  bio?: string;
+  avatarMediaLabel?: string;
+  bannerMediaLabel?: string;
+  visibilityProjection: CreatorProjectionStatus;
+  profileConfiguredProjection: boolean;
+  warnings?: string[];
+}
+
+export interface CreatorStorefrontStatusProjection {
+  status: CreatorProjectionStatus;
+  statusText: string;
+  visibilityText: string;
+  warnings?: string[];
+}
+
+export interface CreatorProductManagementItemProjection {
+  storefrontProductId: string;
+  productId: string;
+  title: string;
+  contextText?: string;
+  displayOrderProjection?: number;
+  listedStateProjection: CreatorProductProjectionState;
+  activeSellableTruth: false;
+  priceTruth: false;
+  stockTruth: false;
+  warnings?: string[];
+}
+
+export interface CreatorProductManagementProjection {
+  items: CreatorProductManagementItemProjection[];
+  totalProjection?: number;
+  emptyState?: boolean;
+  warnings?: string[];
+}
+
+export interface CreatorContentManagementItemProjection {
+  contentId: string;
+  kind: CreatorContentProjectionKind;
+  title: string;
+  statusProjection: CreatorContentProjectionState;
+  moderationStatusText?: string;
+  publicVisibleTruth: false;
+  publishTruth: false;
+  moderationDecisionTruth: false;
+  mediaProcessingTruth: false;
+  warnings?: string[];
+}
+
+export interface CreatorContentManagementProjection {
+  items: CreatorContentManagementItemProjection[];
+  emptyState?: boolean;
+  warnings?: string[];
+}
+
+export interface CreatorScopeGuidanceProjection {
+  surfaceOnlyProjection: true;
+  actionsRequireOwnerCommand: true;
+  scopeOutsideActionBlockedText: string;
+  boundaryTexts: string[];
+}
+
+export interface CreatorBoundaryFlagsProjection {
+  creatorOwnershipTruth: false;
+  permissionTruth: false;
+  productBindingTruth: false;
+  productAvailabilityTruth: false;
+  priceTruth: false;
+  stockTruth: false;
+  mediaPublishTruth: false;
+  moderationDecisionTruth: false;
+  payoutSettlementTruth: false;
+}
+
+export interface CreatorManagementProjection {
+  context: CreatorContextProjection;
+  storefront: CreatorStorefrontProfileProjection;
+  storefrontStatus: CreatorStorefrontStatusProjection;
+  products: CreatorProductManagementProjection;
+  content: CreatorContentManagementProjection;
+  scopeGuidance: CreatorScopeGuidanceProjection;
+  boundaryFlags: CreatorBoundaryFlagsProjection;
+  warnings?: string[];
+}

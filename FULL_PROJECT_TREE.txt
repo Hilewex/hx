@@ -1,0 +1,2381 @@
+├── .codex-bff-smoke.out.log
+├── .codex-bff.err.log
+├── .codex-bff.out.log
+├── .codex-phase02-bff.err.log
+├── .codex-phase02-bff.out.log
+├── .env
+├── .env.example
+├── .gitignore
+├── .local
+│   └── media
+│       ├── ast_2lff9sv6w
+│       │   ├── original.mp4
+│       │   └── poster.jpg
+│       ├── ast_6vb9wf9q0
+│       │   ├── original.mp4
+│       │   └── poster.jpg
+│       ├── ast_aoi68rmsz
+│       │   ├── original.jpg
+│       │   └── thumbnail.jpg
+│       ├── ast_eyliyfhnc
+│       │   └── original.jpg
+│       ├── ast_ha1glh97e
+│       │   ├── original.jpg
+│       │   └── thumbnail.jpg
+│       ├── ast_hfpz041jf
+│       │   ├── original.jpg
+│       │   └── thumbnail.jpg
+│       ├── ast_lrbwdwfa8
+│       │   ├── original.mp4
+│       │   └── poster.jpg
+│       ├── ast_y653b7jqg
+│       │   ├── original.jpg
+│       │   └── thumbnail.jpg
+│       └── ast_ydvxeqvnh
+│           ├── original.mp4
+│           └── poster.jpg
+├── .pnpm-store
+│   └── v10
+│       ├── files
+│       │   ├── 00
+│       │   ├── 01
+├── .runtime-logs
+│   ├── admin-web-dev.err.log
+│   ├── admin-web-dev.out.log
+│   ├── bff-fix05-memory-final.err.log
+│   ├── bff-fix05-memory-final.out.log
+│   ├── bff-fix05-memory.err.log
+│   ├── bff-fix05-memory.out.log
+│   ├── bff-fix05.err.log
+│   ├── bff-fix05.out.log
+│   ├── web-dev-3100.err.log
+│   └── web-dev-3100.out.log
+├── .tmp-bff-08a2-final.log
+├── .tmp-creator-smoke.log
+├── apps
+│   ├── bff
+│   │   ├── .local
+│   │   │   └── media
+│   │   │       ├── ast_08lqb3lvo
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_10wim6tli
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_172k4dtvq
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_1p1k08ufi
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_1v92giu8n
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_2wmh0dftl
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_3amciey0d
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_3yg617iyh
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_41cvp1asy
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_4nd36l40x
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_6xc5z5ii8
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_6xz7u14fh
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_774nb7wg9
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_873frdzkv
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_90638vqgc
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_96ezp04dw
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_9ff8bqcb2
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_9hy1h2ixl
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_9tbnwfsgv
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_a0ua70j8h
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_bbxlrqokj
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_brk6sxtgj
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_bzcm4724z
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_c1k8wzwbu
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_c8y12w5xx
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_cg6wlaiz3
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_cloxo918f
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_czat94ino
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_d7dgcjm47
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_ea6lvbj39
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_ej36t0ojs
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_etrll2tud
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_f38p1utmn
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_f4dhy3hvr
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_gnyseb8gl
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_hsbzt19an
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_hwyd6kzdj
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_hzoz3r6qo
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_kfekdeqab
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_km542f0hf
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_lqgj8afno
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_lxu9drbww
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_mffbzd5we
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_mswo4zp2e
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_nzr6sw681
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_o0zzaezlo
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_o69rragge
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_ojio1hlie
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_pxy5brb9e
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_q45jhnpf5
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_q5rf5mjwy
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_qii6quyjp
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_qrhbcci1u
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_qvrrlriyt
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_rl8qyzdgj
+│   │   │       │   └── original.jpg
+│   │   │       ├── ast_ro7x8fao4
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_rxve5of3i
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_sqop5kshm
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_t3ap2fkgy
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_t88g9jr22
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_teec9gurv
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_u4uwiblfd
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_v2qvlcsaz
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_vmhm4aykp
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_vnwcibt2s
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_xm4ck4vz7
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_y3msonjeq
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_ymg40w5j8
+│   │   │       │   ├── original.mp4
+│   │   │       │   └── poster.jpg
+│   │   │       ├── ast_yrhjlc1cn
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_yt4izh8up
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_zdzzk45uh
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_zrohw7mib
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       ├── ast_zu8gc5y2r
+│   │   │       │   ├── original.jpg
+│   │   │       │   └── thumbnail.jpg
+│   │   │       └── ast_zwx92p4g9
+│   │   │           └── original.jpg
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── config
+│   │   │   │   └── index.ts
+│   │   │   ├── env.ts
+│   │   │   ├── index.ts
+│   │   │   └── server
+│   │   │       ├── access.ts
+│   │   │       ├── actions.ts
+│   │   │       ├── admin.ts
+│   │   │       ├── analytics.ts
+│   │   │       ├── cancel-return.ts
+│   │   │       ├── cart.ts
+│   │   │       ├── catalog.ts
+│   │   │       ├── category.ts
+│   │   │       ├── checkout.ts
+│   │   │       ├── context.ts
+│   │   │       ├── creator.ts
+│   │   │       ├── customer-address.ts
+│   │   │       ├── customer-contribution.ts
+│   │   │       ├── customer-reward.ts
+│   │   │       ├── customer-social.ts
+│   │   │       ├── customer-support.ts
+│   │   │       ├── customer.ts
+│   │   │       ├── feed.ts
+│   │   │       ├── finance-correction.ts
+│   │   │       ├── finance-ledger.ts
+│   │   │       ├── follow.ts
+│   │   │       ├── fraud.ts
+│   │   │       ├── guards.ts
+│   │   │       ├── index.ts
+│   │   │       ├── interaction.ts
+│   │   │       ├── media.ts
+│   │   │       ├── moderation.ts
+│   │   │       ├── notification.ts
+│   │   │       ├── ops-center.ts
+│   │   │       ├── order-ops.ts
+│   │   │       ├── order.ts
+│   │   │       ├── p49-response-smoke-test.ts
+│   │   │       ├── p50-response-smoke-test.ts
+│   │   │       ├── payment.ts
+│   │   │       ├── payout.ts
+│   │   │       ├── plp.ts
+│   │   │       ├── pool.ts
+│   │   │       ├── post.ts
+│   │   │       ├── provider-callback.ts
+│   │   │       ├── qa.ts
+│   │   │       ├── refund.ts
+│   │   │       ├── response.ts
+│   │   │       ├── review.ts
+│   │   │       ├── risk.ts
+│   │   │       ├── search.ts
+│   │   │       ├── settlement.ts
+│   │   │       ├── shipment.ts
+│   │   │       ├── store-message.ts
+│   │   │       ├── store-post.ts
+│   │   │       ├── store-story.ts
+│   │   │       ├── storefront.ts
+│   │   │       ├── story.ts
+│   │   │       ├── supplier.ts
+│   │   │       ├── support.ts
+│   │   │       └── ugc.ts
+│   │   └── tsconfig.json
+│   ├── panel
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── bootstrap
+│   │   │   │   ├── access.ts
+│   │   │   │   ├── actions.ts
+│   │   │   │   ├── app.ts
+│   │   │   │   ├── auth.ts
+│   │   │   │   └── customer.ts
+│   │   │   ├── config
+│   │   │   │   └── index.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   └── web
+│       ├── app
+│       │   ├── admin
+│       │   │   ├── moderation
+│       │   │   │   ├── page.tsx
+│       │   │   │   └── [id]
+│       │   │   │       └── page.tsx
+│       │   │   ├── ops
+│       │   │   │   ├── page.tsx
+│       │   │   │   └── [id]
+│       │   │   │       └── page.tsx
+│       │   │   ├── page.tsx
+│       │   │   ├── products
+│       │   │   │   ├── page.tsx
+│       │   │   │   └── [id]
+│       │   │   │       └── page.tsx
+│       │   │   ├── refunds
+│       │   │   │   ├── page.tsx
+│       │   │   │   └── [id]
+│       │   │   │       └── page.tsx
+│       │   │   └── risk
+│       │   │       ├── page.tsx
+│       │   │       └── [id]
+│       │   │           └── page.tsx
+│       │   ├── api
+│       │   │   └── bff
+│       │   │       └── [...path]
+│       │   │           └── route.ts
+│       │   ├── cart
+│       │   │   └── page.tsx
+│       │   ├── category
+│       │   │   └── page.tsx
+│       │   ├── checkout
+│       │   │   └── page.tsx
+│       │   ├── creator
+│       │   │   ├── content
+│       │   │   │   └── page.tsx
+│       │   │   ├── page.tsx
+│       │   │   ├── products
+│       │   │   │   └── page.tsx
+│       │   │   └── storefront
+│       │   │       └── page.tsx
+│       │   ├── error.tsx
+│       │   ├── globals.css
+│       │   ├── layout.tsx
+│       │   ├── loading.tsx
+│       │   ├── not-found.tsx
+│       │   ├── order
+│       │   │   └── confirmation
+│       │   │       └── page.tsx
+│       │   ├── orders
+│       │   │   ├── page.tsx
+│       │   │   └── [id]
+│       │   │       └── page.tsx
+│       │   ├── page.tsx
+│       │   ├── payment
+│       │   │   └── page.tsx
+│       │   ├── product
+│       │   │   └── [id]
+│       │   │       └── page.tsx
+│       │   ├── returns
+│       │   │   ├── page.tsx
+│       │   │   └── [id]
+│       │   │       └── page.tsx
+│       │   ├── search
+│       │   │   └── page.tsx
+│       │   ├── store
+│       │   │   └── [slug]
+│       │   │       └── page.tsx
+│       │   ├── supplier
+│       │   │   ├── orders
+│       │   │   │   └── page.tsx
+│       │   │   ├── page.tsx
+│       │   │   ├── products
+│       │   │   │   └── page.tsx
+│       │   │   ├── shipments
+│       │   │   │   └── page.tsx
+│       │   │   └── support
+│       │   │       └── page.tsx
+│       │   └── support
+│       │       ├── page.tsx
+│       │       └── tickets
+│       │           └── [id]
+│       │               └── page.tsx
+│       ├── next-env.d.ts
+│       ├── next.config.mjs
+│       ├── package.json
+│       ├── playwright.config.ts
+│       ├── README.md
+│       ├── src
+│       │   ├── bootstrap
+│       │   │   ├── access.ts
+│       │   │   ├── app.ts
+│       │   │   ├── auth.ts
+│       │   │   ├── cancel-return.ts
+│       │   │   ├── cart.ts
+│       │   │   ├── category.ts
+│       │   │   ├── checkout.ts
+│       │   │   ├── feed.ts
+│       │   │   ├── follow.ts
+│       │   │   ├── interaction.ts
+│       │   │   ├── media.ts
+│       │   │   ├── moderation.ts
+│       │   │   ├── notification.ts
+│       │   │   ├── order.ts
+│       │   │   ├── payment.ts
+│       │   │   ├── pdp.ts
+│       │   │   ├── plp.ts
+│       │   │   ├── post.ts
+│       │   │   ├── qa.ts
+│       │   │   ├── refund.ts
+│       │   │   ├── review.ts
+│       │   │   ├── search.ts
+│       │   │   ├── shipment.ts
+│       │   │   ├── storefront.ts
+│       │   │   ├── story.ts
+│       │   │   ├── support.ts
+│       │   │   └── ugc.ts
+│       │   ├── components
+│       │   │   ├── admin-ops-surface.tsx
+│       │   │   ├── app-shell.tsx
+│       │   │   ├── cart-surface.tsx
+│       │   │   ├── checkout-surface.tsx
+│       │   │   ├── creator-management-surface.tsx
+│       │   │   ├── degraded-state.tsx
+│       │   │   ├── discovery-surface.tsx
+│       │   │   ├── empty-state.tsx
+│       │   │   ├── error-state.tsx
+│       │   │   ├── home-data-readiness.tsx
+│       │   │   ├── loading-state.tsx
+│       │   │   ├── order-surface.tsx
+│       │   │   ├── payment-surface.tsx
+│       │   │   ├── product-decision-surface.tsx
+│       │   │   ├── return-support-surface.tsx
+│       │   │   ├── route-placeholder.tsx
+│       │   │   ├── session-status.tsx
+│       │   │   ├── supplier-management-surface.tsx
+│       │   │   └── surface-card.tsx
+│       │   ├── config
+│       │   │   ├── index.ts
+│       │   │   └── routes.ts
+│       │   ├── config.ts
+│       │   ├── index.ts
+│       │   ├── lib
+│       │   │   ├── bff
+│       │   │   │   ├── admin.ts
+│       │   │   │   ├── cart.ts
+│       │   │   │   ├── catalog.ts
+│       │   │   │   ├── category.ts
+│       │   │   │   ├── checkout.ts
+│       │   │   │   ├── creator.ts
+│       │   │   │   ├── discover.ts
+│       │   │   │   ├── errors.ts
+│       │   │   │   ├── home.ts
+│       │   │   │   ├── orders.ts
+│       │   │   │   ├── payment.ts
+│       │   │   │   ├── product.ts
+│       │   │   │   ├── query-keys.ts
+│       │   │   │   ├── read.ts
+│       │   │   │   ├── returns.ts
+│       │   │   │   ├── search.ts
+│       │   │   │   ├── session.ts
+│       │   │   │   ├── storefront.ts
+│       │   │   │   ├── story.ts
+│       │   │   │   ├── supplier.ts
+│       │   │   │   └── support.ts
+│       │   │   ├── bff-client.ts
+│       │   │   └── query-client.ts
+│       │   └── providers
+│       │       ├── app-providers.tsx
+│       │       ├── query-provider.tsx
+│       │       └── session-provider.tsx
+│       ├── test-results
+│       ├── tests
+│       │   └── smoke
+│       │       └── render.spec.ts
+│       └── tsconfig.json
+├── bff-smoke-debug.err.log
+├── bff-smoke-debug.out.log
+├── bff-smoke.log
+├── combined-1.txt
+├── custom_tree.txt
+├── docs
+│   ├── api
+│   │   └── .gitkeep
+│   ├── architecture
+│   │   └── .gitkeep
+│   ├── plan
+│   │   └── .gitkeep
+│   ├── runbooks
+│   │   ├── .gitkeep
+│   │   ├── db-validation.md
+│   │   ├── local-setup.md
+│   │   └── runtime-verification.md
+│   ├── standards
+│   │   └── .gitkeep
+│   └── topology
+│       └── .gitkeep
+├── dummy.txt
+├── files_list.txt
+├── filtered_project_tree.txt
+├── fix-extends.js
+├── fix-package-scripts.js
+├── fix-tsconfig.js
+├── fix_script.js
+├── FULL_PROJECT_TREE.txt
+├── generate-10g-audit-report.js
+├── generate-10g-report.js
+├── generate_tree.js
+├── infra
+│   ├── ci
+│   │   └── .gitkeep
+│   ├── compose
+│   │   ├── .gitkeep
+│   │   ├── docker-compose.local.yml
+│   │   └── tempo
+│   │       └── tempo.yaml
+│   ├── docker
+│   │   ├── .gitkeep
+│   │   └── docker-compose.yml
+│   ├── env
+│   │   └── .gitkeep
+│   ├── migrations
+│   │   ├── .gitkeep
+│   │   ├── 20260425_001_moderation_init.sql
+│   │   ├── 20260425_002_commerce_cart_checkout.sql
+│   │   ├── 20260425_003_payment_order_persistence.sql
+│   │   ├── 20260425_004_shipment_return_refund_persistence.sql
+│   │   ├── 20260425_005_p37_shipment_return_refund_indexes.sql
+│   │   ├── 20260426_001_event_audit_durability.sql
+│   │   ├── 20260427_001_risk_foundation.sql
+│   │   ├── 20260427_002_finance_correction_foundation.sql
+│   │   ├── 20260427_003_settlement_foundation.sql
+│   │   ├── 20260427_004_payout_foundation.sql
+│   │   ├── 20260427_005_notification_provider_hardening.sql
+│   │   ├── 20260427_006_metrics_analytics_foundation.sql
+│   │   ├── 20260430_001_customer_storefront_init.sql
+│   │   ├── 20260430_002_shipment_timeline.sql
+│   │   ├── 20260430_003_media_readiness_foundation.sql
+│   │   ├── 20260504_001_provider_callback_persistence.sql
+│   │   ├── 20260507_001_payment_reconciliation_task_persistence.sql
+│   │   ├── 20260512_001_operational_intent_audit_outbox_foundation.sql
+│   │   └── 20260513_001_finance_ledger_durability.sql
+│   ├── scripts
+│   │   └── .gitkeep
+│   └── topology
+│       └── .gitkeep
+├── kontrol  v1
+│   ├── FAZ-1
+│   │   ├── COMMERCE CORE TRUTH EXTRACTION — v0.1.md
+│   │   ├── CORE FOUNDATIONS TRUTH EXTRACTION — v0.1.md
+│   │   ├── FINANCE  SETTLEMENT  PAYOUT  COUPON  REWARD ECONOMY TRUTH EXTRACTION — v0.1.md
+│   │   ├── MEDIA  INFRASTRUCTURE  ASSET PROCESSING  PLATFORM OPERABILITY TRUTH EXTRACTION — v0.1.md
+│   │   ├── MODERATION  FRAUD  TRUST  SAFETY  ADMIN GOVERNANCE TRUTH EXTRACTION — v0.1.md
+│   │   ├── ORDER - OPERATIONS -DELIVERY - RETURN TRUTH EXTRACTION — v0.1.md
+│   │   ├── SEARCH  RECOMMENDATION ANALYTICS  RETRIEVAL  TAXONOMY TRUTH EXTRACTION — v0.1.md
+│   │   └── SOCIAL  CREATOR CONTENT  INTERACTION TRUTH EXTRACTION — v0.1.md
+│   ├── FAZ-2
+│   │   ├── Domain Ownership Haritası — v0.1.MD
+│   │   ├── Event Boundary Map — v0.1.md
+│   │   ├── Read  Projection Matrix — v0.1.md
+│   │   ├── Repo Audit Control Criteria — v0.1.md
+│   │   ├── System Interaction Map — v0.1.md
+│   │   └── Write Boundary Matrix — v0.1.MD
+│   └── HEDIHUP FINAL STABILIZATION ROADMAP.md
+├── p-1-7.md
+├── p.bff log
+│   ├── .bff-08c.log
+│   ├── bff-06e.err.log
+│   ├── bff-06e.out.log
+│   ├── bff-07a1-3003.err.log
+│   ├── bff-07a1-3003.out.log
+│   ├── bff-07a1.err.log
+│   ├── bff-07a1.out.log
+│   ├── bff-07b.log
+│   ├── bff-07c.err.log
+│   ├── bff-07c.log
+│   ├── bff-08a1.err.log
+│   ├── bff-08a1.log
+│   ├── bff-08b.err.log
+│   ├── bff-08b.out.log
+│   ├── bff-08d.log
+│   ├── bff-3013-h10b2e-freshness.err.log
+│   ├── bff-3013-h10b2e-freshness.log
+│   ├── bff-3013-h10b2e-rerun.err.log
+│   ├── bff-3013-h10b2e-rerun.log
+│   ├── bff-3013-h10b2e.err.log
+│   ├── bff-3013-h10b2e.log
+│   ├── bff_boot.err.log
+│   └── bff_boot.log
+├── p.kayıt
+│   ├── ARCHIVED-HARDENING-05E-COMMERCE-ACTION-PERMISSION-ENFORCEMENT-CLOSURE-REPORT.md
+│   ├── HARDENING-00-REVIEW-REPORT.md
+│   ├── HARDENING-01-CLOSURE-REPORT.md
+│   ├── HARDENING-01B-CLOSURE-REPORT.md
+│   ├── HARDENING-02-CLOSURE-REPORT.md
+│   ├── HARDENING-02B-CLOSURE-REPORT.md
+│   ├── HARDENING-02R-CLOSURE-REPORT.md
+│   ├── HARDENING-02V-CLOSURE-REPORT.md
+│   ├── HARDENING-03-CLOSURE-REPORT.md
+│   ├── HARDENING-03B-CLOSURE-REPORT.md
+│   ├── HARDENING-04B-CLOSURE-REPORT.md
+│   ├── HARDENING-04R-CLOSURE-REPORT.md
+│   ├── HARDENING-05-00-AUTH-SESSION-PERMISSION-INVENTORY.md
+│   ├── HARDENING-05A-AUTH-SESSION-ACTOR-CONTEXT-CLOSURE-REPORT.md
+│   ├── HARDENING-05B-PERMISSION-GUARD-INTEGRATION-CLOSURE-REPORT.md
+│   ├── HARDENING-05C-PANEL-ADMIN-CREATOR-ROUTE-PROTECTION-CLOSURE-REPORT.md
+│   ├── HARDENING-05D-SOCIAL-ACTION-PERMISSION-ENFORCEMENT-CLOSURE-REPORT.md
+│   ├── HARDENING-05E-COMMERCE-PERMISSION-ENFORCEMENT-DESIGN.md
+│   ├── HARDENING-05E-SR-ANALYSIS.md
+│   ├── HARDENING-05E-SR-CLOSURE-REPORT.md
+│   ├── HARDENING-06-00A-MODERATION-WORKFLOW-INVENTORY.md
+│   ├── HARDENING-06-00B1-RISK-FRAUD-CORE-INVENTORY.md
+│   ├── HARDENING-06-00B2-ABUSE-SIGNAL-COVERAGE-INVENTORY.md
+│   ├── HARDENING-06-FINAL-CLOSURE-REPORT.md
+│   ├── HARDENING-06A-MODERATION-WORKFLOW-FOUNDATION-HARDENING-CLOSURE-REPORT.md
+│   ├── HARDENING-06B-RISK-SIGNAL-CORE-GUARD-INGEST-HARDENING-CLOSURE-REPORT.md
+│   ├── HARDENING-06C1-SOCIAL-CONTENT-MODERATION-ENFORCEMENT-CLOSURE-REPORT.md
+│   ├── HARDENING-06C2-SOCIAL-ABUSE-SIGNAL-INTEGRATION-CLOSURE-REPORT.md
+│   ├── HARDENING-06D-COMMERCE-ABUSE-FRAUD-GUARD-INTEGRATION-CLOSURE-REPORT.md
+│   ├── HARDENING-06E-MODERATION-RISK-ABUSE-SMOKE-REGRESSION-CLOSURE-REPORT.md
+│   ├── HARDENING-07-00A-CATALOG-PDP-PLP-READ-INVENTORY.md
+│   ├── HARDENING-07-00B-SEARCH-INDEX-SYNC-INVENTORY.md
+│   ├── HARDENING-07-FINAL-CLOSURE-REPORT.md
+│   ├── HARDENING-07A1-CATALOG-READ-PROJECTION-FOUNDATION-CLOSURE-REPORT.md
+│   ├── HARDENING-07A2-PDP-PLP-READ-HARDENING-SMOKE-CLOSURE-REPORT.md
+│   ├── HARDENING-07B-SEARCH-BFF-SMOKE-CANDIDATE-BOUNDARY-CLOSURE-REPORT.md
+│   ├── HARDENING-07C-SEARCH-INDEX-SYNC-PROJECTION-FOUNDATION-CLOSURE-REPORT.md
+│   ├── HARDENING-07D-SEARCH-CATALOG-REGRESSION-FINAL-PREP-CLOSURE-REPORT.md
+│   ├── HARDENING-08-00A-ANALYTICS-EVENT-AUDIT-INVENTORY.md
+│   ├── HARDENING-08-00B-NOTIFICATION-DELIVERY-USER-COMMUNICATION-INVENTORY.md
+│   ├── HARDENING-08-FINAL-CLOSURE-REPORT.md
+│   ├── HARDENING-08A1-EVENT-ENVELOPE-AUDIT-CONTRACT-FOUNDATION-CLOSURE-REPORT.md
+│   ├── HARDENING-08A2-ANALYTICS-INGEST-GUARD-ROOT-SMOKE-CLOSURE-REPORT.md
+│   ├── HARDENING-08B-NOTIFICATION-DELIVERY-BOUNDARY-HARDENING-CLOSURE-REPORT.md
+│   ├── HARDENING-08C-OUTBOX-RETRY-DELIVERY-SMOKE-FOUNDATION-CLOSURE-REPORT.md
+│   ├── HARDENING-08D-ANALYTICS-NOTIFICATION-EVENT-REGRESSION-FINAL-PREP-CLOSURE-REPORT.md
+│   ├── HARDENING-09-FINAL-CLOSURE-REPORT.md
+│   ├── HARDENING-09A-PLAN.md
+│   ├── HARDENING-09B-PAYMENT-SANDBOX-ADAPTER-FOUNDATION-CLOSURE-REPORT.md
+│   ├── HARDENING-09C-PAYMENT-UNKNOWN-RESULT-PENDING-BOUNDARY-CLOSURE-REPORT.md
+│   ├── HARDENING-09D-SHIPMENT-CARRIER-BOUNDARY-FOUNDATION-CLOSURE-REPORT.md
+│   ├── HARDENING-09E-NOTIFICATION-EMAIL-SANDBOX-PROVIDER-BOUNDARY-CLOSURE-REPORT.md
+│   ├── HARDENING-09F-PAYOUT-PROVIDER-BOUNDARY-FOUNDATION-CLOSURE-REPORT.md
+│   ├── HARDENING-10-00-PROVIDER-CALLBACK-WEBHOOK-RECONCILIATION-INVENTORY.md
+│   ├── HARDENING-10A3-PROVIDER-CALLBACK-PERSISTENCE-MIGRATION-CLOSURE-REPORT.md
+│   ├── HARDENING-10A4-PROVIDER-CALLBACK-IN-MEMORY-SMOKE-CLOSURE-REPORT.md
+│   ├── HARDENING-10A5-PROVIDER-CALLBACK-FINAL-REGRESSION-CLOSURE-REPORT.md
+│   ├── HARDENING-10A5-R-PROVIDER-CALLBACK-FINAL-REGRESSION-RUNTIME-REMEDIATION-CLOSURE-REPORT.md
+│   ├── HARDENING-10B-00A-PROVIDER-CALLBACK-REPO-SOURCE-REALITY-INVENTORY.md
+│   ├── HARDENING-10B-00B-PAYMENT-CALLBACK-DOMAIN-INVENTORY.md
+│   ├── HARDENING-10B-00C-SHIPMENT-CALLBACK-ELIGIBILITY-INVENTORY.md
+│   ├── HARDENING-10B-00D-NOTIFICATION-DELIVERY-CALLBACK-INVENTORY.md
+│   ├── HARDENING-10B-00E-PAYOUT-CALLBACK-FINANCE-RISK-INVENTORY.md
+│   ├── HARDENING-10B-00F-CROSS-DOMAIN-RISK-IMPLEMENTATION-ORDER-FINAL-INVENTORY.md
+│   ├── HARDENING-10B1-PROVIDER-CALLBACK-POSTGRES-IDEMPOTENCY-REMEDIATION-CLOSURE-REPORT.md
+│   ├── HARDENING-10B2A-COMMON-PROVIDER-CALLBACK-BFF-INGESTION-BOUNDARY-CLOSURE-REPORT.md
+│   ├── HARDENING-10B2B-PROVIDER-CALLBACK-SIGNATURE-GUARD-FOUNDATION-CLOSURE-REPORT.md
+│   ├── HARDENING-10B2C-PROVIDER-CALLBACK-REPLAY-IDEMPOTENCY-GUARD-CLOSURE-REPORT.md
+│   ├── HARDENING-10B2D-PROVIDER-CALLBACK-TIMESTAMP-NONCE-FRESHNESS-GUARD-CLOSURE-REPORT.md
+│   ├── HARDENING-10B2E-PROVIDER-CALLBACK-PUBLIC-WEBHOOK-RATE-LIMIT-ABUSE-GUARD-CLOSURE-REPORT.md
+│   ├── HARDENING-10B2F-COMMON-PROVIDER-CALLBACK-INGESTION-SECURITY-BOUNDARY-FINAL-CLOSURE.md
+│   ├── HARDENING-10C0-PROVIDER-SPECIFIC-CALLBACK-MAPPING-INVENTORY-PAYMENT-FIRST-CANDIDATE.md
+│   ├── HARDENING-10C1-NORMALIZED-PAYMENT-CALLBACK-CANDIDATE-CONTRACT-HELPER-CLOSURE-REPORT.md
+│   ├── HARDENING-10C1-R-VERIFICATION-COMPLETION-CLOSURE-REPORT.md
+│   ├── HARDENING-10C10 FINAL CLOSURE SUMMARY.md
+│   ├── HARDENING-10C10-01-PAYTR-STATUS-INQUIRY-CONTRACT-MAPPING-FOUNDATION-CLOSURE-REPORT.md
+│   ├── HARDENING-10C10-02-PAYTR-STATUS-INQUIRY-ADAPTER-BOUNDARY-CLOSURE-REPORT.md
+│   ├── HARDENING-10C10-03-RECONCILIATION-DECISION-CONTRACT-TASK-MODEL-CLOSURE-REPORT.md
+│   ├── HARDENING-10C10-04-RECONCILIATION-TASK-PERSISTENCE-REPOSITORY-CLOSURE-REPORT.md
+│   ├── HARDENING-10C10-05-RECONCILIATION-WORKER-DRY-RUN-CLOSURE-REPORT.md
+│   ├── HARDENING-10C10-06-RECONCILIATION-OWNER-COMMAND-GUARD-CLOSURE-REPORT.md
+│   ├── HARDENING-10C10-07-CONTROLLED-RECONCILIATION-PAYMENT-MUTATION-CLOSURE-REPORT.md
+│   ├── HARDENING-10C10-08-RECONCILIATION-E2E-NO-ORDER-HANDOFF-CLOSURE-REPORT.md
+│   ├── HARDENING-10C10-09-RECONCILIATION-AUDIT-OUTBOX-FINALIZATION-CLOSURE-REPORT.md
+│   ├── HARDENING-10C10-A-RECONCILIATION-BOUNDARY-SYSTEM-ALIGNMENT-INVENTORY.md
+│   ├── HARDENING-10C10-B-PAYTR-STATUS-INQUIRY-RECONCILIATION-DECISION-INVENTORY.md
+│   ├── HARDENING-10C2-PAYTR-CALLBACK-MAPPING-FOUNDATION-SMOKE-CLOSURE-REPORT.md
+│   ├── HARDENING-10C3-PAYMENT-PROVIDER-CALLBACK-RESPONSE-POLICY-BRIDGE-CLOSURE-REPORT.md
+│   ├── HARDENING-10C4-PAYMENT-PROVIDER-CONFIG-SECRET-RESOLUTION-FOUNDATION-CLOSURE-REPORT.md
+│   ├── HARDENING-10C5-PAYTR-CALLBACK-MAPPING-LIVE-BFF-PATH-CLOSURE-REPORT.md
+│   ├── HARDENING-10C6-PAYMENT-CALLBACK-PROCESSING-WORKER-OWNER-HANDOFF-INVENTORY.md
+│   ├── HARDENING-10C7-PAYMENT-CALLBACK-STATE-MODEL-OWNER-COMMAND-CONTRACT-CLOSURE-REPORT.md
+│   ├── HARDENING-10C8-PAYMENT-CALLBACK-PROCESSING-WORKER-FOUNDATION-CLOSURE-REPORT.md
+│   ├── HARDENING-10C9-00-PAYMENT-PROVIDER-REFERENCE-LOOKUP-FOUNDATION-CLOSURE-REPORT.md
+│   ├── HARDENING-10C9-01-PAYMENT-INITIATION-PROVIDER-REFERENCE-PERSISTENCE-CLOSURE-REPORT.md
+│   ├── HARDENING-10C9-02-PAYMENT-OWNER-TRANSITION-SUCCEEDED-FAILED-CALLBACK-CLOSURE-REPORT.md
+│   └── HARDENING_PROGRESS_RECORD (1).md
+├── p.px kayıt
+│   ├── PX-FENOMEN-02-CLOSURE-REPORT.md
+│   ├── PX-FENOMEN-05-CLOSURE-REPORT.md
+│   ├── PX-HAVUZ-01-CLOSURE-REPORT.md
+│   ├── PX-HAVUZ-02-CLOSURE-REPORT.md
+│   ├── PX-HAVUZ-03-CLOSURE-REPORT.md
+│   ├── PX-HAVUZ-03-R-CLOSURE-REPORT.md
+│   ├── PX-HAVUZ-04-CLOSURE-REPORT.md
+│   ├── PX-HAVUZ-05-CLOSURE-REPORT.md
+│   ├── PX-KULLANICI-02-CLOSURE-REPORT.md
+│   ├── PX-KULLANICI-03-CLOSURE-REPORT.md
+│   ├── PX-KULLANICI-04-CLOSURE-REPORT.md
+│   ├── PX-KULLANICI-05-CLOSURE-REPORT.md
+│   ├── PX-KULLANICI-06-CLOSURE-REPORT.md
+│   └── PX-KULLANICI-07-CLOSURE-REPORT.md
+├── p21-runtime-check.ts
+├── p21-verification.js
+├── P51_ACCEPTANCE_CLOSURE_REPORT.md
+├── package-lock.json
+├── package.json
+├── packages
+│   ├── config
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.d.ts.map
+│   │   │   ├── index.js
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── contracts
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── access.d.ts
+│   │   │   ├── access.d.ts.map
+│   │   │   ├── access.js
+│   │   │   ├── access.ts
+│   │   │   ├── actions.d.ts
+│   │   │   ├── actions.d.ts.map
+│   │   │   ├── actions.js
+│   │   │   ├── actions.ts
+│   │   │   ├── admin.ts
+│   │   │   ├── analytics.d.ts
+│   │   │   ├── analytics.d.ts.map
+│   │   │   ├── analytics.js
+│   │   │   ├── analytics.ts
+│   │   │   ├── api-error.d.ts
+│   │   │   ├── api-error.d.ts.map
+│   │   │   ├── api-error.js
+│   │   │   ├── api-error.ts
+│   │   │   ├── audit.d.ts
+│   │   │   ├── audit.d.ts.map
+│   │   │   ├── audit.js
+│   │   │   ├── audit.ts
+│   │   │   ├── auth.d.ts
+│   │   │   ├── auth.d.ts.map
+│   │   │   ├── auth.js
+│   │   │   ├── auth.ts
+│   │   │   ├── cancel-return.d.ts
+│   │   │   ├── cancel-return.d.ts.map
+│   │   │   ├── cancel-return.js
+│   │   │   ├── cancel-return.ts
+│   │   │   ├── cart.d.ts
+│   │   │   ├── cart.d.ts.map
+│   │   │   ├── cart.js
+│   │   │   ├── cart.ts
+│   │   │   ├── catalog.d.ts
+│   │   │   ├── catalog.d.ts.map
+│   │   │   ├── catalog.js
+│   │   │   ├── catalog.ts
+│   │   │   ├── category.d.ts
+│   │   │   ├── category.d.ts.map
+│   │   │   ├── category.js
+│   │   │   ├── category.ts
+│   │   │   ├── checkout.d.ts
+│   │   │   ├── checkout.d.ts.map
+│   │   │   ├── checkout.js
+│   │   │   ├── checkout.ts
+│   │   │   ├── coupon.d.ts
+│   │   │   ├── coupon.d.ts.map
+│   │   │   ├── coupon.js
+│   │   │   ├── coupon.ts
+│   │   │   ├── creator.ts
+│   │   │   ├── customer-address.d.ts
+│   │   │   ├── customer-address.d.ts.map
+│   │   │   ├── customer-address.js
+│   │   │   ├── customer-address.ts
+│   │   │   ├── customer-contribution.d.ts
+│   │   │   ├── customer-contribution.d.ts.map
+│   │   │   ├── customer-contribution.js
+│   │   │   ├── customer-contribution.ts
+│   │   │   ├── customer-reward.d.ts
+│   │   │   ├── customer-reward.d.ts.map
+│   │   │   ├── customer-reward.js
+│   │   │   ├── customer-reward.ts
+│   │   │   ├── customer-social.d.ts
+│   │   │   ├── customer-social.d.ts.map
+│   │   │   ├── customer-social.js
+│   │   │   ├── customer-social.ts
+│   │   │   ├── customer-support.d.ts
+│   │   │   ├── customer-support.d.ts.map
+│   │   │   ├── customer-support.js
+│   │   │   ├── customer-support.ts
+│   │   │   ├── customer.d.ts
+│   │   │   ├── customer.d.ts.map
+│   │   │   ├── customer.js
+│   │   │   ├── customer.ts
+│   │   │   ├── discovery.ts
+│   │   │   ├── feed.d.ts
+│   │   │   ├── feed.d.ts.map
+│   │   │   ├── feed.js
+│   │   │   ├── feed.ts
+│   │   │   ├── finance-correction.d.ts
+│   │   │   ├── finance-correction.d.ts.map
+│   │   │   ├── finance-correction.js
+│   │   │   ├── finance-correction.ts
+│   │   │   ├── finance-ledger.d.ts
+│   │   │   ├── finance-ledger.d.ts.map
+│   │   │   ├── finance-ledger.js
+│   │   │   ├── finance-ledger.ts
+│   │   │   ├── finance.d.ts
+│   │   │   ├── finance.d.ts.map
+│   │   │   ├── finance.js
+│   │   │   ├── finance.ts
+│   │   │   ├── follow.d.ts
+│   │   │   ├── follow.d.ts.map
+│   │   │   ├── follow.js
+│   │   │   ├── follow.ts
+│   │   │   ├── fraud.ts
+│   │   │   ├── health.d.ts
+│   │   │   ├── health.d.ts.map
+│   │   │   ├── health.js
+│   │   │   ├── health.ts
+│   │   │   ├── index.d.ts.map
+│   │   │   ├── index.js
+│   │   │   ├── index.ts
+│   │   │   ├── interaction.d.ts
+│   │   │   ├── interaction.d.ts.map
+│   │   │   ├── interaction.js
+│   │   │   ├── interaction.ts
+│   │   │   ├── media.d.ts
+│   │   │   ├── media.d.ts.map
+│   │   │   ├── media.js
+│   │   │   ├── media.ts
+│   │   │   ├── moderation.d.ts
+│   │   │   ├── moderation.d.ts.map
+│   │   │   ├── moderation.js
+│   │   │   ├── moderation.ts
+│   │   │   ├── notification.d.ts
+│   │   │   ├── notification.d.ts.map
+│   │   │   ├── notification.js
+│   │   │   ├── notification.ts
+│   │   │   ├── order-ops.d.ts
+│   │   │   ├── order-ops.d.ts.map
+│   │   │   ├── order-ops.js
+│   │   │   ├── order-ops.ts
+│   │   │   ├── order.d.ts
+│   │   │   ├── order.d.ts.map
+│   │   │   ├── order.js
+│   │   │   ├── order.ts
+│   │   │   ├── payment.d.ts
+│   │   │   ├── payment.d.ts.map
+│   │   │   ├── payment.js
+│   │   │   ├── payment.ts
+│   │   │   ├── payout.d.ts
+│   │   │   ├── payout.d.ts.map
+│   │   │   ├── payout.js
+│   │   │   ├── payout.ts
+│   │   │   ├── pdp.ts
+│   │   │   ├── plp.d.ts
+│   │   │   ├── plp.d.ts.map
+│   │   │   ├── plp.js
+│   │   │   ├── plp.ts
+│   │   │   ├── pool.d.ts
+│   │   │   ├── pool.d.ts.map
+│   │   │   ├── pool.js
+│   │   │   ├── pool.ts
+│   │   │   ├── post.d.ts
+│   │   │   ├── post.d.ts.map
+│   │   │   ├── post.js
+│   │   │   ├── post.ts
+│   │   │   ├── pricing.d.ts
+│   │   │   ├── pricing.d.ts.map
+│   │   │   ├── pricing.js
+│   │   │   ├── pricing.ts
+│   │   │   ├── projection.ts
+│   │   │   ├── provider.d.ts
+│   │   │   ├── provider.d.ts.map
+│   │   │   ├── provider.js
+│   │   │   ├── provider.ts
+│   │   │   ├── qa.d.ts
+│   │   │   ├── qa.d.ts.map
+│   │   │   ├── qa.js
+│   │   │   ├── qa.ts
+│   │   │   ├── ranking.ts
+│   │   │   ├── recommendation.ts
+│   │   │   ├── refund.d.ts
+│   │   │   ├── refund.d.ts.map
+│   │   │   ├── refund.js
+│   │   │   ├── refund.ts
+│   │   │   ├── responses.d.ts
+│   │   │   ├── responses.d.ts.map
+│   │   │   ├── responses.js
+│   │   │   ├── responses.ts
+│   │   │   ├── review.d.ts
+│   │   │   ├── review.d.ts.map
+│   │   │   ├── review.js
+│   │   │   ├── review.ts
+│   │   │   ├── risk.d.ts.map
+│   │   │   ├── risk.js
+│   │   │   ├── risk.ts
+│   │   │   ├── search.d.ts
+│   │   │   ├── search.d.ts.map
+│   │   │   ├── search.js
+│   │   │   ├── search.ts
+│   │   │   ├── settlement.d.ts
+│   │   │   ├── settlement.d.ts.map
+│   │   │   ├── settlement.js
+│   │   │   ├── settlement.ts
+│   │   │   ├── shipment.d.ts
+│   │   │   ├── shipment.d.ts.map
+│   │   │   ├── shipment.js
+│   │   │   ├── shipment.ts
+│   │   │   ├── stock.d.ts
+│   │   │   ├── stock.d.ts.map
+│   │   │   ├── stock.js
+│   │   │   ├── stock.ts
+│   │   │   ├── store-message.d.ts
+│   │   │   ├── store-message.d.ts.map
+│   │   │   ├── store-message.js
+│   │   │   ├── store-message.ts
+│   │   │   ├── store-post.d.ts
+│   │   │   ├── store-post.d.ts.map
+│   │   │   ├── store-post.js
+│   │   │   ├── store-post.ts
+│   │   │   ├── store-story.d.ts
+│   │   │   ├── store-story.d.ts.map
+│   │   │   ├── store-story.js
+│   │   │   ├── store-story.ts
+│   │   │   ├── storefront.d.ts
+│   │   │   ├── storefront.d.ts.map
+│   │   │   ├── storefront.js
+│   │   │   ├── storefront.ts
+│   │   │   ├── story.d.ts
+│   │   │   ├── story.d.ts.map
+│   │   │   ├── story.js
+│   │   │   ├── story.ts
+│   │   │   ├── supplier.ts
+│   │   │   ├── support.d.ts
+│   │   │   ├── support.d.ts.map
+│   │   │   ├── support.js
+│   │   │   ├── support.ts
+│   │   │   ├── ugc.d.ts
+│   │   │   ├── ugc.d.ts.map
+│   │   │   ├── ugc.js
+│   │   │   └── ugc.ts
+│   │   ├── src_artifact_backup
+│   │   │   ├── access.d.ts
+│   │   │   ├── access.d.ts.map
+│   │   │   ├── access.js
+│   │   │   ├── actions.d.ts
+│   │   │   ├── actions.d.ts.map
+│   │   │   ├── actions.js
+│   │   │   ├── analytics.d.ts
+│   │   │   ├── analytics.d.ts.map
+│   │   │   ├── analytics.js
+│   │   │   ├── api-error.d.ts
+│   │   │   ├── api-error.d.ts.map
+│   │   │   ├── api-error.js
+│   │   │   ├── auth.d.ts
+│   │   │   ├── auth.d.ts.map
+│   │   │   ├── auth.js
+│   │   │   ├── cancel-return.d.ts
+│   │   │   ├── cancel-return.d.ts.map
+│   │   │   ├── cancel-return.js
+│   │   │   ├── cart.d.ts
+│   │   │   ├── cart.d.ts.map
+│   │   │   ├── cart.js
+│   │   │   ├── catalog.d.ts
+│   │   │   ├── catalog.d.ts.map
+│   │   │   ├── catalog.js
+│   │   │   ├── category.d.ts
+│   │   │   ├── category.d.ts.map
+│   │   │   ├── category.js
+│   │   │   ├── checkout.d.ts
+│   │   │   ├── checkout.d.ts.map
+│   │   │   ├── checkout.js
+│   │   │   ├── feed.d.ts
+│   │   │   ├── feed.d.ts.map
+│   │   │   ├── feed.js
+│   │   │   ├── finance-correction.d.ts
+│   │   │   ├── finance-correction.d.ts.map
+│   │   │   ├── finance-correction.js
+│   │   │   ├── follow.d.ts
+│   │   │   ├── follow.d.ts.map
+│   │   │   ├── follow.js
+│   │   │   ├── health.d.ts
+│   │   │   ├── health.d.ts.map
+│   │   │   ├── health.js
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.d.ts.map
+│   │   │   ├── index.js
+│   │   │   ├── interaction.d.ts
+│   │   │   ├── interaction.d.ts.map
+│   │   │   ├── interaction.js
+│   │   │   ├── media.d.ts
+│   │   │   ├── media.d.ts.map
+│   │   │   ├── media.js
+│   │   │   ├── moderation.d.ts
+│   │   │   ├── moderation.d.ts.map
+│   │   │   ├── moderation.js
+│   │   │   ├── notification.d.ts
+│   │   │   ├── notification.d.ts.map
+│   │   │   ├── notification.js
+│   │   │   ├── order-ops.d.ts
+│   │   │   ├── order-ops.d.ts.map
+│   │   │   ├── order-ops.js
+│   │   │   ├── order.d.ts
+│   │   │   ├── order.d.ts.map
+│   │   │   ├── order.js
+│   │   │   ├── payment.d.ts
+│   │   │   ├── payment.d.ts.map
+│   │   │   ├── payment.js
+│   │   │   ├── payout.d.ts
+│   │   │   ├── payout.d.ts.map
+│   │   │   ├── payout.js
+│   │   │   ├── plp.d.ts
+│   │   │   ├── plp.d.ts.map
+│   │   │   ├── plp.js
+│   │   │   ├── pool.d.ts
+│   │   │   ├── pool.d.ts.map
+│   │   │   ├── pool.js
+│   │   │   ├── post.d.ts
+│   │   │   ├── post.d.ts.map
+│   │   │   ├── post.js
+│   │   │   ├── pricing.d.ts
+│   │   │   ├── pricing.d.ts.map
+│   │   │   ├── pricing.js
+│   │   │   ├── qa.d.ts
+│   │   │   ├── qa.d.ts.map
+│   │   │   ├── qa.js
+│   │   │   ├── refund.d.ts
+│   │   │   ├── refund.d.ts.map
+│   │   │   ├── refund.js
+│   │   │   ├── responses.d.ts
+│   │   │   ├── responses.d.ts.map
+│   │   │   ├── responses.js
+│   │   │   ├── review.d.ts
+│   │   │   ├── review.d.ts.map
+│   │   │   ├── review.js
+│   │   │   ├── risk.d.ts
+│   │   │   ├── risk.d.ts.map
+│   │   │   ├── risk.js
+│   │   │   ├── search.d.ts
+│   │   │   ├── search.d.ts.map
+│   │   │   ├── search.js
+│   │   │   ├── settlement.d.ts
+│   │   │   ├── settlement.d.ts.map
+│   │   │   ├── settlement.js
+│   │   │   ├── shipment.d.ts
+│   │   │   ├── shipment.d.ts.map
+│   │   │   ├── shipment.js
+│   │   │   ├── stock.d.ts
+│   │   │   ├── stock.d.ts.map
+│   │   │   ├── stock.js
+│   │   │   ├── store-message.d.ts
+│   │   │   ├── store-message.d.ts.map
+│   │   │   ├── store-message.js
+│   │   │   ├── store-post.d.ts
+│   │   │   ├── store-post.d.ts.map
+│   │   │   ├── store-post.js
+│   │   │   ├── store-story.d.ts
+│   │   │   ├── store-story.d.ts.map
+│   │   │   ├── store-story.js
+│   │   │   ├── storefront.d.ts
+│   │   │   ├── storefront.d.ts.map
+│   │   │   ├── storefront.js
+│   │   │   ├── story.d.ts
+│   │   │   ├── story.d.ts.map
+│   │   │   ├── story.js
+│   │   │   ├── support.d.ts
+│   │   │   ├── support.d.ts.map
+│   │   │   ├── support.js
+│   │   │   ├── ugc.d.ts
+│   │   │   ├── ugc.d.ts.map
+│   │   │   └── ugc.js
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── events
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── envelope.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── observability
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   ├── logger.ts
+│   │   │   └── tracer.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── persistence
+│   │   ├── p37-smoke-test.ts
+│   │   ├── p38-smoke-test.ts
+│   │   ├── package.json
+│   │   ├── run-migrations.ts
+│   │   ├── src
+│   │   │   ├── audit-event.d.ts
+│   │   │   ├── audit-event.d.ts.map
+│   │   │   ├── audit-event.js
+│   │   │   ├── audit-event.ts
+│   │   │   ├── finance-ledger.d.ts
+│   │   │   ├── finance-ledger.d.ts.map
+│   │   │   ├── finance-ledger.js
+│   │   │   ├── finance-ledger.ts
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.d.ts.map
+│   │   │   ├── index.js
+│   │   │   ├── index.ts
+│   │   │   ├── migrator.ts
+│   │   │   ├── operational-intent.d.ts
+│   │   │   ├── operational-intent.ts
+│   │   │   ├── payment-reconciliation-task.d.ts
+│   │   │   ├── payment-reconciliation-task.d.ts.map
+│   │   │   ├── payment-reconciliation-task.js
+│   │   │   ├── payment-reconciliation-task.ts
+│   │   │   ├── provider-callback.d.ts
+│   │   │   ├── provider-callback.d.ts.map
+│   │   │   ├── provider-callback.js
+│   │   │   └── provider-callback.ts
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.tsbuildinfo
+│   │   └── verify-schema.ts
+│   ├── shared-kernel
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── errors.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── testing
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── builders.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── types
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── common.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   └── ui
+│       ├── package.json
+│       ├── README.md
+│       ├── src
+│       │   ├── index.d.ts
+│       │   ├── index.d.ts.map
+│       │   ├── index.js
+│       │   ├── index.ts
+│       │   ├── theme.d.ts
+│       │   ├── theme.d.ts.map
+│       │   ├── theme.js
+│       │   └── theme.ts
+│       ├── tsconfig.json
+│       └── tsconfig.tsbuildinfo
+├── PayTR_IFrame_API
+│   └── PayTR IFrame API
+│       ├── PayTR IFrame API
+│       │   ├── iFrame API - English
+│       │   │   ├── Read Me First.pdf
+│       │   │   ├── STEP 1
+│       │   │   │   ├── STEP 1 .NET Sample
+│       │   │   │   │   ├── iframe_example.aspx
+│       │   │   │   │   ├── iframe_example.aspx.cs
+│       │   │   │   │   └── Newtonsoft.Json.dll
+│       │   │   │   ├── STEP 1 NODEJS Sample
+│       │   │   │   │   ├── app.js
+│       │   │   │   │   ├── app_server
+│       │   │   │   │   │   └── views
+│       │   │   │   │   │       └── layout.ejs
+│       │   │   │   │   └── package.json
+│       │   │   │   ├── STEP 1 PHP Sample
+│       │   │   │   │   └── iframe_sample.php
+│       │   │   │   ├── STEP 1. PYTHON Sample
+│       │   │   │   │   └── iframe_sample.py
+│       │   │   │   └── STEP 1.pdf
+│       │   │   └── STEP 2
+│       │   │       ├── STEP 2 .NET Sample
+│       │   │       │   ├── callback_url_sample.aspx
+│       │   │       │   └── callback_url_sample.aspx.cs
+│       │   │       ├── STEP 2 NODEJS Sample
+│       │   │       │   ├── app.js
+│       │   │       │   ├── app_server
+│       │   │       │   │   └── views
+│       │   │       │   │       └── layout.ejs
+│       │   │       │   └── package.json
+│       │   │       ├── STEP 2 PHP Sample
+│       │   │       │   └── callback_url_sample.php
+│       │   │       ├── STEP 2 PYTHON Sample
+│       │   │       │   └── callback_url_sample.py
+│       │   │       └── STEP 2.pdf
+│       │   └── iFrame API - Türkçe
+│       │       ├── 1.ADIM
+│       │       │   ├── 1. ADIM .NET Örnek
+│       │       │   │   ├── iframe_ornek.aspx
+│       │       │   │   ├── iframe_ornek.aspx.cs
+│       │       │   │   └── Newtonsoft.Json.dll
+│       │       │   ├── 1. ADIM PHP Örnek
+│       │       │   │   └── iframe_ornek.php
+│       │       │   ├── 1. ADIM PYTHON Örnek
+│       │       │   │   └── iframe_ornek.py
+│       │       │   ├── 1. ADIM.pdf
+│       │       │   └── 1.ADIM NODEJS Örnek
+│       │       │       ├── app.js
+│       │       │       ├── app_server
+│       │       │       │   └── views
+│       │       │       │       └── layout.ejs
+│       │       │       └── package.json
+│       │       ├── 2. ADIM
+│       │       │   ├── 2. ADIM .NET Örnek
+│       │       │   │   ├── bildirim_url_ornek.aspx
+│       │       │   │   └── bildirim_url_ornek.aspx.cs
+│       │       │   ├── 2. ADIM PHP Örnek
+│       │       │   │   └── bildirim_url_ornek.php
+│       │       │   ├── 2. ADIM PYTHON Örnek
+│       │       │   │   └── bildirim_url_ornek.py
+│       │       │   ├── 2. ADIM.pdf
+│       │       │   └── 2.ADIM NODEJS Örnek
+│       │       │       ├── app.js
+│       │       │       ├── app_server
+│       │       │       │   └── views
+│       │       │       │       └── layout.ejs
+│       │       │       └── package.json
+│       │       └── Paytr Beni Oku.pdf
+│       ├── PayTR Mağaza Durum Sorgulama
+│       │   ├── English
+│       │   │   ├── PayTR Status Inquiry Service.pdf
+│       │   │   ├── Sample .NET
+│       │   │   │   ├── Newtonsoft.Json.dll
+│       │   │   │   └── status_query_example.cs
+│       │   │   ├── Sample NODEJS
+│       │   │   │   ├── app.js
+│       │   │   │   └── package.json
+│       │   │   ├── Sample PHP
+│       │   │   │   └── status_query_example.php
+│       │   │   └── Sample PYTHON
+│       │   │       └── status_query_example.py
+│       │   └── Türkçe
+│       │       ├── PayTR Durum Sorgu API.pdf
+│       │       ├── Örnek .NET
+│       │       │   ├── durum_sorgu_ornek.cs
+│       │       │   └── Newtonsoft.Json.dll
+│       │       ├── Örnek NODEJS
+│       │       │   ├── app.js
+│       │       │   └── package.json
+│       │       ├── Örnek PHP
+│       │       │   └── durum_sorgu_ornek.php
+│       │       └── Örnek PYTHON
+│       │           └── durum_sorgu_ornek.py
+│       └── PayTR İade API
+│           ├── English
+│           │   ├── Example .NET
+│           │   │   ├── Newtonsoft.Json.dll
+│           │   │   └── refund_example.cs
+│           │   ├── Example PHP
+│           │   │   └── refund_example.php
+│           │   └── Paytr Refund API.pdf
+│           └── Türkçe
+│               ├── PayTR İade API.pdf
+│               ├── Örnek .NET
+│               │   ├── iade_ornek.cs
+│               │   └── Newtonsoft.Json.dll
+│               └── Örnek PHP
+│                   └── iade_ornek.php
+├── PHASE-10 CONTEXT TRANSFER & OPERATIONAL FOUNDATION RECORD.md
+├── PHASE-10E-03B-ADMIN-PRODUCT-APPROVAL-REPO-REALITY-BOUNDARY-REPORT.md
+├── PHASE-10E-03C-ADMIN-PRODUCT-APPROVAL-COMMAND-HANDOFF-FOUNDATION-REPORT.md
+├── PHASE-10E-03C-R-ADMIN-PRODUCT-APPROVAL-COMMAND-HANDOFF-GUARD-REPORT.md
+├── PHASE-10E-04-OPERATIONAL-ENFORCEMENT-REALITY-SCAN-REPORT.md
+├── PHASE-10E-04A-REFUND-COMMAND-SECURITY-HARDENING-REPORT.md
+├── PHASE-10E-04B-FINANCE-REFUND-REVIEW-OPERATIONAL-SURFACE-REPORT.md
+├── PHASE-10E-04C-REFUND-MAKER-CHECKER-AUDIT-FOUNDATION-REPORT.md
+├── PHASE-10F-01-MODERATION-RISK-OPERATIONAL-SURFACE-FOUNDATION-REPORT.md
+├── PHASE-10F-02-LEGACY-ENFORCEMENT-ISOLATION-COMMAND-SEPARATION-REPORT.md
+├── PHASE-10F-03-PERSISTENT-OPERATIONAL-WORKFLOW-AUDIT-OUTBOX-FOUNDATION-REPORT.md
+├── PHASE-10F-04-OPERATIONAL-QUEUE-SLA-ESCALATION-CENTER-FOUNDATION-REPORT.md
+├── PHASE-10F-05-OPERATIONAL-OUTBOX-DELIVERY-WORKER-FOUNDATION-REPORT.md
+├── PHASE-10F-06-SIGNED-INTERNAL-AUTH-WORKER-LEASE-FOUNDATION-REPORT.md
+├── PHASE-10F-AUDIT-02-MIGRATION-TEST-REALITY-DEEP-SCAN.md
+├── PHASE-10F-AUDIT-EXISTING-HARDENING-COVERAGE-REALITY-SCAN.md
+├── PHASE-10F-ECONOMICS-01-COMMERCE-RUNTIME-MAPPING-AUDIT.md
+├── PHASE-10F-ECONOMICS-02-ORDER-LINE-ECONOMICS-SNAPSHOT-CLOSURE-REPORT.md
+├── PHASE-10F-ECONOMICS-03-POOL-CREATOR-SOURCE-BINDING-CLOSURE-REPORT.md
+├── PHASE-10F-ECONOMICS-04-MARGIN-SNAPSHOT-CLOSURE-REPORT.md
+├── PHASE-10F-ECONOMICS-05-SETTLEMENT-ORDER-ECONOMICS-SNAPSHOT-CLOSURE-REPORT.md
+├── PHASE-10F-ECONOMICS-06-SUPPLIER-PAYABLE-CREATOR-EARNINGS-CLOSURE-REPORT.md
+├── PHASE-10F-ECONOMICS-07-REFUND-REVERSAL-ROLLBACK-CLOSURE-REPORT.md
+├── PHASE-10F-ECONOMICS-08-RELEASE-ELIGIBILITY-PAYOUT-READINESS-CLOSURE-REPORT.md
+├── PHASE-10F-ECONOMICS-09-RISK-REFUND-FINANCE-SIGNAL-INTEGRATION-CLOSURE-REPORT.md
+├── PHASE-10F-ECONOMICS-10-PAYOUT-CANDIDATE-PREPARATION-CLOSURE-REPORT.md
+├── PHASE-10F-ECONOMICS-11-PAYOUT-CANDIDATE-REVIEW-OPS-VISIBILITY-CLOSURE-REPORT.md
+├── PHASE-10F-ECONOMICS-12-FINAL-ACCEPTANCE-BOUNDARY-AUDIT-REPORT.md
+├── PHASE-10G-A-FINANCE-OPS-PROJECTION-LAYER-CLOSURE-REPORT.md
+├── PHASE-10G-AUDIT-01-SETTLEMENT-PAYOUT-OPS-REALITY-REPORT.md
+├── PHASE-10G-AUDIT-01A-OPERATIONAL-INTENT-SOURCE-REPORT.md
+├── PHASE-10G-B-FINANCE-OPS-PROJECTION-SOURCE-REVIEW.md
+├── PHASE-10G-C-FINANCE-OPS-ENDPOINT-SMOKE-CLOSURE-REPORT.md
+├── PHASE-10G-D-FINANCE-LEDGER-POSTGRES-DURABILITY-AUDIT-REPORT.md
+├── PHASE-10G-E-FINANCE-LEDGER-POSTGRES-DURABILITY-CLOSURE-REPORT.md
+├── PHASE-10G-SOURCE-READ-SEQUENCE-REPORT.md
+├── planlama
+│   ├── 65-ACTIVE_RISKS_AND_DECISIONS.md
+│   ├── Asama_Belgeleri
+│   │   ├── aşama-1
+│   │   │   ├── DOSYA_DURUM_ENVANTERI.md
+│   │   │   ├── FAZ_1_KAPSAM_LISTESI.md
+│   │   │   ├── FAZ_2_PARK_LISTESI.md
+│   │   │   ├── KANONIK_KARARLAR_OZETI.md
+│   │   │   ├── KRITIK_KARAR_KUMELERI.md
+│   │   │   └── TERIM_SOZLUGU.md
+│   │   ├── aşama-10
+│   │   │   ├── BUSINESS_RULES_REGISTER.md
+│   │   │   ├── ELIGIBILITY_RULEBOOK.md
+│   │   │   ├── PROMOTION_RULEBOOK.md
+│   │   │   └── UGC_RULEBOOK.md
+│   │   ├── aşama-11
+│   │   │   ├── AUDIT_TAXONOMY.md
+│   │   │   ├── DATA_QUALITY_POLICY.md
+│   │   │   ├── EVENT_TAXONOMY.md
+│   │   │   └── METRIC_DICTIONARY.md
+│   │   ├── aşama-12
+│   │   │   ├── APPROVAL_FLOW_PACK.md
+│   │   │   ├── ESCALATION_MATRIX.md
+│   │   │   ├── OPERATION_LOGIC_GUIDE.md
+│   │   │   └── SLA_OWNER_LIST.md
+│   │   ├── aşama-13
+│   │   │   ├── CLOUD_TOPOLOGY_DIAGRAM.png
+│   │   │   ├── ENVIRONMENT_ARCHITECTURE.md
+│   │   │   ├── SECRETS_AND_CONFIG_POLICY.md
+│   │   │   └── SERVICE_DEPLOYMENT_MAP.md
+│   │   ├── aşama-14
+│   │   │   ├── BRANCH_RELEASE_POLICY.md
+│   │   │   ├── DEFINITION_OF_DONE.md
+│   │   │   ├── DEFINITION_OF_READY.md
+│   │   │   ├── ENGINEERING_STANDARDS.md
+│   │   │   ├── ERROR_CODE_STANDARD.md
+│   │   │   └── REPO_BLUEPRINT.md
+│   │   ├── aşama-15
+│   │   │   ├── ACCEPTANCE_CRITERIA_PACK.md
+│   │   │   ├── CODING_READINESS_GATE.md
+│   │   │   └── CRITICAL_JOURNEY_CHECKLIST.md
+│   │   ├── aşama-2
+│   │   │   ├── ACTOR_MATRIX.md
+│   │   │   ├── ENDPOINT_SCOPE_CATALOG.md
+│   │   │   ├── GUARD_MATRIX.md
+│   │   │   ├── OWNER_MATRIX.md
+│   │   │   └── PERMISSION_MATRIX.md
+│   │   ├── aşama-3
+│   │   │   ├── IDEMPOTENCY_POLICIES.md
+│   │   │   ├── STATE_MACHINES
+│   │   │   │   ├── cancel-return.md
+│   │   │   │   ├── checkout.md
+│   │   │   │   ├── creator-lifecycle.md
+│   │   │   │   ├── moderation-item.md
+│   │   │   │   ├── order.md
+│   │   │   │   ├── payment.md
+│   │   │   │   ├── payout-batch.md
+│   │   │   │   ├── settlement-line.md
+│   │   │   │   ├── shipment-delivery.md
+│   │   │   │   ├── supplier-lifecycle.md
+│   │   │   │   └── support-ticket.md
+│   │   │   └── TRANSITION_POLICIES.md
+│   │   ├── aşama-4
+│   │   │   ├── ARCHIVE_RETENTION_POLICY.md
+│   │   │   ├── ENTITY_CATALOG.md
+│   │   │   ├── LOGICAL_DATA_MODEL.md
+│   │   │   └── SNAPSHOT_POLICY.md
+│   │   ├── aşama-5
+│   │   │   ├── API_ERROR_CATALOG.md
+│   │   │   ├── MOCKING_STRATEGY.md
+│   │   │   └── OPENAPI
+│   │   │       ├── app.yaml
+│   │   │       ├── internal.yaml
+│   │   │       ├── panel.yaml
+│   │   │       └── public.yaml
+│   │   ├── aşama-6
+│   │   │   ├── FALLBACK_RETRY_TIMEOUT_POLICY.md
+│   │   │   ├── INTEGRATION_BEHAVIOR_RULES.md
+│   │   │   ├── SANDBOX_AND_MOCK_PLAN.md
+│   │   │   └── THIRD_PARTY_PROVIDER_MATRIX.md
+│   │   ├── aşama-7
+│   │   │   ├── CAPACITY_ASSUMPTIONS.md
+│   │   │   ├── NFR_TARGETS.md
+│   │   │   ├── PERFORMANCE_BUDGETS.md
+│   │   │   └── RELIABILITY_TARGETS.md
+│   │   ├── aşama-8
+│   │   │   ├── AŞAMA 8 KAPANIŞ NOTU.md
+│   │   │   ├── DTO_RESPONSE_CATALOG.md
+│   │   │   ├── PANEL_CONTRACTS.md
+│   │   │   ├── SCREEN_CONTRACTS.md
+│   │   │   ├── SCREEN_CONTRACTS_REFINED.md
+│   │   │   └── STATEFUL_UI_BEHAVIOR_GUIDE.md
+│   │   └── aşama-9
+│   │       ├── COMPONENT_STATE_GUIDE.md
+│   │       ├── DESIGN_TOKEN_GUIDE.md
+│   │       ├── DEV_HANDOFF_PACK.md
+│   │       └── FIGMA_LINKS.md
+│   ├── DDD_Tasarim
+│   │   └── ddd
+│   │       ├── app yaml.md
+│   │       ├── internal.yaml.md
+│   │       ├── panel.yaml.md
+│   │       └── public.yaml.md
+│   ├── Kayit_Arsiv
+│   │   ├── arşiv
+│   │   │   ├── 63-IMPLEMENTATION_PROGRESS_MASTER.md
+│   │   │   ├── 63A-IMPLEMENTATION_PROGRESS_ARCHIVE_P01_P41.md
+│   │   │   ├── 64-PACKAGE_EXECUTION_LOG.md
+│   │   │   ├── 64A-PACKAGE_EXECUTION_ARCHIVE_P01_P41.md
+│   │   │   ├── 65-ACTIVE_RISKS_AND_DECISIONS.md
+│   │   │   ├── 65A-RISKS_AND_DECISIONS_ARCHIVE_P01_P41.md
+│   │   │   └── kullanılacak teknolojiler.md
+│   │   └── kayıt
+│   │       ├── HARDENING-00-05E-CONSOLIDATED-REFERENCE-RECORD.md
+│   │       ├── HARDENING-06-07-CONSOLIDATED-REFERENCE-RECORD.md
+│   │       ├── HARDENING-08-09-CONSOLIDATED-REFERENCE-RECORD.md
+│   │       ├── HARDENING-10-CALLBACK-DECISION-INDEX.md
+│   │       ├── HARDENING-10-CALLBACK-MASTER-REFERENCE.md
+│   │       ├── HARDENING-10C10-BIRLESIK-REFERANS-DOSYASI.md
+│   │       └── PX_DOMAIN_IMPLEMENTATION_REFERENCE_RECORD.md
+│   ├── Mimari_Konfigurasyon
+│   │   ├── DOSYA_SEMASI.md
+│   │   ├── KONFIGURASYON_YONETIMI.md
+│   │   ├── kullanılacak teknolojiler2.md
+│   │   ├── platform sistem ağacı .md
+│   │   ├── TEST_STRATEJISI.md
+│   │   └── VERI_AKISI_SENKRONIZASYON_MODELI.md
+│   ├── planlama
+│   │   └── SYSTEM_CLOSURES
+│   │       ├── dosyasını kaydet. Sonra S07 — Keşfet Sistemi
+│   │       ├── S01-HAVUZ_KAYIT_DOSYASI.md
+│   │       ├── S02-FENOMEN_MAGAZA_KAYIT_DOSYASI.md
+│   │       ├── S03-KULLANICI_MUSTERI_KAYIT_DOSYASI.md
+│   │       ├── S04-PDP_KAYIT_DOSYASI.md
+│   │       ├── S05-STORY_KAYIT_DOSYASI.md
+│   │       └── S06-VIDEO_KAYIT_DOSYASI.md
+│   ├── Sistem_Tasarimlari
+│   │   ├── 1-havuz sistemi.md
+│   │   ├── 10-kategori-plp sistemi.md
+│   │   ├── 11-takip sistemi.md
+│   │   ├── 12- Arama Sistemi.md
+│   │   ├── 13-sepet sistemi .md
+│   │   ├── 14-checkout sistemi .md
+│   │   ├── 15-ödeme sistemi .md
+│   │   ├── 16-sipariş sistemi .md
+│   │   ├── 17- kargo ve teslimat sistemi.md
+│   │   ├── 18- iptal ve iade sistemi .md
+│   │   ├── 19- bildirim sistemi.md
+│   │   ├── 2-fenoemen mağaza sistemi.md
+│   │   ├── 20-destek sistemi .md
+│   │   ├── 21-post sistemi .md
+│   │   ├── 22-moderasyon sistemi.md
+│   │   ├── 23-üyelik giriş sistemi.md
+│   │   ├── 24-adres sistem,.md
+│   │   ├── 25-kural -yetki sistemi.md
+│   │   ├── 26-varyant sistemi.md
+│   │   ├── 27-merkezi stok sistemi.md
+│   │   ├── 28-ürün kabul - onay sistemi.md
+│   │   ├── 29-merkezi fiyat sistemi.md
+│   │   ├── 3- kullanıcı-müşteri sistemi.md
+│   │   ├── 30-sipariş takip sistemi.md
+│   │   ├── 31-yorum ve puanlama sistemi.md
+│   │   ├── 32-soru cevap sistemi.md
+│   │   ├── 33-beğenme kaydetme  paulaşma sistemi.md
+│   │   ├── 34-kullanıcı story sistemi.md
+│   │   ├── 35-kampanya sistemi.md
+│   │   ├── 36-beğen ve kaydet sayfaları sistemi.md
+│   │   ├── 37-öneri ve sıralama sistemi.md
+│   │   ├── 38-puan market sistemi.md
+│   │   ├── 39-ödül puan sistemi.md
+│   │   ├── 4-pdp sistemi.md
+│   │   ├── 40-admin sistemi.md
+│   │   ├── 41- fenomen yönetim sistemi.md
+│   │   ├── 42-fenomen mağaza yönetim panel sistemi.md
+│   │   ├── 43-tedarikçi panel sistemi.md
+│   │   ├── 44-tedarikçi yönetim sistemi.md
+│   │   ├── 45-sipariş operasyon sistemi.md
+│   │   ├── 46-kupon sistemi.md
+│   │   ├── 47-finansal mutabakat  hakediş sistemi.md
+│   │   ├── 48-arka paln analatik ölçümleme sistemi.md
+│   │   ├── 49-fraud risk abuse sistemi.md
+│   │   ├── 5-story sistemi.md
+│   │   ├── 50-medya sistemş asset  sitemi.md
+│   │   ├── 51-arama  indeksleme sistemi.md
+│   │   ├── 52-kategori taksonomi sistemi.md
+│   │   ├── 53- destek ticket operasyon sistemi.md
+│   │   ├── 54-payaut ödeme çıkış sistemi.md
+│   │   ├── 6-video sistemi.md
+│   │   ├── 7-keşfet sistemi.md
+│   │   ├── 8-klasik ürün kart sistemi.md
+│   │   └── 9-ana sayfa sistemi.md
+│   └── Yol_Haritasi_Planlar
+│       ├── 60-KODLAMAYA HAZIRLIK YOL HARİTASI.md
+│       ├── 61-FULL_CAPACITY_CODING_ROADMAP.md
+│       ├── 62-MASTER_IMPLEMENTATION_PLAN.md
+│       ├── 63-IMPLEMENTATION_PROGRESS_MASTER_BIRLESTIRILMIS.md
+│       ├── 64-PACKAGE_EXECUTION_LOG_BIRLESTIRILMIS.md
+│       ├── 65-ACTIVE_RISKS_AND_DECISIONS-CONSOLIDATED.md
+│       ├── 66-referans dosyaları.md
+│       ├── 67-ROADMAP_ALIGNMENT_AND_PACKAGE_NUMBERING.md
+│       ├── 68-yeni roodmap.md
+│       ├── 81.md
+│       ├── 88.md
+│       └── PHASE-10 ROADMAP — Frontend UX Mobile  Panel.md
+├── planlama 2
+│   ├── raporlar
+│   │   ├── PHASE-01-CLOSURE-REPORT.md
+│   │   ├── PHASE-02-CLOSURE-REPORT.md
+│   │   ├── PHASE-03-CLOSURE-REPORT.md
+│   │   ├── PHASE-04-CLOSURE-REPORT.md
+│   │   ├── PHASE-05-CLOSURE-REPORT.md
+│   │   ├── PHASE-06-CLOSURE-REPORT.md
+│   │   ├── PHASE-07-CLOSURE-REPORT.md
+│   │   ├── PHASE-08-CLOSURE-REPORT.md
+│   │   ├── PHASE-09-CONSOLIDATED-REPORT.md
+│   │   └── Phase-10 Economics Foundation — Sohbet Özeti, Ertelemeler, Riskler ve Devam Notları.md
+│   ├── Readiness_Documents
+│   │   ├── PHASE-00-BASELINE-MAPPING-AND-RULE-LOCK.md
+│   │   ├── PHASE-01-ARCHITECTURE-BOUNDARY-OWNER-GUARD-READINESS.md
+│   │   ├── PHASE-01-CLOSURE-REPORT-TEMPLATE.md
+│   │   ├── PHASE-02-COMMERCE-CORE-READINESS.md
+│   │   ├── PHASE-03-PAYMENT-PROVIDER-CALLBACK-RECONCILIATION-READINESS.md
+│   │   ├── PHASE-04-ORDER-FULFILLMENT-DELIVERY-RETURN-REFUND-READINESS.md
+│   │   ├── PHASE-05-FINANCE-SETTLEMENT-PAYOUT-REWARD-READINESS.md
+│   │   ├── PHASE-06-SOCIAL-CONTENT-MEDIA-MODERATION-READINESS.md
+│   │   ├── PHASE-07-SEARCH-CATALOG-RANKING-TAXONOMY-READINESS.md
+│   │   ├── PHASE-08-ADMIN-CREATOR-SUPPLIER-SUPPORT-PANEL-READINESS.md
+│   │   ├── PHASE-09-RISK-FRAUD-ANALYTICS-NOTIFICATION-READINESS.md
+│   │   ├── PHASE-10-FRONTEND-UX-MOBILE-SURFACE-READINESS.md
+│   │   ├── PHASE-11-CRITICAL-JOURNEY-ACCEPTANCE.md
+│   │   └── PHASE-12-DEPLOYMENT-OBSERVABILITY-SECURITY-RELEASE-GATE.md
+│   ├── Readiness_Master_Plans
+│   │   ├── 00-PRODUCTION_READINESS_WORKING_RULES.md
+│   │   ├── 01-SYSTEM_TO_IMPLEMENTATION_MAPPING.md
+│   │   ├── 02-CURRENT_STATE_BASELINE.md
+│   │   ├── 03-PRODUCTION_READINESS_PHASE_MASTER_PLAN.md
+│   │   ├── 04-PRODUCTION_READINESS_RISK_REGISTER.md
+│   │   ├── 05-PHASE_FILE_TEMPLATE.md
+│   │   ├── 06-PHASE_CLOSURE_TEMPLATE.md
+│   │   └── 09-RELEASE_BLOCKER_REGISTER.md
+│   └── Root_Phase_Executions
+│       ├── PHASE-01-FINAL-BOUNDARY-CLOSURE-REVIEW.md
+│       ├── PHASE-01-FIX-01-BOUNDARY-VIOLATION-REMEDIATION-REPORT.md
+│       ├── PHASE-01-FIX-02-PERSISTENCE-ACTOR-BUILD-RECOVERY-REPORT.md
+│       ├── PHASE-02-COMMERCE-CORE-SOURCE-REVIEW-REPORT.md
+│       ├── PHASE-02-FIX-01-CHECKOUT-PAYMENT-READINESS-GUARD-REPORT.md
+│       ├── PHASE-02-FIX-02-ADDRESS-SNAPSHOT-ELIGIBILITY-REPORT.md
+│       ├── PHASE-02-FIX-03-VALIDATION-CONTRACT-REPORT.md
+│       ├── PHASE-02-FIX-03A-BUILD-TYPECHECK-SMOKE-RECOVERY-REPORT.md
+│       ├── PHASE-02-FIX-04-COUPON-CAMPAIGN-CHECKOUT-IMPACT-FOUNDATION-REPORT.md
+│       ├── PHASE-02-FIX-05-COMMERCE-SMOKE-RUNTIME-ALIGNMENT-REPORT.md
+│       ├── PHASE-03-PAYMENT-PROVIDER-CALLBACK-RECONCILIATION-SOURCE-REVIEW-REPORT.md
+│       ├── PHASE-04-ORDER-FULFILLMENT-RETURN-REFUND-EVIDENCE-REVIEW-REPORT.md
+│       ├── PHASE-04-ORDER-FULFILLMENT-RETURN-REFUND-SOURCE-REVIEW-REPORT.md
+│       ├── PHASE-05-FINANCE-SETTLEMENT-PAYOUT-REWARD-SOURCE-REVIEW-REPORT.md
+│       ├── PHASE-05-FIX-01-LEDGER-FOUNDATION-REPORT.md
+│       ├── PHASE-05-FIX-01A-ADDENDUM-LEDGER-COMMAND-EVIDENCE.md
+│       ├── PHASE-05-FIX-01A-LEDGER-FOUNDATION-VERIFICATION-REPORT.md
+│       ├── PHASE-05-FIX-01B-LEDGER-TOOLING-RECOVERY-REPORT.md
+│       ├── PHASE-05-FIX-02-SETTLEMENT-CALCULATION-FOUNDATION-REPORT.md
+│       ├── PHASE-05-FIX-03-REFUND-FINANCIAL-IMPACT-FOUNDATION-REPORT.md
+│       ├── PHASE-05-FIX-04-PAYABLE-PAYOUT-BOUNDARY-FOUNDATION-REPORT.md
+│       ├── PHASE-05-FIX-05-COMMISSION-COUPON-REWARD-RULE-INVENTORY-GAP-REVIEW.md
+│       ├── PHASE-05-FIX-05A-POOL-BASE-PRICE-CORRIDOR-RULE-SOURCE-REPORT.md
+│       ├── PHASE-05-FIX-05B-CREATOR-MARGIN-SETTLEMENT-FOUNDATION-REPORT.md
+│       ├── PHASE-05-FIX-05C-COUPON-SPONSOR-POLICY-GUARD-REPORT.md
+│       ├── PHASE-05-FIX-05D-COUPON-LINE-ALLOCATION-SETTLEMENT-IMPACT-REPORT.md
+│       ├── PHASE-05-FIX-05E-REFUND-COUPON-SPONSOR-REVERSAL-REPORT.md
+│       ├── PHASE-05-FIX-05F-REWARD-POINT-LIFECYCLE-FOUNDATION-REPORT.md
+│       ├── PHASE-06-FIX-00-TOOLING-BUILD-RECOVERY-REPORT.md
+│       ├── PHASE-06-FIX-01-BFF-ACTOR-SPOOFING-GUARDS-REPORT.md
+│       ├── PHASE-06-FIX-02-INTERACTION-IDEMPOTENCY-DUPLICATE-PREVENTION-REPORT.md
+│       ├── PHASE-06-FIX-03-STORY-REVIEW-QA-VISIBILITY-GUARD-REPORT.md
+│       ├── PHASE-06-FIX-04-MODERATION-DECISION-AUDIT-MAKER-CHECKER-REPORT.md
+│       ├── PHASE-06-SOURCE-REVIEW-ADDENDUM-EVIDENCE-REPORT.md
+│       ├── PHASE-06-SOURCE-REVIEW-ADDENDUM-FIX-EVIDENCE-CORRECTION-REPORT.md
+│       ├── PHASE-06-SOURCE-REVIEW-SOCIAL-CONTENT-MEDIA-MODERATION-REPORT.md
+│       ├── PHASE-06-START-CONTEXT-HANDOFF-REPORT.md
+│       ├── PHASE-07-CLOSURE-READINESS-REVIEW-REPORT.md
+│       ├── PHASE-07-CLOSURE-READINESS-REVIEW-REVISION-NOTE.md
+│       ├── PHASE-07-CLOSURE-REPORT-REVISION-NOTE.md
+│       ├── PHASE-07-FIX-00-SEARCH-CATALOG-SMOKE-RUNTIME-RECOVERY-REPORT.md
+│       ├── PHASE-07-FIX-01-CATEGORY-TAXONOMY-PLP-SMOKE-COVERAGE-REPORT.md
+│       ├── PHASE-07-FIX-02-PROJECTION-SYNC-OUTBOX-CONSUMER-GAP-REVIEW-REPORT.md
+│       ├── PHASE-07-FIX-02-REPORT-REVISION-NOTE.md
+│       ├── PHASE-07-FIX-03-PROJECTION-CONSUMER-FOUNDATION-REPORT.md
+│       ├── PHASE-07-FIX-03-REPORT-REVISION-NOTE.md
+│       ├── PHASE-07-FIX-04-REPORT-REVISION-NOTE.md
+│       ├── PHASE-07-FIX-04-STALE-PRICE-STOCK-MEDIA-LEAK-SMOKE-COVERAGE-REPORT.md
+│       ├── PHASE-07-FIX-05-RANKING-RECOMMENDATION-SMOKE-READINESS-REPORT.md
+│       ├── PHASE-07-FIX-05-REPORT-REVISION-NOTE.md
+│       ├── PHASE-07-FIX-05A-RANKING-RECOMMENDATION-TYPE-SAFETY-REMEDIATION-REPORT.md
+│       ├── PHASE-07-SOURCE-REVIEW-ADDENDUM-EVIDENCE-SMOKE-REPORT.md
+│       ├── PHASE-07-SOURCE-REVIEW-SEARCH-CATALOG-RANKING-TAXONOMY-REPORT.md
+│       ├── PHASE-07-START-CONTEXT-HANDOFF-REPORT.md
+│       ├── PHASE-08-SOURCE-REVIEW-ADMIN-CREATOR-SUPPLIER-SUPPORT-PANEL-BOUNDARY-REPORT.md
+│       ├── PHASE-08-SOURCE-REVIEW-RECHECK-REPO-REALITY-VERIFICATION-REPORT.md
+│       └── PHASE-08-START-CONTEXT-HANDOFF-REPORT.md
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml
+├── README.md
+├── REPO_REALITY_INVENTORY_DRAFT.md
+├── Root_Phase_Executions
+│   ├── PHASE-08-CLOSURE-READINESS-REVIEW-REPORT.md
+│   ├── PHASE-08-FIX-00-PANEL-ROUTE-BUILD-SMOKE-RUNTIME-RECOVERY-REPORT.md
+│   ├── PHASE-08-FIX-01-ADMIN-DIRECT-WRITE-OWNER-COMMAND-GUARD-REPORT.md
+│   ├── PHASE-08-FIX-01-REPORT-REVISION-NOTE.md
+│   ├── PHASE-08-FIX-02-CREATOR-SCOPE-STOREFRONT-PRODUCT-ACTION-GUARD-REPORT.md
+│   ├── PHASE-08-FIX-03-SUPPLIER-SCOPE-PRODUCT-INTAKE-STOCK-PRICE-GUARD-REPORT.md
+│   ├── PHASE-08-FIX-04-SUPPORT-VISIBILITY-ORDER-ACCESS-PII-GUARD-REPORT.md
+│   ├── PHASE-08-FIX-05-PANEL-AUDIT-EVIDENCE-MAKER-CHECKER-READINESS-REPORT.md
+│   ├── PHASE-08-FIX-06-PANEL-SMOKE-COVERAGE-FOUNDATION-REPORT.md
+│   ├── PHASE-09-FIX-00-REPORT-REVISION-NOTE.md
+│   ├── PHASE-09-FIX-00-RISK-FRAUD-ANALYTICS-NOTIFICATION-ROUTE-BUILD-SMOKE-RUNTIME-RECOVERY-REPORT.md
+│   ├── PHASE-09-FIX-01-RISK-SIGNAL-SCORE-OWNER-HANDOFF-GUARD-REPORT.md
+│   ├── PHASE-09-FIX-02-FRAUD-SIGNAL-REVIEW-FALSE-POSITIVE-GUARD-REPORT.md
+│   ├── PHASE-09-FIX-03-ANALYTICS-EVENT-TAXONOMY-PII-NON-MUTATION-GUARD-REPORT.md
+│   ├── PHASE-09-FIX-04-NOTIFICATION-DISPATCH-TEMPLATE-PRIVACY-IDEMPOTENCY-GUARD-REPORT.md
+│   ├── PHASE-09-FIX-05-EVENT-AUDIT-OUTBOX-BOUNDARY-FOUNDATION-REPORT.md
+│   ├── PHASE-09-FIX-05-REPORT-REVISION-NOTE.md
+│   ├── PHASE-09-FIX-06-RISK-FRAUD-ANALYTICS-NOTIFICATION-SMOKE-COVERAGE-FOUNDATION-REPORT.md
+│   ├── PHASE-09-SOURCE-REVIEW-REVISION-NOTE.md
+│   ├── PHASE-09-SOURCE-REVIEW-RISK-FRAUD-ANALYTICS-NOTIFICATION-BOUNDARY-REPORT.md
+│   ├── PHASE-09-START-CONTEXT-HANDOFF-REPORT.md
+│   ├── PHASE-09-START-CONTEXT-HANDOFF-REVISION-NOTE.md
+│   ├── PHASE-10-00-REPO-REALITY-CHECK-REPORT.md
+│   ├── PHASE-10A-01-REAL-WEB-APP-SHELL-FOUNDATION-REPORT.md
+│   ├── PHASE-10A-02-FRONTEND-DATA-QUERY-AUTH-FOUNDATION-REPORT.md
+│   ├── PHASE-10B-01-PUBLIC-STOREFRONT-DISCOVERY-FOUNDATION-REPORT.md
+│   ├── PHASE-10B-02-PUBLIC-DISCOVERY-PROJECTION-WIRING-REPORT.md
+│   ├── PHASE-10C-01-PDP-PRODUCT-DECISION-SURFACE-FOUNDATION-REPORT.md
+│   ├── PHASE-10C-02-CART-SURFACE-FOUNDATION-REPORT.md
+│   ├── PHASE-10D-01-CHECKOUT-SURFACE-FOUNDATION-REPORT.md
+│   ├── PHASE-10D-02-PAYMENT-UNKNOWN-RESULT-SURFACE-FOUNDATION-REPORT.md
+│   ├── PHASE-10D-03-ORDER-CONFIRMATION-TRACKING-SURFACE-FOUNDATION-REPORT.md
+│   ├── PHASE-10D-04-RETURN-REFUND-SUPPORT-SURFACE-FOUNDATION-REPORT.md
+│   ├── PHASE-10E-01A-CREATOR-STOREFRONT-MANAGEMENT-SURFACE-REPORT.md
+│   ├── PHASE-10E-02-SUPPLIER-PANEL-SURFACE-FOUNDATION-REPORT.md
+│   ├── PHASE-10E-03A-ADMIN-OPS-PRODUCT-APPROVAL-SURFACE-REPORT.md
+│   └── PHASE-10G-DEEP-REPO-CAPABILITY-INVENTORY-REPORT.md
+├── runtime-verification.js
+├── scan_repo_capability.js
+├── services
+│   ├── admin
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   └── ops-projections.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── analytics
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── analytics.ts
+│   │   │   ├── index.ts
+│   │   │   ├── repository
+│   │   │   │   ├── in-memory.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── interface.ts
+│   │   │   │   └── postgres.ts
+│   │   │   └── smoke-test.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── auth
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── auth.ts
+│   │   │   ├── index.ts
+│   │   │   └── token.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── cancel-return
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── cancel-return.ts
+│   │   │   ├── index.ts
+│   │   │   └── repository
+│   │   │       ├── in-memory.ts
+│   │   │       ├── index.ts
+│   │   │       ├── interface.ts
+│   │   │       └── postgres.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── catalog
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── catalog.d.ts
+│   │   │   ├── catalog.d.ts.map
+│   │   │   ├── catalog.js
+│   │   │   ├── catalog.ts
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.d.ts.map
+│   │   │   ├── index.js
+│   │   │   ├── index.ts
+│   │   │   └── projection-handler.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── category
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── category.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── checkout
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── checkout.d.ts
+│   │   │   ├── checkout.d.ts.map
+│   │   │   ├── checkout.js
+│   │   │   ├── checkout.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── commerce
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── cart.d.ts
+│   │   │   ├── cart.d.ts.map
+│   │   │   ├── cart.js
+│   │   │   ├── cart.ts
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.d.ts.map
+│   │   │   ├── index.js
+│   │   │   ├── index.ts
+│   │   │   ├── repository
+│   │   │   │   ├── in-memory.d.ts
+│   │   │   │   ├── in-memory.d.ts.map
+│   │   │   │   ├── in-memory.js
+│   │   │   │   ├── in-memory.ts
+│   │   │   │   ├── index.d.ts
+│   │   │   │   ├── index.d.ts.map
+│   │   │   │   ├── index.js
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── interface.d.ts
+│   │   │   │   ├── interface.d.ts.map
+│   │   │   │   ├── interface.js
+│   │   │   │   ├── interface.ts
+│   │   │   │   ├── postgres.d.ts
+│   │   │   │   ├── postgres.d.ts.map
+│   │   │   │   ├── postgres.js
+│   │   │   │   └── postgres.ts
+│   │   │   └── smoke-test.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── creator-management
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── customer
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── customer.d.ts
+│   │   │   ├── customer.d.ts.map
+│   │   │   ├── customer.js
+│   │   │   ├── customer.ts
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.d.ts.map
+│   │   │   ├── index.js
+│   │   │   ├── index.ts
+│   │   │   └── repository
+│   │   │       ├── customer-repository.interface.d.ts
+│   │   │       ├── customer-repository.interface.d.ts.map
+│   │   │       ├── customer-repository.interface.js
+│   │   │       ├── customer-repository.interface.ts
+│   │   │       ├── in-memory-customer.repository.d.ts
+│   │   │       ├── in-memory-customer.repository.d.ts.map
+│   │   │       ├── in-memory-customer.repository.js
+│   │   │       ├── in-memory-customer.repository.ts
+│   │   │       ├── index.d.ts
+│   │   │       ├── index.d.ts.map
+│   │   │       ├── index.js
+│   │   │       ├── index.ts
+│   │   │       ├── postgres-customer.repository.d.ts
+│   │   │       ├── postgres-customer.repository.d.ts.map
+│   │   │       ├── postgres-customer.repository.js
+│   │   │       └── postgres-customer.repository.ts
+│   │   └── tsconfig.json
+│   ├── customer-address
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── customer-address.d.ts
+│   │   │   ├── customer-address.d.ts.map
+│   │   │   ├── customer-address.js
+│   │   │   ├── customer-address.ts
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.d.ts.map
+│   │   │   ├── index.js
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── customer-contribution
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── customer-contribution.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── customer-reward
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── customer-reward.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── customer-social
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── customer-social.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── customer-support
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── customer-support.ts
+│   │   │   └── index.ts
+│   │   └── tsconfig.json
+│   ├── finance
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── finance.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── finance-correction
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── finance-correction.ts
+│   │   │   ├── index.ts
+│   │   │   ├── repository
+│   │   │   │   ├── in-memory.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── interface.ts
+│   │   │   │   └── postgres.ts
+│   │   │   └── smoke-test.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── follow
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── follow.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── fraud
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── fraud.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── interaction
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   └── interaction.ts
+│   │   └── tsconfig.json
+│   ├── media
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── asset.ts
+│   │   │   ├── eligibility.ts
+│   │   │   ├── index.ts
+│   │   │   ├── media.d.ts
+│   │   │   ├── media.d.ts.map
+│   │   │   ├── media.js
+│   │   │   ├── media.ts
+│   │   │   ├── qa.ts
+│   │   │   ├── repository
+│   │   │   │   ├── in-memory.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   └── postgres.ts
+│   │   │   ├── review.ts
+│   │   │   └── storage
+│   │   │       ├── index.ts
+│   │   │       └── local.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── moderation
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   ├── moderation.ts
+│   │   │   ├── operational-intent.ts
+│   │   │   ├── repository
+│   │   │   │   ├── in-memory.ts
+│   │   │   │   ├── interface.ts
+│   │   │   │   └── postgres.ts
+│   │   │   └── test-persistence.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── notification
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   ├── notification.ts
+│   │   │   ├── provider-adapter.ts
+│   │   │   ├── repository
+│   │   │   │   ├── in-memory.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── interface.ts
+│   │   │   │   └── postgres.ts
+│   │   │   └── smoke-test.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── operational-outbox
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   └── operational-audit-outbox-worker.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── order
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   ├── order.d.ts
+│   │   │   ├── order.d.ts.map
+│   │   │   ├── order.js
+│   │   │   ├── order.ts
+│   │   │   └── repository
+│   │   │       ├── in-memory.d.ts
+│   │   │       ├── in-memory.d.ts.map
+│   │   │       ├── in-memory.js
+│   │   │       ├── in-memory.ts
+│   │   │       ├── index.d.ts
+│   │   │       ├── index.d.ts.map
+│   │   │       ├── index.js
+│   │   │       ├── index.ts
+│   │   │       ├── interface.d.ts
+│   │   │       ├── interface.d.ts.map
+│   │   │       ├── interface.js
+│   │   │       ├── interface.ts
+│   │   │       ├── postgres.d.ts
+│   │   │       ├── postgres.d.ts.map
+│   │   │       ├── postgres.js
+│   │   │       └── postgres.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── order-ops
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   ├── order-ops.ts
+│   │   │   └── smoke-test.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── payment
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── callback-worker.ts
+│   │   │   ├── index.ts
+│   │   │   ├── payment.ts
+│   │   │   ├── provider-adapter.ts
+│   │   │   ├── provider-config.ts
+│   │   │   ├── reconciliation-worker.ts
+│   │   │   ├── repository
+│   │   │   │   ├── in-memory.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── interface.ts
+│   │   │   │   └── postgres.ts
+│   │   │   └── smoke-test.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── payout
+│   │   ├── jest.config.js
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   ├── payout.ts
+│   │   │   ├── provider-adapter.ts
+│   │   │   ├── repository
+│   │   │   │   ├── in-memory.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── interface.ts
+│   │   │   │   └── postgres.ts
+│   │   │   └── smoke-test.ts
+│   │   └── tsconfig.json
+│   ├── pool
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   └── pool.ts
+│   │   └── tsconfig.json
+│   ├── post
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   └── post.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── pricing
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.d.ts.map
+│   │   │   ├── index.js
+│   │   │   ├── index.ts
+│   │   │   ├── pricing.d.ts
+│   │   │   ├── pricing.d.ts.map
+│   │   │   ├── pricing.js
+│   │   │   └── pricing.ts
+│   │   └── tsconfig.json
+│   ├── provider-callback
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── question-answer
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   └── qa.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── ranking
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── refund
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   ├── operational-intent.ts
+│   │   │   ├── refund.ts
+│   │   │   └── repository
+│   │   │       ├── in-memory.ts
+│   │   │       ├── index.ts
+│   │   │       ├── interface.ts
+│   │   │       └── postgres.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── review
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   └── review.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── risk
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.d.ts.map
+│   │   │   ├── index.js
+│   │   │   ├── index.ts
+│   │   │   ├── operational-intent.d.ts
+│   │   │   ├── operational-intent.ts
+│   │   │   ├── repository
+│   │   │   │   ├── in-memory.d.ts
+│   │   │   │   ├── in-memory.d.ts.map
+│   │   │   │   ├── in-memory.js
+│   │   │   │   ├── in-memory.ts
+│   │   │   │   ├── index.d.ts
+│   │   │   │   ├── index.d.ts.map
+│   │   │   │   ├── index.js
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── interface.d.ts
+│   │   │   │   ├── interface.d.ts.map
+│   │   │   │   ├── interface.js
+│   │   │   │   ├── interface.ts
+│   │   │   │   ├── postgres.d.ts
+│   │   │   │   ├── postgres.d.ts.map
+│   │   │   │   ├── postgres.js
+│   │   │   │   └── postgres.ts
+│   │   │   ├── risk.d.ts
+│   │   │   ├── risk.d.ts.map
+│   │   │   ├── risk.js
+│   │   │   ├── risk.ts
+│   │   │   └── smoke-test.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── search
+│   │   ├── p40-smoke-test.ts
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── config.ts
+│   │   │   ├── document.ts
+│   │   │   ├── index.ts
+│   │   │   ├── opensearch.ts
+│   │   │   └── search.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── settlement
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   ├── repository
+│   │   │   │   ├── in-memory.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── interface.ts
+│   │   │   │   └── postgres.ts
+│   │   │   ├── settlement.ts
+│   │   │   └── smoke-test.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── shipment
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   ├── provider-adapter.ts
+│   │   │   ├── repository
+│   │   │   │   ├── in-memory.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── interface.ts
+│   │   │   │   └── postgres.ts
+│   │   │   └── shipment.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── stock
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.d.ts.map
+│   │   │   ├── index.js
+│   │   │   ├── index.ts
+│   │   │   ├── stock.d.ts
+│   │   │   ├── stock.d.ts.map
+│   │   │   ├── stock.js
+│   │   │   └── stock.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── store-message
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   └── store-message.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── store-post
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   └── store-post.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── store-story
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   └── store-story.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── storefront
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   ├── repository
+│   │   │   │   ├── in-memory-storefront.repository.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── postgres-storefront.repository.ts
+│   │   │   │   └── storefront-repository.interface.ts
+│   │   │   └── storefront.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── story
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   └── story.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── supplier-management
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   ├── support
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   ├── support.d.ts
+│   │   │   ├── support.d.ts.map
+│   │   │   ├── support.js
+│   │   │   └── support.ts
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
+│   └── ugc
+│       ├── package.json
+│       ├── src
+│       │   ├── index.ts
+│       │   └── ugc.ts
+│       ├── tsconfig.json
+│       └── tsconfig.tsbuildinfo
+├── setup_customer_storefront.js
+├── temp_checkout_test.js
+├── tests
+│   ├── acceptance
+│   │   └── .gitkeep
+│   ├── contract
+│   │   └── .gitkeep
+│   ├── fixtures
+│   │   └── .gitkeep
+│   ├── integration
+│   │   └── .gitkeep
+│   └── smoke
+│       ├── auth-utils.ts
+│       ├── durability-context.json
+│       ├── run-smoke.ts
+│       ├── start-bff.ts
+│       ├── suites
+│       │   ├── admin-direct-write-owner-command-guard.ts
+│       │   ├── admin-finance-ops-projection.ts
+│       │   ├── admin-permission.ts
+│       │   ├── analytics.ts
+│       │   ├── auth-permission.ts
+│       │   ├── bff-actor-spoofing-guard.ts
+│       │   ├── catalog-read.ts
+│       │   ├── category.ts
+│       │   ├── checkout-coupon-campaign-impact-foundation.ts
+│       │   ├── checkout-variant-price-stock-validation.ts
+│       │   ├── commerce-abuse-signal.ts
+│       │   ├── commerce-permission.ts
+│       │   ├── core-commerce.ts
+│       │   ├── coupon-line-allocation-settlement-impact.ts
+│       │   ├── coupon-sponsor-policy-guard.ts
+│       │   ├── creator-margin-settlement-foundation.ts
+│       │   ├── creator-scope-storefront-product-action-guard.ts
+│       │   ├── event-audit.ts
+│       │   ├── event-outbox.ts
+│       │   ├── finance-ledger-postgres-durability.ts
+│       │   ├── finance-ledger.ts
+│       │   ├── fraud-signal-review-false-positive-guard.ts
+│       │   ├── health.ts
+│       │   ├── interaction-idempotency-duplicate-prevention.ts
+│       │   ├── internal-service-auth.ts
+│       │   ├── media.ts
+│       │   ├── moderation-decision-audit-maker-checker.ts
+│       │   ├── moderation-workflow.ts
+│       │   ├── notification-provider-boundary.ts
+│       │   ├── notification.ts
+│       │   ├── operational-outbox-worker-dry-run.ts
+│       │   ├── operational-outbox-worker-lease.ts
+│       │   ├── order-line-economics-snapshot-foundation.ts
+│       │   ├── others.ts
+│       │   ├── panel-audit-evidence-maker-checker-readiness.ts
+│       │   ├── panel-smoke-coverage-foundation.ts
+│       │   ├── payable-payout-boundary-foundation.ts
+│       │   ├── payment-callback-candidate.ts
+│       │   ├── payment-callback-owner-command.ts
+│       │   ├── payment-callback-owner-transition.ts
+│       │   ├── payment-callback-worker-foundation.ts
+│       │   ├── payment-initiation-provider-reference.ts
+│       │   ├── payment-provider-boundary.ts
+│       │   ├── payment-provider-config.ts
+│       │   ├── payment-provider-reference-lookup.ts
+│       │   ├── payment-readiness-guard.ts
+│       │   ├── payment-reconciliation-audit-outbox-finalization.ts
+│       │   ├── payment-reconciliation-controlled-mutation.ts
+│       │   ├── payment-reconciliation-decision.ts
+│       │   ├── payment-reconciliation-e2e-no-order-handoff.ts
+│       │   ├── payment-reconciliation-owner-command-guard.ts
+│       │   ├── payment-reconciliation-task-persistence.ts
+│       │   ├── payment-reconciliation-worker-dry-run.ts
+│       │   ├── payout-candidate-preparation-foundation.ts
+│       │   ├── payout-candidate-review-ops-foundation.ts
+│       │   ├── payout-provider-boundary.ts
+│       │   ├── paytr-callback-bff-policy.ts
+│       │   ├── paytr-callback-live-bff-mapping.ts
+│       │   ├── paytr-callback-mapping.ts
+│       │   ├── paytr-status-inquiry-adapter-boundary.ts
+│       │   ├── paytr-status-inquiry-mapping.ts
+│       │   ├── phase09-smoke-coverage-foundation.ts
+│       │   ├── plp.ts
+│       │   ├── pool-base-price-corridor-foundation.ts
+│       │   ├── projection-consumer-foundation.ts
+│       │   ├── provider-boundary.ts
+│       │   ├── provider-callback-foundation.ts
+│       │   ├── provider-callback-freshness-guard.ts
+│       │   ├── provider-callback-ingestion.ts
+│       │   ├── provider-callback-postgres.ts
+│       │   ├── provider-callback-rate-limit-guard.ts
+│       │   ├── provider-callback-replay-guard.ts
+│       │   ├── provider-callback-signature-guard.ts
+│       │   ├── ranking-recommendation-readiness.ts
+│       │   ├── refund-command-security-hardening.ts
+│       │   ├── refund-coupon-sponsor-reversal-foundation.ts
+│       │   ├── refund-financial-impact-foundation.ts
+│       │   ├── refund-maker-checker-audit-foundation.ts
+│       │   ├── reward-point-lifecycle-foundation.ts
+│       │   ├── risk-signal.ts
+│       │   ├── search-index-projection.ts
+│       │   ├── settlement-calculation-foundation.ts
+│       │   ├── settlement-from-order-economics-snapshot-foundation.ts
+│       │   ├── settlement-payable-earning-lifecycle-foundation.ts
+│       │   ├── settlement-payable-earning-release-eligibility-foundation.ts
+│       │   ├── settlement-payable-earning-reversal-foundation.ts
+│       │   ├── settlement-payable-earning-signal-integration-foundation.ts
+│       │   ├── shipment-provider-boundary.ts
+│       │   ├── social-abuse-signal.ts
+│       │   ├── social-moderation.ts
+│       │   ├── social-permission.ts
+│       │   ├── social.ts
+│       │   ├── stale-projection-leak.ts
+│       │   ├── story-review-qa-visibility-guard.ts
+│       │   ├── supplier-scope-product-intake-stock-price-guard.ts
+│       │   ├── support-visibility-order-access-pii-guard.ts
+│       │   └── taxonomy.ts
+│       ├── tsconfig.json
+│       └── types.ts
+├── tree_output.txt
+├── tsconfig.base.json
+└── update_script.js

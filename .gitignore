@@ -4,6 +4,8 @@ dist/
 build/
 .cache/
 .turbo/
+.next/
+**/.next/
 .pnpm-store/
 .local/
 coverage/

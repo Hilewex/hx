@@ -91,3 +91,131 @@ export interface CancelReturnTransitionResult {
   request?: CancelReturnResponse;
   error?: string;
 }
+
+export type ReturnSurfaceStatus =
+  | 'empty'
+  | 'return_requested'
+  | 'review_pending'
+  | 'approved_projection'
+  | 'rejected_projection'
+  | 'refund_pending'
+  | 'refund_processing'
+  | 'refund_completed_projection'
+  | 'support_escalation'
+  | 'degraded'
+  | 'unavailable'
+  | 'timeout'
+  | 'error';
+
+export type RefundProjectionStatus =
+  | 'not_started'
+  | 'pending'
+  | 'processing'
+  | 'completed_projection'
+  | 'settlement_pending'
+  | 'degraded'
+  | 'unavailable';
+
+export type ReturnTimelineStepStatus = 'complete_projection' | 'current_projection' | 'pending_projection' | 'degraded_projection';
+
+export interface ReturnReferenceProjection {
+  returnId?: string;
+  orderId?: string;
+  orderNumber?: string;
+  label: string;
+  helperText: string;
+  returnApprovedTruth: false;
+  logisticsTruth: false;
+  warnings?: string[];
+}
+
+export interface RefundProjectionSummary {
+  refundId?: string;
+  status: RefundProjectionStatus;
+  label: string;
+  helperText: string;
+  refundCompletedTruth: false;
+  settlementTruth: false;
+  payoutTruth: false;
+  rawProviderPayloadExposed: false;
+  warnings?: string[];
+}
+
+export interface ReturnSupportGuidanceProjection {
+  href: '/support';
+  label: string;
+  referenceText: string;
+  refundReferenceText: string;
+  helperText: string;
+  escalationText: string;
+  ticketCreationTruth: false;
+  issueResolvedTruth: false;
+}
+
+export interface ReturnTimelineStepProjection {
+  stepId: string;
+  title: string;
+  description: string;
+  status: ReturnTimelineStepStatus;
+  ariaText: string;
+  returnApprovalTruth: false;
+  refundTruth: false;
+  settlementTruth: false;
+  logisticsTruth: false;
+}
+
+export interface ReturnItemPreviewProjection {
+  lineId: string;
+  productId?: string;
+  title: string;
+  quantityText: string;
+  reasonText: string;
+  summaryText: string;
+  refundTruth: false;
+  settlementTruth: false;
+  warnings?: string[];
+}
+
+export interface ReturnEscalationProjection {
+  status: 'none' | 'recommended' | 'required' | 'degraded';
+  label: string;
+  helperText: string;
+  escalationDecisionTruth: false;
+  moderationTruth: false;
+  fraudTruth: false;
+}
+
+export interface ReturnSurfaceProjection {
+  status: ReturnSurfaceStatus;
+  reference: ReturnReferenceProjection;
+  refund: RefundProjectionSummary;
+  supportGuidance: ReturnSupportGuidanceProjection;
+  escalation: ReturnEscalationProjection;
+  timeline: ReturnTimelineStepProjection[];
+  items: ReturnItemPreviewProjection[];
+  navigation: {
+    goToReturns: {
+      href: '/returns';
+      label: string;
+    };
+    contactSupport: {
+      href: '/support';
+      label: string;
+    };
+  };
+  boundaryFlags: {
+    projectionTruth: false;
+    queryCacheTruth: false;
+    returnApprovalTruth: false;
+    refundCompletedTruth: false;
+    settlementTruth: false;
+    payoutTruth: false;
+    logisticsTruth: false;
+    supportResolutionTruth: false;
+    moderationTruth: false;
+    fraudTruth: false;
+    rawFinancePayloadExposed: false;
+    rawProviderPayloadExposed: false;
+  };
+  warnings?: string[];
+}

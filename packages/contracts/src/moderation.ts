@@ -155,6 +155,36 @@ export interface ReviewModerationCaseCommand {
   ownerHandoffCreated?: boolean;
 }
 
+export interface OperationalIntentRequest {
+  caseId: string;
+  kind: 'review' | 'escalation' | 'require-evidence' | 'recommend-payout-hold';
+  makerActorId: string;
+  checkerActorId?: string;
+  reasonCode: string;
+  evidenceRefs: string[];
+  idempotencyKey: string;
+  decision?: string;
+  operationalIntentOnly: true;
+  enforcementExecuted?: false;
+  ownerMutationTruth?: false;
+}
+
+export interface OwnerDomainReviewCommand extends ReviewModerationCaseCommand {
+  ownerDomainInternalOnly?: true;
+  operationalIntentOnly?: false;
+  enforcementExecuted?: false;
+  ownerMutationTruth?: true;
+}
+
+export interface LegacyReviewCommandDeprecated extends ReviewModerationCaseCommand {
+  deprecatedForOperationalWorkflow: true;
+  replacementRoute: '/moderation/intent';
+  internalOnly: true;
+  operationalIntentOnly: false;
+  enforcementExecuted?: false;
+  ownerMutationTruth?: true;
+}
+
 export interface GetModerationCaseQuery {
   caseId: string;
 }
@@ -206,4 +236,112 @@ export interface ModerationCaseListResponse {
   items: ModerationCase[];
   nextCursor?: string;
   warnings?: string[];
+}
+
+export interface ModerationOperationalBoundaryFlags {
+  moderationTruthMutated: false;
+  riskTruthMutated: false;
+  payoutBlockedTruth: false;
+  enforcementExecuted: false;
+  auditMutationTruth: false;
+}
+
+export interface ModerationEvidenceProjection {
+  evidenceId: string;
+  evidenceTypeProjection: string;
+  sourceProjection: string;
+  summaryProjectionText: string;
+  createdAtProjectionText: string;
+  evidenceOwnerMutationTruth: false;
+}
+
+export interface ModerationEscalationProjection {
+  escalationStateProjection: 'none' | 'visible' | 'recommended' | 'required';
+  escalationTargetProjection: string;
+  visibilityText: string;
+  escalationDecisionTruth: false;
+}
+
+export interface ModerationPayoutHoldRecommendationProjection {
+  recommendationStateProjection: 'not_applicable' | 'visible' | 'recommended';
+  recommendationText: string;
+  payoutBlockedTruth: false;
+}
+
+export interface ModerationReviewQueueItemProjection {
+  caseId: string;
+  targetTypeProjection: string;
+  targetIdProjection: string;
+  severityProjection: ModerationRiskLevel | 'UNAVAILABLE';
+  statusProjection: string;
+  sourceProjection: string;
+  relatedContextProjectionText: string;
+  evidencePreviewText: string;
+  escalation: ModerationEscalationProjection;
+  payoutHoldRecommendation: ModerationPayoutHoldRecommendationProjection;
+  detailHref: string;
+  boundaryFlags: ModerationOperationalBoundaryFlags;
+  warnings?: string[];
+}
+
+export interface ModerationReviewQueueProjection {
+  items: ModerationReviewQueueItemProjection[];
+  totalProjection?: number;
+  emptyState?: boolean;
+  degradedStateText?: string;
+  boundaryFlags: ModerationOperationalBoundaryFlags;
+  warnings?: string[];
+}
+
+export interface ModerationReviewDetailProjection extends ModerationReviewQueueItemProjection {
+  contentPreviewProjectionText: string;
+  relatedOrderStoreUserPostContextProjectionText: string;
+  evidence: ModerationEvidenceProjection[];
+  auditEvidence: {
+    requiredEvidenceRefs: string[];
+    providedEvidenceRefs: string[];
+    reasonCodeProjectionText: string;
+    auditIntentPreview: string[];
+    auditIntentRecordedProjection: boolean;
+    auditIntentPersistedProjection: boolean;
+    latestAuditIntentText?: string;
+    auditMutationTruth: false;
+  };
+  makerChecker: {
+    makerActorProjectionText: string;
+    checkerActorProjectionText: string;
+    workflowStateProjection: 'prepared' | 'checker_required' | 'checked' | 'rejected' | 'escalated' | 'owner_handoff_pending' | 'owner_handoff_ready';
+    sameActorApprovalBlockedProjection: true;
+    ownerHandoffRequiredProjection: true;
+    makerCheckerTruth: false;
+  };
+  actionIntent: {
+    reviewIntentAllowed: true;
+    escalationIntentAllowed: true;
+    requireEvidenceIntentAllowed: true;
+    recommendPayoutHoldIntentAllowed: true;
+    ownerCommandRequired: true;
+    directExecutionAllowed: false;
+    uiMutationTruth: false;
+  };
+}
+
+export type ModerationCommandIntentStatus =
+  | 'maker_submitted'
+  | 'checker_required'
+  | 'checked_for_owner_handoff'
+  | 'rejected_by_checker'
+  | 'escalated'
+  | 'evidence_required'
+  | 'validation_failed'
+  | 'permission_denied'
+  | 'owner_unavailable';
+
+export interface ModerationCommandIntentResultProjection {
+  status: ModerationCommandIntentStatus;
+  message: string;
+  idempotencyKey: string;
+  workflowState?: 'prepared' | 'checker_required' | 'checked' | 'rejected' | 'escalated' | 'owner_handoff_pending' | 'owner_handoff_ready';
+  auditIntentPersisted: boolean;
+  boundaryFlags: ModerationOperationalBoundaryFlags;
 }

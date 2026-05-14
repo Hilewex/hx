@@ -4,6 +4,17 @@ import {
   AdminProtectedActionEvidence
 } from '@hx/contracts';
 
+export {
+  buildFinanceOpsProjection,
+  buildOperationalQueueDetailProjection,
+  buildOperationalQueueProjection,
+  listPayoutCandidateReviewQueue,
+  priorities,
+  queueDomains,
+  readPayoutCandidateReviewProjection,
+  workflowStates,
+} from './ops-projections';
+
 const processedIdempotencyKeys = new Set<string>();
 
 export function validateAdminProtectedAction(req: AdminProtectedActionRequest): AdminActionResult {

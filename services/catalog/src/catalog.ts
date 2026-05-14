@@ -12,6 +12,7 @@ import {
   StorefrontContext,
   SupplierSubmittedVariant
 } from '@hx/contracts';
+import { getProjection } from './projection-handler';
 
 export interface CatalogProductListInput {
   categoryId?: string;
@@ -175,7 +176,7 @@ export function getCatalogProductProjection(
   productId: string,
   options: { includeNonPublic?: boolean } = {}
 ): CatalogProductProjectionResult {
-  const product = FOUNDATION_PRODUCTS.find(item => item.productId === productId);
+  const product = getProjection(productId) ?? FOUNDATION_PRODUCTS.find(item => item.productId === productId);
   if (!product) {
     return { status: 'NOT_FOUND', warnings: FOUNDATION_WARNINGS };
   }

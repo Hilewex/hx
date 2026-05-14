@@ -1,4 +1,16 @@
-import { SettlementLine, ListSettlementLinesQuery, SettlementLineListResponse, SettlementPartyType, SettlementLineStatus, SettlementReasonCode } from '@hx/contracts';
+import {
+  ListSettlementLinesQuery,
+  ListSettlementPayableEarningsQuery,
+  SettlementCreatorEarning,
+  SettlementCreatorEarningListResponse,
+  SettlementLine,
+  SettlementLineListResponse,
+  SettlementPartyType,
+  SettlementLineStatus,
+  SettlementReasonCode,
+  SettlementSupplierPayable,
+  SettlementSupplierPayableListResponse,
+} from '@hx/contracts';
 import { ISettlementRepository } from './interface';
 import { Pool } from 'pg';
 
@@ -54,6 +66,52 @@ export class PostgresSettlementRepository implements ISettlementRepository {
     } finally {
       client.release();
     }
+  }
+
+  async createSupplierPayables(payables: SettlementSupplierPayable[]): Promise<void> {
+    if (payables.length === 0) return;
+    throw new Error('SETTLEMENT_SUPPLIER_PAYABLE_POSTGRES_FOUNDATION_TABLE_NOT_CONFIGURED');
+  }
+
+  async createCreatorEarnings(earnings: SettlementCreatorEarning[]): Promise<void> {
+    if (earnings.length === 0) return;
+    throw new Error('SETTLEMENT_CREATOR_EARNING_POSTGRES_FOUNDATION_TABLE_NOT_CONFIGURED');
+  }
+
+  async getSupplierPayableById(_payableId: string): Promise<SettlementSupplierPayable | null> {
+    throw new Error('SETTLEMENT_SUPPLIER_PAYABLE_POSTGRES_FOUNDATION_TABLE_NOT_CONFIGURED');
+  }
+
+  async getCreatorEarningById(_earningId: string): Promise<SettlementCreatorEarning | null> {
+    throw new Error('SETTLEMENT_CREATOR_EARNING_POSTGRES_FOUNDATION_TABLE_NOT_CONFIGURED');
+  }
+
+  async reverseSupplierPayable(
+    _payableId: string,
+    _updates: Partial<SettlementSupplierPayable>,
+  ): Promise<SettlementSupplierPayable | null> {
+    throw new Error('SETTLEMENT_SUPPLIER_PAYABLE_POSTGRES_FOUNDATION_TABLE_NOT_CONFIGURED');
+  }
+
+  async reverseCreatorEarning(
+    _earningId: string,
+    _updates: Partial<SettlementCreatorEarning>,
+  ): Promise<SettlementCreatorEarning | null> {
+    throw new Error('SETTLEMENT_CREATOR_EARNING_POSTGRES_FOUNDATION_TABLE_NOT_CONFIGURED');
+  }
+
+  async markSupplierPayableReleaseEligible(
+    _payableId: string,
+    _updatedAt: string,
+  ): Promise<SettlementSupplierPayable | null> {
+    throw new Error('SETTLEMENT_SUPPLIER_PAYABLE_POSTGRES_FOUNDATION_TABLE_NOT_CONFIGURED');
+  }
+
+  async markCreatorEarningReleaseEligible(
+    _earningId: string,
+    _updatedAt: string,
+  ): Promise<SettlementCreatorEarning | null> {
+    throw new Error('SETTLEMENT_CREATOR_EARNING_POSTGRES_FOUNDATION_TABLE_NOT_CONFIGURED');
   }
 
   async update(settlementLineId: string, updates: Partial<SettlementLine>): Promise<void> {
@@ -136,6 +194,18 @@ export class PostgresSettlementRepository implements ISettlementRepository {
       settlementLines: res.rows.map(this.mapRow),
       total
     };
+  }
+
+  async listSupplierPayables(
+    _query: ListSettlementPayableEarningsQuery,
+  ): Promise<SettlementSupplierPayableListResponse> {
+    return { supplierPayables: [], total: 0 };
+  }
+
+  async listCreatorEarnings(
+    _query: ListSettlementPayableEarningsQuery,
+  ): Promise<SettlementCreatorEarningListResponse> {
+    return { creatorEarnings: [], total: 0 };
   }
 
   async getByIdempotencyKey(idempotencyKey: string): Promise<string[] | null> {

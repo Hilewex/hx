@@ -1,6 +1,9 @@
 {
   "references": [
     {
+      "path": "../../services/admin"
+    },
+    {
       "path": "../../services/analytics"
     },
     {
@@ -71,6 +74,9 @@
     },
     {
       "path": "../../packages/observability"
+    },
+    {
+      "path": "../../packages/persistence"
     },
     {
       "path": "../../services/order"
@@ -153,6 +159,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@hx/persistence": ["../../packages/persistence/src"],
       "@hx/post": ["../../services/post/src"],
       "@hx/question-answer": ["../../services/question-answer/src"],
       "@hx/review": ["../../services/review/src"],

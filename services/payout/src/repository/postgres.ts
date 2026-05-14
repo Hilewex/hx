@@ -5,7 +5,9 @@ import {
   ListPayoutItemsQuery,
   ListPayoutBatchesQuery,
   PayoutItemListResponse,
-  PayoutBatchListResponse
+  PayoutBatchListResponse,
+  PayoutCandidate,
+  PayoutCandidateListResponse
 } from '@hx/contracts';
 import { IPayoutRepository } from './interface';
 
@@ -294,5 +296,29 @@ export class PostgresPayoutRepository implements IPayoutRepository {
       INSERT INTO payout_idempotency (idempotency_key, scope, batch_id) 
       VALUES ($1, $2, $3) ON CONFLICT (idempotency_key) DO NOTHING
     `, [idempotencyKey, 'batch', batchId]);
+  }
+
+  async createPayoutCandidate(_candidate: PayoutCandidate): Promise<void> {
+    throw new Error('PAYOUT_CANDIDATE_POSTGRES_FOUNDATION_UNAVAILABLE');
+  }
+
+  async updatePayoutCandidate(_payoutCandidateId: string, _updates: Partial<PayoutCandidate>): Promise<void> {
+    throw new Error('PAYOUT_CANDIDATE_POSTGRES_FOUNDATION_UNAVAILABLE');
+  }
+
+  async getPayoutCandidateById(_payoutCandidateId: string): Promise<PayoutCandidate | null> {
+    throw new Error('PAYOUT_CANDIDATE_POSTGRES_FOUNDATION_UNAVAILABLE');
+  }
+
+  async getPayoutCandidateBySourceFingerprint(_sourceFingerprint: string): Promise<PayoutCandidate | null> {
+    throw new Error('PAYOUT_CANDIDATE_POSTGRES_FOUNDATION_UNAVAILABLE');
+  }
+
+  async savePayoutCandidateSourceFingerprint(_sourceFingerprint: string, _payoutCandidateId: string): Promise<void> {
+    throw new Error('PAYOUT_CANDIDATE_POSTGRES_FOUNDATION_UNAVAILABLE');
+  }
+
+  async listPayoutCandidates(): Promise<PayoutCandidateListResponse> {
+    throw new Error('PAYOUT_CANDIDATE_POSTGRES_FOUNDATION_UNAVAILABLE');
   }
 }

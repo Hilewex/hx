@@ -178,7 +178,7 @@ export const moderationDecisionAuditMakerCheckerSmoke: SmokeRunner = {
       }))).data.items;
       const reviewCase = cases.find((item: any) => item.target.targetId === reviewId);
       if (!reviewCase?.caseId) throw new Error('review moderation case not found');
-      const rejectRes = await fetch(`${baseUrl}/moderation/review`, {
+      const legacyRejectRes = await fetch(`${baseUrl}/moderation/review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
         body: JSON.stringify({
@@ -189,19 +189,36 @@ export const moderationDecisionAuditMakerCheckerSmoke: SmokeRunner = {
           idempotencyKey: `bff-review-reject-${suffix}`,
         }),
       });
-      if (!rejectRes.ok) throw new Error(`BFF moderation reject failed: ${rejectRes.status}`);
-      const rejectData = (await json(rejectRes)).data;
-      if (rejectData.visibilityTruthMutatedByBff !== false || !rejectData.auditRecorded || !rejectData.evidenceRecorded) {
-        throw new Error('BFF moderation result missing audit/evidence/boundary flags');
+      if (legacyRejectRes.status !== 403) {
+        throw new Error(`Admin legacy BFF moderation review should be internal-only 403, got ${legacyRejectRes.status}`);
+      }
+      const intentRes = await fetch(`${baseUrl}/moderation/intent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          caseId: reviewCase.caseId,
+          kind: 'review',
+          decision: 'REJECT',
+          makerActorId: `mc-admin-${suffix}`,
+          checkerActorId: `mc-checker-${suffix}`,
+          reasonCode: 'ABUSE',
+          evidenceRefs: [`bff-review-${suffix}`],
+          idempotencyKey: `bff-review-intent-${suffix}`,
+        }),
+      });
+      if (!intentRes.ok) throw new Error(`BFF moderation intent failed: ${intentRes.status}`);
+      const intentData = (await json(intentRes)).data;
+      if (intentData.accepted !== true || intentData.boundaryFlags?.enforcementExecuted !== false) {
+        throw new Error('BFF moderation intent missing accepted/no-enforcement boundary flags');
       }
       const rejectedList = (await json(await fetch(`${baseUrl}/review/list?productId=${productId}`))).data.items;
       if (rejectedList.some((item: any) => item.reviewId === reviewId)) {
-        throw new Error('rejected review leaked to public list');
+        throw new Error('review with operational intent leaked to public list');
       }
 
       return {
         result: 'PASS',
-        message: 'Decision actor/reason/evidence, audit, idempotency, maker-checker guard, risk boundary, BFF boundary flags, owner handoff path, and public leak regression verified',
+        message: 'Decision actor/reason/evidence, audit, idempotency, maker-checker guard, risk boundary, BFF legacy isolation, operational intent boundary, and public leak regression verified',
       };
     } catch (error: any) {
       console.error('[DEBUG] moderation-decision-audit-maker-checker error:', error);

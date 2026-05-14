@@ -7,7 +7,7 @@ import {
   RefundFinancialImpactResult,
   RefundFinancialImpactType,
 } from '@hx/contracts';
-import { appendLedgerEntry as appendToDb, getLedgerEntries as getFromDb } from '@hx/persistence';
+import { getFinanceLedgerRepository } from '@hx/persistence';
 
 export async function appendLedgerEntry(command: AppendLedgerEntryCommand): Promise<AppendLedgerEntryResult> {
   try {
@@ -24,7 +24,7 @@ export async function appendLedgerEntry(command: AppendLedgerEntryCommand): Prom
       return { success: false, errors: ['SOURCE_REFERENCE_REQUIRED'] };
     }
     
-    const entry = appendToDb(command);
+    const entry = await getFinanceLedgerRepository().appendLedgerEntry(command);
     return {
       success: true,
       ledgerEntryId: entry.ledgerEntryId,
@@ -34,12 +34,15 @@ export async function appendLedgerEntry(command: AppendLedgerEntryCommand): Prom
     if (err.message === 'DUPLICATE_IDEMPOTENCY_KEY') {
       return { success: false, errors: ['DUPLICATE_IDEMPOTENCY_KEY'] };
     }
+    if (err.message === 'DUPLICATE_IDEMPOTENCY_KEY_CONFLICT') {
+      return { success: false, errors: ['DUPLICATE_IDEMPOTENCY_KEY_CONFLICT'] };
+    }
     return { success: false, errors: ['LEDGER_APPEND_FAILED'] };
   }
 }
 
 export async function getLedgerEntries(query: GetLedgerQuery): Promise<LedgerEntry[]> {
-  return getFromDb(query);
+  return getFinanceLedgerRepository().getLedgerEntries(query);
 }
 
 function stableValue(value: any): any {
@@ -119,7 +122,7 @@ export async function recordRefundFinancialImpact(
   }
 
   const fingerprint = createRefundImpactFingerprint(command);
-  const existing = getFromDb({}).find((entry) => entry.idempotencyKey === command.idempotencyKey);
+  const existing = (await getLedgerEntries({})).find((entry) => entry.idempotencyKey === command.idempotencyKey);
 
   if (existing) {
     if (existing.metadata?.refundFinancialImpactFingerprint !== fingerprint) {

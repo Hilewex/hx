@@ -60,7 +60,9 @@ export async function closePool() {
 }
 
 export * from './audit-event';
+export * from './operational-intent';
 export * from './provider-callback';
 export * from './payment-reconciliation-task';
 export * from './finance-ledger';
+export * from './migrator';
 

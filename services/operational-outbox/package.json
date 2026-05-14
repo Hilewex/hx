@@ -1,0 +1,19 @@
+{
+  "name": "@hx/operational-outbox",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hx/contracts": "workspace:*",
+    "@hx/persistence": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "typescript": "^5.3.3"
+  }
+}

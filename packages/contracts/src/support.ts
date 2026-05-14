@@ -334,3 +334,116 @@ export interface SupportVisibilityResult {
   };
   error?: string;
 }
+
+export type SupportSurfaceStatus =
+  | 'empty'
+  | 'ticket_opened'
+  | 'triaged_projection'
+  | 'waiting_for_customer_projection'
+  | 'escalated_projection'
+  | 'resolved_projection'
+  | 'closed_projection'
+  | 'degraded'
+  | 'unavailable'
+  | 'timeout'
+  | 'error';
+
+export type SupportTimelineStepStatus = 'complete_projection' | 'current_projection' | 'pending_projection' | 'degraded_projection';
+
+export interface SupportOrderReferenceProjection {
+  orderId?: string;
+  orderNumber?: string;
+  paymentReferenceText: string;
+  returnReferenceText: string;
+  refundReferenceText: string;
+  helperText: string;
+  orderTruth: false;
+  paymentTruth: false;
+  returnTruth: false;
+  refundTruth: false;
+  rawProviderPayloadExposed: false;
+}
+
+export interface SupportTicketProjection {
+  ticketId?: string;
+  status: SupportSurfaceStatus;
+  categoryText: string;
+  subjectText: string;
+  latestMessagePreview: string;
+  statusLabel: string;
+  helperText: string;
+  ticketOpenedTruth: false;
+  issueResolvedTruth: false;
+  warnings?: string[];
+}
+
+export interface SupportEscalationProjection {
+  status: 'none' | 'recommended' | 'required' | 'degraded';
+  label: string;
+  helperText: string;
+  escalationDecisionTruth: false;
+  moderationTruth: false;
+  fraudTruth: false;
+}
+
+export interface SupportGuidanceProjection {
+  title: string;
+  helperText: string;
+  escalationText: string;
+  ctaLabel: string;
+  ctaHref: '/support';
+  supportResolutionTruth: false;
+  ticketMutationTruth: false;
+}
+
+export interface SupportTimelineStepProjection {
+  stepId: string;
+  title: string;
+  description: string;
+  status: SupportTimelineStepStatus;
+  ariaText: string;
+  ticketTruth: false;
+  resolutionTruth: false;
+  moderationTruth: false;
+  fraudTruth: false;
+}
+
+export interface SupportSurfaceProjection {
+  status: SupportSurfaceStatus;
+  ticket: SupportTicketProjection;
+  orderContext: SupportOrderReferenceProjection;
+  guidance: SupportGuidanceProjection;
+  escalation: SupportEscalationProjection;
+  timeline: SupportTimelineStepProjection[];
+  navigation: {
+    goToSupport: {
+      href: '/support';
+      label: string;
+    };
+    goToReturns: {
+      href: '/returns';
+      label: string;
+    };
+    goToOrders: {
+      href: '/orders';
+      label: string;
+    };
+  };
+  boundaryFlags: {
+    projectionTruth: false;
+    queryCacheTruth: false;
+    supportTicketTruth: false;
+    supportResolutionTruth: false;
+    escalationDecisionTruth: false;
+    moderationTruth: false;
+    fraudTruth: false;
+    orderTruth: false;
+    paymentTruth: false;
+    returnTruth: false;
+    refundTruth: false;
+    rawFinancePayloadExposed: false;
+    rawProviderPayloadExposed: false;
+    adminNotesExposed: false;
+  };
+  warnings?: string[];
+}

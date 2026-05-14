@@ -2,7 +2,7 @@ import {
   CreateFraudFalsePositiveReviewCommand,
   CreateFraudReviewCaseCommand,
   CreateFraudSignalCommand,
-  ReviewFraudCaseCommand
+  OwnerDomainFraudReviewCommand
 } from '@hx/contracts';
 import {
   createFraudFalsePositiveReview,
@@ -11,7 +11,7 @@ import {
   reviewFraudCase
 } from '@hx/fraud';
 import * as response from './response';
-import { requireRiskOperator } from './guards';
+import { requireRiskOperator, requireInternalService } from './guards';
 
 export async function handleCreateFraudSignal(req: any) {
   const guardResult = requireRiskOperator(req.context);
@@ -54,17 +54,31 @@ export async function handleCreateFraudCase(req: any) {
 }
 
 export async function handleReviewFraudCase(req: any) {
-  const guardResult = requireRiskOperator(req.context);
+  const guardResult = requireInternalService(req.context);
   if (!guardResult.allowed) return guardResult.response;
 
   try {
-    const command: ReviewFraudCaseCommand = req.body;
+    const command: OwnerDomainFraudReviewCommand = req.body;
     if (!command.fraudCaseId || !command.reviewerId || !command.decision) {
       return response.badRequest('REQUEST_MISSING_FIELD', 'Missing required fields for fraud review');
     }
     const evidenceError = validateFraudEvidence(command);
     if (evidenceError) return evidenceError;
-    return response.ok(await reviewFraudCase(command));
+    const result = await reviewFraudCase(command);
+    return response.ok({
+      ...result,
+      routeClassification: 'owner-domain internal route',
+      deprecatedForOperationalWorkflow: true,
+      internalOnly: true,
+      operationalIntentOnly: false,
+      ownerMutationTruth: true,
+      enforcementExecuted: false,
+      payoutBlockedTruth: false,
+      warning: 'Deprecated for admin operational workflow; use risk/moderation operational intent routes for admin surfaces.',
+    }, {
+      routeClassification: 'owner-domain internal route',
+      deprecatedForOperationalWorkflow: true,
+    });
   } catch (error: any) {
     if (error?.code?.startsWith('FRAUD_')) {
       return response.badRequest(error.code, error.message);

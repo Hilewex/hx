@@ -23,8 +23,12 @@ import {
 import {
   handleCreateRefundFromCancelReturn,
   handleGetRefundDetail,
+  handleGetRefundReviewQueueProjection,
+  handleGetRefundReviewDetailProjection,
   handleProcessRefund,
-  handleTransitionRefund
+  handleTransitionRefund,
+  handleReviewRefund,
+  handleManualRefundEscalation
 } from './refund';
 import {
   handleCreateNotification,
@@ -110,7 +114,10 @@ import {
   handleCreateModerationCase,
   handleReviewModerationCase,
   handleGetModerationCase,
-  handleListModerationCases
+  handleListModerationCases,
+  handleGetModerationReviewQueueProjection,
+  handleGetModerationReviewDetailProjection,
+  handleModerationCommandIntent
 } from './moderation';
 import {
   handleCreateRiskSignal,
@@ -118,7 +125,10 @@ import {
   handleCreateRiskCase,
   handleReviewRiskCase,
   handleGetRiskCase,
-  handleListRiskCases
+  handleListRiskCases,
+  handleGetRiskReviewQueueProjection,
+  handleGetRiskReviewDetailProjection,
+  handleRiskCommandIntent
 } from './risk';
 import {
   handleCreateFraudSignal,
@@ -126,6 +136,11 @@ import {
   handleReviewFraudCase,
   handleCreateFraudFalsePositiveReview
 } from './fraud';
+import {
+  handleGetOperationalQueueProjection,
+  handleGetOperationalQueueDetailProjection,
+  handleGetFinanceOpsProjection
+} from './ops-center';
 import { handleGetOrderOpsOverview } from './order-ops';
 import {
   handleCreateSettlementFromOrder,
@@ -193,11 +208,10 @@ export function createServer() {
     const authHeader = req.headers['authorization'] as string | undefined;
     const actorIdHeader = req.headers['x-actor-id'] as string | undefined;
     const sessionIdHeader = req.headers['session-id'] as string | undefined;
-    
-    let { context } = resolveContext(authHeader, actorIdHeader, sessionIdHeader);
-    
+    const internalServiceToken = req.headers['x-internal-service-token'] as string | undefined;
     const url = new URL(req.url || '', `http://${req.headers.host}`);
     const pathname = url.pathname;
+    let { context } = resolveContext(authHeader, actorIdHeader, sessionIdHeader, internalServiceToken, pathname);
     
     // We remove the hardcoded actorIdHeader block to respect context resolve entirely,
     // or we can let context resolver handle legacy header if env var is true.
@@ -376,6 +390,30 @@ export function createServer() {
       return sendBffResponse(await handleCreateRefundFromCancelReturn(context, body));
     }
 
+    if (pathname === '/admin/refunds' && req.method === 'GET') {
+      const query = Object.fromEntries(url.searchParams);
+      return sendBffResponse(await handleGetRefundReviewQueueProjection(context, query));
+    }
+
+    if (pathname === '/admin/ops' && req.method === 'GET') {
+      const query = Object.fromEntries(url.searchParams);
+      return sendBffResponse(await handleGetOperationalQueueProjection(context, query));
+    }
+
+    if (pathname === '/admin/ops/finance' && req.method === 'GET') {
+      return sendBffResponse(await handleGetFinanceOpsProjection(context));
+    }
+
+    if (pathname.startsWith('/admin/ops/') && req.method === 'GET') {
+      const intentId = decodeURIComponent(pathname.replace('/admin/ops/', ''));
+      return sendBffResponse(await handleGetOperationalQueueDetailProjection(context, intentId));
+    }
+
+    if (pathname.startsWith('/admin/refunds/') && req.method === 'GET') {
+      const refundId = decodeURIComponent(pathname.replace('/admin/refunds/', ''));
+      return sendBffResponse(await handleGetRefundReviewDetailProjection(context, refundId));
+    }
+
     if (req.url?.startsWith('/refund/') && req.method === 'GET') {
       const refundId = req.url.replace('/refund/', '');
       return sendBffResponse(await handleGetRefundDetail(context, refundId));
@@ -387,6 +425,14 @@ export function createServer() {
 
     if (req.url === '/refund/transition' && req.method === 'POST') {
       return sendBffResponse(await handleTransitionRefund(context, body));
+    }
+
+    if (req.url === '/refund/review' && req.method === 'POST') {
+      return sendBffResponse(await handleReviewRefund(context, body));
+    }
+
+    if (req.url === '/refund/manual-escalation' && req.method === 'POST') {
+      return sendBffResponse(await handleManualRefundEscalation(context, body));
     }
 
     if (req.url === '/notification/create' && req.method === 'POST') {
@@ -690,6 +736,34 @@ export function createServer() {
       const url = new URL(req.url, `http://${req.headers.host}`);
       const query = Object.fromEntries(url.searchParams);
       return sendBffResponse(await handleGetMediaVisibility(context, query));
+    }
+
+    if (pathname === '/admin/moderation' && req.method === 'GET') {
+      const query = Object.fromEntries(url.searchParams);
+      return sendBffResponse(await handleGetModerationReviewQueueProjection(context, query));
+    }
+
+    if (pathname.startsWith('/admin/moderation/') && req.method === 'GET') {
+      const caseId = decodeURIComponent(pathname.replace('/admin/moderation/', ''));
+      return sendBffResponse(await handleGetModerationReviewDetailProjection(context, caseId));
+    }
+
+    if (pathname === '/moderation/intent' && req.method === 'POST') {
+      return sendBffResponse(await handleModerationCommandIntent(context, body));
+    }
+
+    if (pathname === '/risk/intent' && req.method === 'POST') {
+      return sendBffResponse(await handleRiskCommandIntent(context, body));
+    }
+
+    if (pathname === '/admin/risk' && req.method === 'GET') {
+      const query = Object.fromEntries(url.searchParams);
+      return sendBffResponse(await handleGetRiskReviewQueueProjection(context, query));
+    }
+
+    if (pathname.startsWith('/admin/risk/') && req.method === 'GET') {
+      const caseId = decodeURIComponent(pathname.replace('/admin/risk/', ''));
+      return sendBffResponse(await handleGetRiskReviewDetailProjection(context, caseId));
     }
 
     if (pathname === '/moderation/list') {
