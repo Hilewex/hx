@@ -13,8 +13,8 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "paths": {
-      "@hx/contracts": ["packages/contracts/dist"],
-      "@hx/customer": ["services/customer/dist"]
+      "@hx/contracts": ["../../packages/contracts/dist"],
+      "@hx/customer": ["../customer/dist"]
     }
   },
   "include": ["src/**/*"]

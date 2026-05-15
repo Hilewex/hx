@@ -10,7 +10,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "paths": {
-      "@hx/contracts": ["packages/contracts/dist"]
+      "@hx/contracts": ["../../packages/contracts/dist"]
     }
   },
   "include": ["src/**/*"]

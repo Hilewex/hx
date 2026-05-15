@@ -157,7 +157,6 @@
 
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@hx/persistence": ["../../packages/persistence/src"],
       "@hx/post": ["../../services/post/src"],

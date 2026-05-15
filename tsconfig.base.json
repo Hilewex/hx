@@ -8,10 +8,9 @@
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
     "declarationMap": true,
-    "baseUrl": ".",
     "composite": true,
     "paths": {
-      "@hx/*": ["packages/*/src", "services/*/src"]
+      "@hx/*": ["./packages/*/src", "./services/*/src"]
     }
   }
 }
