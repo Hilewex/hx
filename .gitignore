@@ -16,3 +16,4 @@ coverage/
 Thumbs.db
 *.log
 custom_tree.txt
+*.tsbuildinfo
