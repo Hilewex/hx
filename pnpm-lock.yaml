@@ -633,7 +633,11 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
-  services/finance: {}
+  services/finance:
+    dependencies:
+      '@hx/persistence':
+        specifier: workspace:*
+        version: link:../../packages/persistence
 
   services/finance-correction:
     dependencies:
