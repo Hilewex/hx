@@ -1,0 +1,17 @@
+.git
+.env
+.env.local
+.env.*.local
+node_modules
+.next
+dist
+*.tsbuildinfo
+*.log
+ci-logs
+coverage
+.cache
+.turbo
+.pnpm-store
+custom_tree.txt
+tree_output.txt
+FULL_PROJECT_TREE.txt
