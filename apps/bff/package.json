@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "pnpm run clean && tsc",
+    "clean": "node -e \"const fs = require('fs'); fs.rmSync('./dist', { recursive: true, force: true }); fs.rmSync('./tsconfig.tsbuildinfo', { force: true })\"",
     "typecheck": "tsc --noEmit",
     "smoke:p49": "tsx src/server/p49-response-smoke-test.ts",
     "smoke:p50": "tsx src/server/p50-response-smoke-test.ts",
-    "start": "tsx src/index.ts"
+    "start": "tsx src/index.ts",
+    "start:prod": "node dist/index.js"
   },
   "dependencies": {
     "@hx/admin": "workspace:*",

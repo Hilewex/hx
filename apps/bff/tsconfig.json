@@ -170,7 +170,7 @@
       "@hx/supplier-management": ["../../services/supplier-management/src"]
     },
     "outDir": "./dist",
-    "rootDir": "."
+    "rootDir": "./src"
   },
   "include": [
     "src/**/*"
