@@ -1,0 +1,156 @@
+name: FAZ-5F Linux Production Proof
+
+on:
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: 24.14.0
+  PNPM_VERSION: 10.30.3
+  WEB_STANDALONE_SERVER: apps/web/.next/standalone/apps/web/server.js
+
+jobs:
+  linux-production-proof:
+    name: Linux production proof foundation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare proof log directory
+        shell: bash
+        run: mkdir -p ci-logs
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Record toolchain versions
+        shell: bash
+        timeout-minutes: 1
+        run: |
+          set -euo pipefail
+          {
+            echo "node=$(node --version)"
+            echo "pnpm=$(pnpm --version)"
+          } | tee ci-logs/toolchain.txt
+
+      - name: Install dependencies with frozen lockfile
+        shell: bash
+        timeout-minutes: 8
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile 2>&1 | tee ci-logs/install.log
+          exit "${PIPESTATUS[0]}"
+
+      - name: Run production build orchestration
+        shell: bash
+        timeout-minutes: 15
+        run: |
+          set -euo pipefail
+          pnpm run build:prod 2>&1 | tee ci-logs/build-prod.log
+          exit "${PIPESTATUS[0]}"
+
+      - name: Verify web standalone artifact
+        shell: bash
+        timeout-minutes: 2
+        run: |
+          set -euo pipefail
+          pnpm run verify:web:standalone 2>&1 | tee ci-logs/verify-web-standalone.log
+          exit "${PIPESTATUS[0]}"
+
+      - name: Smoke web standalone startup
+        shell: bash
+        timeout-minutes: 2
+        run: |
+          set -euo pipefail
+          WEB_LOG="ci-logs/web-startup.log"
+          WEB_PID=""
+          cleanup() {
+            if [ -n "${WEB_PID}" ] && kill -0 "${WEB_PID}" 2>/dev/null; then
+              kill "${WEB_PID}" 2>/dev/null || true
+              wait "${WEB_PID}" 2>/dev/null || true
+            fi
+          }
+          trap cleanup EXIT
+
+          node "${WEB_STANDALONE_SERVER}" >"${WEB_LOG}" 2>&1 &
+          WEB_PID="$!"
+
+          for _ in $(seq 1 30); do
+            if grep -Eiq "ready|started|listening|localhost|http" "${WEB_LOG}"; then
+              cat "${WEB_LOG}"
+              exit 0
+            fi
+
+            if ! kill -0 "${WEB_PID}" 2>/dev/null; then
+              cat "${WEB_LOG}"
+              exit 1
+            fi
+
+            sleep 1
+          done
+
+          cat "${WEB_LOG}"
+          exit 1
+
+      - name: Smoke BFF startup
+        shell: bash
+        timeout-minutes: 2
+        run: |
+          set -euo pipefail
+          BFF_LOG="ci-logs/bff-startup.log"
+          BFF_PID=""
+          cleanup() {
+            if [ -n "${BFF_PID}" ] && kill -0 "${BFF_PID}" 2>/dev/null; then
+              kill "${BFF_PID}" 2>/dev/null || true
+              wait "${BFF_PID}" 2>/dev/null || true
+            fi
+          }
+          trap cleanup EXIT
+
+          node apps/bff/dist/index.js >"${BFF_LOG}" 2>&1 &
+          BFF_PID="$!"
+
+          for _ in $(seq 1 30); do
+            if grep -Fq "[BFF] Server listening on port" "${BFF_LOG}"; then
+              cat "${BFF_LOG}"
+              exit 0
+            fi
+
+            if ! kill -0 "${BFF_PID}" 2>/dev/null; then
+              cat "${BFF_LOG}"
+              exit 1
+            fi
+
+            sleep 1
+          done
+
+          cat "${BFF_LOG}"
+          exit 1
+
+      - name: Smoke panel production entry
+        shell: bash
+        timeout-minutes: 2
+        run: |
+          set -euo pipefail
+          node apps/panel/dist/index.js 2>&1 | tee ci-logs/panel-startup.log
+          exit "${PIPESTATUS[0]}"
+
+      - name: Upload proof logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: faz-5f-linux-production-proof-logs
+          path: ci-logs/
+          if-no-files-found: error
+          retention-days: 14
