@@ -2,7 +2,8 @@
   "name": "@hx/risk",
   "version": "1.0.0",
   "description": "Risk and Fraud Foundation Service",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
