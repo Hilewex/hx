@@ -2,6 +2,11 @@ name: FAZ-5F Linux Production Proof
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/faz-5f-linux-production-proof.yml"
 
 env:
   NODE_VERSION: 24.14.0
