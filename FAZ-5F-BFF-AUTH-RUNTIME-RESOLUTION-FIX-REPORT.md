@@ -104,11 +104,20 @@ Bu raporun kapsami `@hx/auth` runtime resolution fix'i ile sinirlidir. `@hx/cata
 
 ## 7. Commit hash
 
-Commit hash final commit sonrasinda raporlanacaktir.
+Fix commit hash:
+
+```text
+6d97ec8
+```
 
 ## 8. Push sonucu
 
-Push sonucu final push sonrasinda raporlanacaktir.
+Push basarili:
+
+```text
+To https://github.com/Hilewex/hx.git
+   fc2ffcc..6d97ec8  master -> master
+```
 
 ## 9. Yeni CI run icin beklenen asama
 
