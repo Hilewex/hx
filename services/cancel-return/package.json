@@ -1,8 +1,8 @@
 {
   "name": "@hx/cancel-return",
   "version": "1.0.0",
-  "main": "dist/services/cancel-return/src/index.js",
-  "types": "dist/services/cancel-return/src/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
