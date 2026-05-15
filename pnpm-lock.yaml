@@ -612,6 +612,10 @@ importers:
       '@hx/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+    devDependencies:
+      '@types/node':
+        specifier: ^20.19.39
+        version: 20.19.39
 
   services/customer-social:
     dependencies:

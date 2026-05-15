@@ -9,6 +9,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
+    "types": ["node"],
     "paths": {
       "@hx/contracts": ["../../packages/contracts/dist"]
     }
